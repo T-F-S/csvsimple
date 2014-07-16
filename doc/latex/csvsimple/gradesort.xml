@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csv>
+  <bracket empty="true" />
+  <sortlines>
+    <column name="grade" order="ascending" type="double"/>
+    <column name="name" order="ascending" type="string"/>
+    <column name="givenname" order="ascending" type="string"/>
+  </sortlines>
+</csv>

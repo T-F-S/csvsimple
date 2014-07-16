@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csv>
+  <bracket empty="true" />
+  <sortlines>
+    <column name="amount" order="descending" type="double"/>
+    <column name="land" order="ascending" type="string"/>
+  </sortlines>
+</csv>

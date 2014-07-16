@@ -1,0 +1,91 @@
+%% The LaTeX package csvsimple - version 1.12 (2014/07/14)
+%%
+%% -------------------------------------------------------------------------------------------
+%% Copyright (c) 2008-2014 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% -------------------------------------------------------------------------------------------
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `author-maintained'.
+%%
+%% This work consists of all files listed in README
+%%
+
+version 1.00 (2010/07/28): initial public release
+
+version 1.01 (2010/11/10):
+- documentation of some keys clarified
+- new key: after first line
+- new key: late after first line
+- new example for key evaluation in the documentation
+
+version 1.02 (2011/04/04):
+- error in the documentation for longtable und tabbing corrected
+- new macros: \csvfilteraccept, \csvfilterreject
+- new keys: filter accept all, filter reject all
+
+version 1.03 (2011/11/04):
+- processing error for lines starting with '00' corrected
+
+version 1.04 (2011/11/11):
+- new key: head to column names (automatic column names)
+- new key: no table
+- column numbers can now be used for column macro definitions
+- documentation update and correction
+- internal behaviour of 'before reading' and 'after reading' changed for tables
+
+version 1.05 (2012/03/12):
+- documentation language changed from German to English
+- source code of the documentation added
+- provision of the csvsimple.tds.zip file for easier installation
+- key @table removed from the documentation
+- new keys: preprocessed file, preprocessor, no preprocessing
+  for preprocessing support (e.g. sorting)
+- error in 'nocheckcolumncount' corrected and key renamed to 'no check column count'
+- key nofilter renamed to 'no filter' and 'nohead' to 'no head' (the old names
+  are kept as deprecated key names)
+
+version 1.06 (2012/11/08):
+- implementation for line breaking changed from full macro expansion to
+  token expansion. This allows quite arbitrary macro code inside the data.
+  Note that this may be a breaking change if your application expects
+  expanded column values.
+- option values added for \csvautotabular and \csvautolongtable
+
+version 1.07 (2013/09/25):
+- internal macro '\TrimSpaces' renamed to avoid name clashed with 'xparse'
+- new option 'separator' to set the data value separator to
+  'comma', 'semicolon', or 'pipe'
+
+version 1.10 (2014/07/07):
+- bug fix: table head names in curly brackets were not recognized for some cases
+- changed: if a CSV file is not found, csvsimple stops with an error message instead of a warning
+- external sorting specifically supported for the CSV-Sorter tool with the new options
+ 'csvsorter command', 'csvsorter configpath', 'csvsorter log',
+ 'sort by', 'new sorting rule'
+- new automatic tabular settings with booktabs:
+  '\csvautotabular' and '\csvautolongtable'
+- new keys for respecting special characters:
+  'respect tab', 'respect percent', 'respect sharp', 'respect dollar',
+  'respect and', 'respect backslash', 'respect underscore', 'respect tilde',
+  'respect circumflex', 'respect leftbrace', 'respect rightbrace',
+ 'respect all', 'respect none'
+- new value 'tab' for the 'separator' option to use a tabulator signs
+  as separator.
+
+version 1.11 (2014/07/08):
+- bug fix (serious!): sorting preprocessor overwrites the input data in some combinations
+- changed: if a CSV file with an empty first line is found, csvsimple stops with an error message
+
+version 1.12 (2014/07/14):
+- fixed: CSV-Sorter call incompatibilities with the ngerman package (not babel)
+- changed: success of CSV-Sorter call is checked (Note: Update to CSV-Sorter v0.94 or newer!)
+  new key 'csvsorter token'
+- changed: encircling column entry braces removed for all entries for better siunitx compatibility
+- documentation revised and extended with siunitx examples

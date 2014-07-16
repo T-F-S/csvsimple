@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csv>
+  <bracket leftsymbol="doublequote" rightsymbol="doublequote" />
+  <delimiter signsymbol="semicolon" />
+  <outBracket leftsymbol="braceleft" rightsymbol="braceright" />
+  <outDelimiter signsymbol="comma" />
+</csv>

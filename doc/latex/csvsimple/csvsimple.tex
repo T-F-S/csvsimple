@@ -1,0 +1,1789 @@
+% \LaTeX-Main\
+%% The LaTeX package csvsimple - version 1.12 (2014/07/14)
+%% csvsimple.tex: Manual
+%%
+%% -------------------------------------------------------------------------------------------
+%% Copyright (c) 2008-2014 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% -------------------------------------------------------------------------------------------
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `author-maintained'.
+%%
+%% This work consists of all files listed in README
+%%
+\documentclass[a4paper,11pt]{ltxdoc}
+
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern,parskip,array,ifthen,calc,makeidx}
+\usepackage{amsmath,amssymb}
+\usepackage[svgnames,table,hyperref]{xcolor}
+\usepackage{tikz,siunitx}
+\usepackage[pdftex,bookmarks,raiselinks,pageanchor,hyperindex,colorlinks]{hyperref}
+\urlstyle{sf}
+
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=1.5cm,bottom=1.5cm,
+    marginparsep=5mm,marginparwidth=10mm,
+    headheight=0mm,headsep=0cm,
+    footskip=1.5cm,includeheadfoot]{geometry}
+\usepackage{fancyhdr}
+\fancyhf{}
+\fancyfoot[C]{\thepage}%
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+\tolerance=2000%
+\setlength{\emergencystretch}{20pt}%
+
+\RequirePackage{csquotes}
+\RequirePackage[style=numeric-comp,sorting=nyt,
+  maxnames=8,minnames=8,abbreviate=false,backend=biber]{biblatex}
+\DeclareFieldFormat{url}{\newline\url{#1}}%
+\DeclareListFormat{language}{}%
+\setlength{\bibitemsep}{\smallskipamount}
+\addbibresource{\jobname.bib}
+
+\usepackage[most,documentation]{tcolorbox}
+\usepackage{longtable,booktabs}
+\usepackage{csvsimple}
+
+\tcbset{skin=enhanced,
+  doc head={colback=yellow!10!white,interior style=fill},
+  doc head key={colback=magenta!5!white,interior style=fill},
+  color key=DarkViolet,
+  color value=Teal,
+  color color=Teal,
+  index colorize,index annotate}
+
+\lstdefinestyle{mydocumentation}{style=tcbdocumentation,
+  classoffset=0,
+  texcsstyle=\color{blue},
+  % LaTeX and other packages
+  moretexcs={arrayrulecolor,draw,includegraphics,ifthenelse,isodd,lipsum,path,pgfkeysalso},
+  classoffset=1,
+  moretexcs={%
+    csvset,csvreader,csvautotabular,csvloop,csvautolongtable,csvstyle,
+    csvnames,csvheadset,csviffirstrow,csvifoddrow,csvfilteraccept,
+    csvfilterreject,csvline,thecsvrow,thecsvinputline,csvlinetotablerow,
+    csvautobooktabular,csvautobooklongtable,
+    },
+  texcsstyle=\color{Definition}\bfseries,
+  classoffset=2,
+  keywordstyle=\color{Option}\bfseries,
+  % option list
+  morekeywords={%
+    },
+  classoffset=0% restore default
+  }
+
+\tcbset{documentation listing style=mydocumentation,%
+  docexample/.style={enhanced,colframe=Navy!50!ExampleFrame,colback=Navy!5!ExampleBack,fontlower=\footnotesize,
+    bicolor,colbacklower=ExampleBack!5!white,drop fuzzy shadow},
+}
+
+
+
+\tcbmakedocSubKey{docCsvKey}{csv}
+
+\NewDocumentCommand{\csvsorter}{}{\textsf{\bfseries\color{red!20!black}CSV-Sorter}}
+
+\newtcbinputlisting{\csvlisting}[1]{docexample,listing style=tcbdocumentation,fonttitle=\bfseries,
+  listing only,title={CSV file \flqq\texttt{\detokenize{#1.csv}}\frqq},listing file=#1.csv}
+
+\newtcbinputlisting{\xmllisting}[1]{docexample,listing options={style=tcbdocumentation,language=XML},
+  fonttitle=\bfseries,listing only,title={Configuration file \flqq\texttt{\detokenize{#1.xml}}\frqq},listing file=#1.xml}
+
+\NewTotalTCBox{\verbbox}{m}{enhanced,on line,size=fbox,frame empty,colback=red!5!white,
+  colupper=red!85!black,fontupper=\bfseries\ttfamily}{\detokenize{"}#1\detokenize{"}}
+
+\hypersetup{
+  pdftitle={Manual for the csvsimple package},
+  pdfauthor={Thomas F. Sturm},
+  pdfsubject={csv file processing with LaTeX},
+  pdfkeywords={csv file, comma separated values, key value syntax}
+}
+
+\def\version{1.12}%
+\def\datum{2014/07/14}%
+\makeindex
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{center}
+\vspace*{5mm}
+\begin{tcolorbox}[enhanced,
+  center upper,width=10cm,boxrule=0.4pt,
+  colback=white,colframe=black!50!yellow,drop fuzzy midday shadow=black!50!yellow]
+{\bfseries\LARGE The \texttt{csvsimple} package\par}\medskip
+{\large Manual for version \version\ (\datum)\par}
+\end{tcolorbox}\bigskip
+{\large Thomas F.~Sturm%
+  \footnote{Prof.~Dr.~Dr.~Thomas F.~Sturm, Institut f\"{u}r Mathematik und Informatik,
+    Universit\"{a}t der Bundeswehr M\"{u}nchen, D-85577 Neubiberg, Germany;
+     email: \href{mailto:thomas.sturm@unibw.de}{thomas.sturm@unibw.de}} }
+\end{center}
+\bigskip
+\begin{absquote}
+  \begin{center}\bfseries Abstract\end{center}
+  |csvsimple| provides a simple \LaTeX\ interface for the processing of files with
+  comma separated values (CSV). |csvsimple| relies heavily on the key value
+  syntax from |pgfkeys| which results (hopefully) in an easy way of usage.
+  Filtering and table generation is especially supported. Since the package
+  is considered as a lightweight tool, there is no support for data sorting
+  or data base storage.
+\end{absquote}
+
+\tableofcontents
+
+\clearpage
+\section{Introduction}%
+The |csvsimple| package is applied to the processing of
+CSV\footnote{CSV file: file with comma separated values.} files.
+This processing is controlled by key value assignments according to the
+syntax of |pgfkeys| \cite{tantau:2013a}. Sample applications of the package
+are tabular lists, serial letters, and charts.
+
+An alternative to |csvsimple| is the |datatool| package \cite{talbot:2014a}
+which provides considerably more functions and allows sorting of data by \LaTeX.
+|csvsimple| has a different approach for the user interface and
+is deliberately restricted to some basic functions with fast
+processing speed. Sorting is not supported directly but can be done
+with external tools, see Section~\ref{sec:Sorting} on page~\pageref{sec:Sorting}.
+
+\subsection{Loading the Package}
+The package |csvsimple| loads the packages
+|pgfkeys| \cite{tantau:2013a} and |ifthen| \cite{carlisle:2001b}.
+|csvsimple| itself is loaded in the usual manner in the preamble:
+\begin{dispListing}
+\usepackage{csvsimple}
+\end{dispListing}
+
+Not automatically loaded, but used for many examples are the packages
+|longtable| \cite{carlisle:2004a}
+and
+|booktabs| \cite{fear:2005a}.
+
+\subsection{First Steps}
+Every line of a processable CSV file has to contain an identical amount of
+comma\footnote{See \refKey{/csv/separator} for other separators than comma.} separated values. The curly braces |{}| of \TeX\ groups can be used
+to mask a block which may contain commas not to be processed as separators.
+
+The first line of such a CSV file is usually but not necessarily a header line
+which contains the identifiers for each column.
+
+%-- file embedded for simplicity --
+\begin{tcbverbatimwrite}{grade.csv}
+name,givenname,matriculation,gender,grade
+Maier,Hans,12345,m,1.0
+Huber,Anna,23456,f,2.3
+Wei\ss{}b\"{a}ck,Werner,34567,m,5.0
+Bauer,Maria,19202,f,3.3
+\end{tcbverbatimwrite}
+%-- end embedded file --
+
+\csvlisting{grade}
+
+
+The most simple way to display a CSV file in tabular form is the processing
+with the \refCom{csvautotabular} command.
+
+\begin{dispExample}
+\csvautotabular{grade.csv}
+\end{dispExample}
+
+
+Typically, one would use \refCom{csvreader} instead of |\csvautotabular| to
+gain full control over the interpretation of the included data.
+
+In the following example, the entries of the header line are automatically
+assigned to \TeX\ macros which may be used deliberately.
+
+
+\begin{dispExample}
+\begin{tabular}{|l|c|}\hline%
+\bfseries Person & \bfseries Matr.~No.
+\csvreader[head to column names]{grade.csv}{}%
+{\\\givenname\ \name & \matriculation}%
+  \\\hline
+\end{tabular}
+\end{dispExample}
+
+
+|\csvreader| is controlled by a plenty of options. For example, for table
+applications line breaks are easily inserted by
+\refKey{/csv/late after line}. This defines a macro execution just before
+the following line.
+Additionally, the assignment of columns to \TeX\ macros is shown in a non automated
+way.
+
+\begin{dispExample}
+\begin{tabular}{|r|l|c|}\hline%
+& Person & Matr.~No.\\\hline\hline
+\csvreader[late after line=\\\hline]%
+  {grade.csv}{name=\name,givenname=\firstname,matriculation=\matnumber}%
+  {\thecsvrow & \firstname~\name & \matnumber}%
+\end{tabular}
+\end{dispExample}
+
+An even more comfortable and preferrable way to create a table is setting
+appropriate option keys. Note, that this gives you the possibility to create a
+|pgfkeys| style which contains the whole table creation.
+
+\begin{dispExample}
+\csvreader[tabular=|r|l|c|,
+    table head=\hline & Person & Matr.~No.\\\hline\hline,
+    late after line=\\\hline]%
+  {grade.csv}{name=\name,givenname=\firstname,matriculation=\matnumber}%
+  {\thecsvrow & \firstname~\name & \matnumber}%
+\end{dispExample}
+
+\clearpage
+The next example shows such a style definition with the convenience macro
+\refCom{csvstyle}. Here, we see again the automated assignment of header
+entries to column names by \refKey{/csv/head to column names}.
+For this, the header entries have to be without spaces and special characters.
+But you can always assign entries to canonical macro names by hand like in the examples
+above.
+
+\begin{dispExample}
+\csvstyle{myTableStyle}{tabular=|r|l|c|,
+    table head=\hline & Person & Matr.~No.\\\hline\hline,
+    late after line=\\\hline,
+    head to column names}
+
+\csvreader[myTableStyle]{grade.csv}{}%
+  {\thecsvrow & \givenname~\name & \matriculation}%
+\end{dispExample}
+
+
+Another way to address columns is to use their roman numbers.
+The direct addressing is done by |\csvcoli|, |\csvcolii|, |\csvcoliii|, \ldots:
+
+\begin{dispExample}
+\csvreader[tabular=|r|l|c|,
+    table head=\hline & Person & Matr.~No.\\\hline\hline,
+    late after line=\\\hline]%
+  {grade.csv}{}%
+  {\thecsvrow & \csvcolii~\csvcoli & \csvcoliii}%
+\end{dispExample}
+
+And yet another method to assign macros to columns is to use arabic numbers
+for the assignment:
+
+\begin{dispExample}
+\csvreader[tabular=|r|l|c|,
+    table head=\hline & Person & Matr.~No.\\\hline\hline,
+    late after line=\\\hline]%
+  {grade.csv}{1=\name,2=\firstname,3=\matnumber}%
+  {\thecsvrow & \firstname~\name & \matnumber}%
+\end{dispExample}
+
+\clearpage
+For recurring applications, the |pgfkeys| syntax allows to create own styles
+for a consistent and centralized design. The following example is easily
+modified to obtain more or less option settings.
+
+\begin{dispExample}
+\csvset{myStudentList/.style={%
+  tabular=|r|l|c|,
+  table head=\hline & Person & #1\\\hline\hline,
+  late after line=\\\hline,
+  column names={name=\name,givenname=\firstname}
+  }}
+
+\csvreader[myStudentList={Matr.~No.}]{grade.csv}{matriculation=\matnumber}%
+{\thecsvrow & \firstname~\name & \matnumber}%
+\hfill%
+\csvreader[myStudentList={Grade}]{grade.csv}{grade=\grade}%
+{\thecsvrow & \firstname~\name & \grade}%
+\end{dispExample}
+
+
+Alternatively, column names can be set by \refCom{csvnames}
+and style definitions by \refCom{csvstyle}.
+With this, the last example is rewritten as follows:
+
+\begin{dispExample}
+\csvnames{myNames}{1=\name,2=\firstname,3=\matnumber,5=\grade}
+\csvstyle{myStudentList}{tabular=|r|l|c|,
+  table head=\hline & Person & #1\\\hline\hline,
+  late after line=\\\hline, myNames}
+
+\csvreader[myStudentList={Matr.~No.}]{grade.csv}{}%
+{\thecsvrow & \firstname~\name & \matnumber}%
+\hfill%
+\csvreader[myStudentList={Grade}]{grade.csv}{}%
+{\thecsvrow & \firstname~\name & \grade}%
+\end{dispExample}
+
+\clearpage
+The data lines of a CSV file can also be filtered. In the following example,
+a certificate is printed only for students with grade unequal to 5.0.
+
+\begin{dispExample}
+\csvreader[filter not equal={\grade}{5.0}]%
+  {grade.csv}{1=\name,2=\firstname,3=\matnumber,4=\gender,5=\grade}%
+  {\begin{center}\Large\bfseries Certificate in Mathematics\end{center}
+  \large\ifthenelse{\equal{\gender}{f}}{Ms.}{Mr.}
+  \firstname~\name, matriculation number \matnumber, has passed the test
+  in mathematics with grade \grade.\par\ldots\par
+  }%
+\end{dispExample}
+
+
+\clearpage
+\section{Macros for the Processing of CSV Files}\label{sec:makros}%
+
+\begin{docCommand}{csvreader}{\oarg{options}\marg{file name}\marg{assignments}\marg{command list}}
+  |\csvreader| reads the file denoted by \meta{file name} line by line.
+  Every line of the file has to contain an identical amount of
+  comma separated values. The curly braces |{}| of \TeX\ groups can be used
+  to mask a block which may contain commas not to be processed as separators.\smallskip
+
+  The first line of such a CSV file is by default but not necessarily
+  processed as a header line which contains the identifiers for each column.
+  The entries of this line can be used to give \meta{assignments} to \TeX\ macros
+  to address the columns. The number of entries of this first line
+  determines the accepted number of entries for all following lines.
+  Every line which contains a higher or lower number of entries is ignored
+  during standard processing.\smallskip
+
+  The \meta{assignments} are given by key value pairs
+  \mbox{\meta{name}|=|\meta{macro}}. Here, \meta{name} is an entry from the
+  header line \emph{or} the arabic number of the addressed column.
+  \meta{macro} is some \TeX\ macro which gets the content of the addressed column.\smallskip
+
+  The \meta{command list} is executed for every accepted data line. Inside the
+  \meta{command list} is applicable:
+  \begin{itemize}
+  \item \docAuxCommand{thecsvrow} or the counter |csvrow| which contains the number of the
+    current data line (starting with 1).
+  \item \docAuxCommand{csvcoli}, \docAuxCommand{csvcolii}, \docAuxCommand{csvcoliii}, \ldots,
+    which contain the contents of the column entries of the current data line.
+    Alternatively can be used:
+  \item \meta{macro} from the \meta{assignments} to have a logical
+    addressing of a column entry.
+  \end{itemize}
+  Note, that the \meta{command list} is allowed to contain |\par| and
+  that all macro definitions are made global to be used for table applications.\smallskip
+
+  The processing of the given CSV file can be controlled by various
+  \meta{options} given as key value list. The feasible option keys
+  are described in section \ref{sec:schluessel} from page \pageref{sec:schluessel}.
+
+\begin{dispExample}
+\csvreader[tabular=|r|l|l|, table head=\hline, table foot=\hline]{grade.csv}%
+  {name=\name,givenname=\firstname,grade=\grade}%
+  {\grade & \firstname~\name & \csvcoliii}
+\end{dispExample}
+
+Mainly, the |\csvreader| command consists of a \refCom{csvloop} macro with
+following parameters:\par
+|\csvloop{|\meta{options}|, file=|\meta{file name}|, column names=|\meta{assignments}|,|\\
+  \hspace*{2cm} |command=|\meta{command list}|}|\par
+  Therefore, the application of the keys \refKey{/csv/file} and \refKey{/csv/command}
+is useless for |\csvreader|.
+\end{docCommand}
+
+\begin{docCommand}{csvloop}{\marg{options}}
+  Usually, \refCom{csvreader} may be preferred instead of |\csvloop|.
+  \refCom{csvreader} is based on |\csvloop| which takes a mandatory list of
+  \meta{options} in key value syntax.
+  This list of \meta{options} controls the total processing. Especially,
+  it has to contain the CSV file name.
+\begin{dispExample}
+\csvloop{file={grade.csv}, head to column names, command=\name,
+  before reading={List of students:\ },
+  late after line={{,}\ }, late after last line=.}
+\end{dispExample}
+\end{docCommand}
+
+\clearpage
+The following |\csvauto...| commands are intended for quick data overview
+with limited formatting potential.
+See Subsection~\ref{subsec:tabsupport} on page \pageref{subsec:tabsupport}
+for the general table options in combination with \refCom{csvreader} and
+\refCom{csvloop}.
+
+\begin{docCommand}{csvautotabular}{\oarg{options}\marg{file name}}
+  |\csvautotabular| is an abbreviation for the application of the option key
+  \refKey{/csv/autotabular} together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+\begin{dispExample}
+\csvautotabular{grade.csv}
+\end{dispExample}
+\begin{dispExample}
+\csvautotabular[filter equal={\csvcoliv}{f}]{grade.csv}
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{csvautolongtable}{\oarg{options}\marg{file name}}
+  |csvautolongtable| is an abbreviation for the application of the option key
+  \refKey{/csv/autolongtable} together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  For application, the package |longtable| is required which has to be
+  loaded in the preamble.
+\begin{dispListing}
+\csvautolongtable{grade.csv}
+\end{dispListing}
+\csvautolongtable{grade.csv}
+\end{docCommand}
+
+\clearpage
+
+\begin{docCommand}{csvautobooktabular}{\oarg{options}\marg{file name}}
+  |\csvautotabular| is an abbreviation for the application of the option key
+  \refKey{/csv/autobooktabular} together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  For application, the package |booktabs| is required which has to be
+  loaded in the preamble.
+\begin{dispExample}
+\csvautobooktabular{grade.csv}
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{csvautobooklongtable}{\oarg{options}\marg{file name}}
+  |csvautobooklongtable| is an abbreviation for the application of the option key
+  \refKey{/csv/autobooklongtable} together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  For application, the packages |booktabs| and |longtable| are required which have to be
+  loaded in the preamble.
+\begin{dispListing}
+\csvautobooklongtable{grade.csv}
+\end{dispListing}
+\csvautobooklongtable{grade.csv}
+\end{docCommand}
+
+
+
+\clearpage
+
+\begin{docCommand}{csvset}{\marg{options}}
+  Sets \meta{options} for every following
+  \refCom{csvreader} and \refCom{csvloop}. For example, this command may
+  be used for style definitions.
+\begin{dispExample}
+\csvset{grade list/.style=
+    {column names={name=\name,givenname=\firstname,grade=\grade}},
+  passed/.style={filter not equal={\grade}{5.0}} }
+
+The following students passed the test in mathematics:
+\csvreader[grade list,passed]{grade.csv}{}{\firstname\ \name\ (\grade); }%
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{csvstyle}{\marg{Stilname}\marg{options}}
+  Abbreviation for |\csvset{|\meta{style name}|/.style=|\marg{options}|}|
+  to define a new style.
+\end{docCommand}
+
+\begin{docCommand}{csvnames}{\marg{Stilname}\marg{Zuweisungsliste}}
+  Abbreviation for |\csvset{|\meta{style name}|/.style={column names=|\marg{assignments}|}}|
+  to define additional \meta{assignments} of macros to columns.
+\begin{dispExample}
+\csvnames{grade list}{name=\name,givenname=\firstname,grade=\grade}
+\csvstyle{passed}{filter not equal={\grade}{5.0}}
+
+The following students passed the test in mathematics:
+\csvreader[grade list,passed]{grade.csv}{}{\firstname\ \name\ (\grade); }%
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{csvheadset}{\marg{assignments}}
+  For some special cases, this command can be used to change the
+  \meta{assignments} of macros to columns during execution of
+  \refCom{csvreader} and \refCom{csvloop}.
+\begin{dispExample}
+\csvreader{grade.csv}{}%
+  { \csvheadset{name=\n} \fbox{\n}
+    \csvheadset{givenname=\n} \ldots\ \fbox{\n}  }%
+\end{dispExample}
+\end{docCommand}
+
+\clearpage
+
+\begin{docCommand}{csviffirstrow}{\marg{then macros}\marg{else macros}}
+  Inside the command list of \refCom{csvreader}, the \meta{then macros}
+  are executed for the first data line, and the \meta{else macros}
+  are executed for all following lines.
+\begin{dispExample}
+\csvreader[tabbing, head to column names, table head=\hspace*{3cm}\=\kill]%
+  {grade.csv}{}%
+  {\givenname~\name \> (\csviffirstrow{first entry!!}{following entry})}
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{csvifoddrow}{\marg{then macros}\marg{else macros}}
+  Inside the command list of \refCom{csvreader}, the \meta{then macros}
+  are executed for odd-numbered   data lines, and the \meta{else macros}
+  are executed for even-numbered lines.
+\begin{dispExample}
+\csvreader[head to column names,tabular=|l|l|l|l|,
+  table head=\hline\bfseries \# & \bfseries Name & \bfseries Grade\\\hline,
+  table foot=\hline]{grade.csv}{}{%
+    \csvifoddrow{\slshape\thecsvrow & \slshape\name, \givenname & \slshape\grade}%
+    {\bfseries\thecsvrow & \bfseries\name, \givenname & \bfseries\grade}}
+\end{dispExample}
+
+The |\csvifoddrow| macro may be used for striped tables:
+
+\begin{dispExample}
+% This example needs the xcolor package
+\csvreader[head to column names,tabular=rlcc,
+  table head=\hline\rowcolor{red!50!black}\color{white}\# & \color{white}Person
+    & \color{white}Matr.~No. & \color{white}Grade,
+  late after head=\\\hline\rowcolor{yellow!50},
+  late after line=\csvifoddrow{\\\rowcolor{yellow!50}}{\\\rowcolor{red!25}}]%
+  {grade.csv}{}%
+  {\thecsvrow & \givenname~\name & \matriculation & \grade}%
+\end{dispExample}
+
+\enlargethispage*{1cm}
+Alternatively, |\rowcolors| from the |xcolor| package can be used for this
+purpose:
+
+\begin{dispExample}
+% This example needs the xcolor package
+\csvreader[tabular=rlcc, before table=\rowcolors{2}{red!25}{yellow!50},
+  table head=\hline\rowcolor{red!50!black}\color{white}\# & \color{white}Person
+    & \color{white}Matr.~No. & \color{white}Grade\\\hline,
+  head to column names]{grade.csv}{}%
+  {\thecsvrow & \givenname~\name & \matriculation & \grade}%
+\end{dispExample}
+\end{docCommand}
+
+\clearpage
+
+\begin{docCommand}{csvfilteraccept}{}
+  All following consistent data lines will be accepted and processed.
+  This command overwrites all previous filter settings and may be used
+  inside \refKey{/csv/before filter} to implement
+  an own filtering rule together with |\csvfilterreject|.
+\begin{dispExample}
+\csvreader[autotabular,
+  before filter=\ifthenelse{\equal{\csvcoliv}{m}}{\csvfilteraccept}{\csvfilterreject}
+  ]{grade.csv}{}{\csvlinetotablerow}%
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{csvfilterreject}{}
+  All following data lines will be ignored.
+  This command overwrites all previous filter settings.
+\end{docCommand}
+
+
+\begin{docCommand}{csvline}{}
+  This macro contains the current and unprocessed data line.
+\begin{dispExample}
+\csvreader[no head, tabbing, table head=\textit{line XX:}\=\kill]%
+  {grade.csv}{}{\textit{line \thecsvrow:} \> \csvline}%
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{thecsvrow}{}
+  Typesets the current data line number. This is the
+  current number of accepted data lines without the header line.
+  The \LaTeX\ counter |csvrow| can be addressed directly in the usual way,
+  e.\,g. by |\roman{csvrow}|.
+\end{docCommand}
+
+
+\begin{docCommand}{thecsvinputline}{}
+  Typesets the current file line number. This is the
+  current number of all data lines including the header line.
+  The \LaTeX\ counter |csvinputline| can be addressed directly in the usual way,
+  e.\,g. by |\roman{csvinputline}|.
+\begin{dispExample}
+\csvreader[no head, filter equal={\thecsvinputline}{3}]%
+  {grade.csv}{}%
+  {The line with number \thecsvinputline\ contains: \csvline}%
+\end{dispExample}
+\end{docCommand}
+
+
+\begin{docCommand}{csvlinetotablerow}{}
+  Typesets the current processed data line with |&| between the entries.
+  %Most users will never apply this command.
+\end{docCommand}
+
+
+
+\clearpage
+\section{Option Keys}\label{sec:schluessel}%
+For the \meta{options} in \refCom{csvreader} respectively \refCom{csvloop}
+the following |pgf| keys can be applied. The key tree path |/csv/| is not
+to be used inside these macros.
+
+
+\subsection{Command Definition}%--------%[[
+
+\begin{docCsvKey}{before reading}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed before the CSV file is processed.
+\end{docCsvKey}
+
+\begin{docCsvKey}{after head}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after the header line is read.
+\end{docCsvKey}
+
+\begin{docCsvKey}{before filter}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after reading and consistency checking
+  of a data line. They are executed before any filter condition is checked,
+  see \refKey{/csv/filter}.
+\end{docCsvKey}
+
+\begin{docCsvKey}{late after head}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after reading and disassembling
+  of the first accepted data line. They are executed before further processing
+  of this line.
+\end{docCsvKey}
+
+\begin{docCsvKey}{late after line}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after reading and disassembling
+  of the next accepted data line (after \refKey{/csv/before filter}).
+  They are executed before further processing of this next line.
+  |late after line| overwrites |late after first line| and |late after last line|.
+  Note that table options like \refKey{/csv/tabular} set this key to |\\|
+  automatically.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{late after first line}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after reading and disassembling
+  of the second accepted data line instead of \refKey{/csv/late after line}.
+  This key has to be set after |late after line|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{late after last line}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after processing of the last
+  accepted data line instead of \refKey{/csv/late after line}.
+  This key has to be set after |late after line|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{before line}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after \refKey{/csv/late after line}
+  and before \refKey{/csv/command}.
+  |before line| overwrites |before first line|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{before first line}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed instead of \refKey{/csv/before line}
+  for the first accepted data line.
+  This key has to be set after |before line|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{command}{=\meta{macros}}{no default, initially \cs{csvline}}
+  Sets the \meta{macros} to be executed for every accepted data line.
+  They are executed between \refKey{/csv/before line} and \refKey{/csv/after line}.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{after line}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed for every accepted data line
+  after \refKey{/csv/command}.
+  |after line| overwrites |after first line|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{after first line}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed instead of \refKey{/csv/after line}
+  for the first accepted data line.
+  This key has to be set after |after line|.
+\end{docCsvKey}
+
+\begin{docCsvKey}{after reading}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after the CSV file is processed.
+\end{docCsvKey}
+
+
+\begin{dispExample}
+\csvreader[
+  before reading        = \meta{before reading}\\,
+  after head            = \meta{after head},
+  before filter         = \\\meta{before filter},
+  late after head       = \meta{late after head},
+  late after line       = \meta{late after line},
+  late after first line = \meta{late after first line},
+  late after last line  = \\\meta{late after last line},
+  before line           = \meta{before line},
+  before first line     = \meta{before first line},
+  after line            = \meta{after line},
+  after first line      = \meta{after first line},
+  after reading         = \\\meta{after reading}
+    ]{grade.csv}{name=\name}{\textbf{\name}}%
+\end{dispExample}
+
+Additional command definition keys are provided for the supported tables,
+see section \ref{subsec:tabsupport} from page
+\pageref{subsec:tabsupport}.
+
+
+\subsection{Header Processing and Column Name Assignment}%
+
+\begin{docCsvKey}{head}{\colOpt{=true\textbar false}}{default |true|, initially |true|}
+  If this key is set, the first line of the CSV file is treated as a header
+  line which can be used for column name assignments.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{no head}{}{no value}
+  Abbreviation for |head=false|, i.\,e. the first line of the CSV file is
+  treated as data line.
+  Note that this option cannot be used in combination with
+  \refCom{csvautotabular}, \refKey{/csv/autotabular}, and similar automated commands/options.
+  See Section~\ref{noheader} on page~\pageref{noheader} for assistance.
+\end{docCsvKey}
+
+\begin{docCsvKey}{column names}{=\meta{assignments}}{no default, initially empty}
+  Adds some new \meta{assignments} of macros to columns in key value syntax.
+  Existing assignments are kept.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{column names reset}{}{no value}
+  Clears all assignments of macros to columns.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{head to column names}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, the entries of the header line are used automatically
+  as macro names for the columns. This option can be used only, if
+  the header entries do not contain spaces and special characters to be
+  used as feasible \LaTeX\ macro names.
+\end{docCsvKey}
+
+
+\clearpage
+\subsection{Consistency Check and Filtering}%
+
+\begin{docCsvKey}{check column count}{\colOpt{=true\textbar false}}{default |true|, initially |true|}
+  This key defines, if the number of entries in a data line is checked against
+  an expected value.\\
+  If |true|, every non consistent line is ignored without announcement.\\
+  If |false|, every line is accepted and may produce an error during
+  further processing.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{no check column count}{}{no value}
+  Abbreviation for |check column count=false|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{column count}{=\meta{number}}{no default}
+  Sets the \meta{number} of feasible entries per data line.
+  This setting is only useful in connection with \refKey{/csv/no head},
+  since \meta{number} would be replaced by the number of entries in the
+  header line otherwise.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{on column count error}{=\meta{macros}}{no default, initially empty}
+  \meta{macros} to be executed for unfeasible data lines.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{warn on column count error}{}{style, no value}
+  Display of a warning for unfeasible data lines.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{filter}{=\meta{condition}}{no default}
+  Only data lines which fulfill a logical \meta{condition} are accepted.
+  For the \meta{condition}, every term from the |ifthen| package \cite{carlisle:2001b}
+  is feasible.
+  To preprocess the data line before testing the \meta{condition},
+  the option key \refKey{/csv/before filter} can be used.
+\end{docCsvKey}
+
+\begin{docCsvKey}{no filter}{}{no value, initially set}
+  Clears a set filter.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{filter accept all}{}{no value, initially set}
+  Alias for |no filter|. All consistent data lines are accepted.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{filter reject all}{}{no value}
+  All data line are ignored.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{filter equal}{=\marg{string A}\marg{string B}}{style, no default}
+  Only lines where \meta{string A} and \meta{string B} are equal after expansion
+  are accepted.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{filter not equal}{=\marg{string A}\marg{string B}}{style, no default}
+  Only lines where \meta{string A} and \meta{string B} are not equal after expansion
+  are accepted.
+\end{docCsvKey}
+
+
+%]]
+
+
+\clearpage
+\subsection{Table Support}\label{subsec:tabsupport}%--------%[[
+
+\begin{docCsvKey}{tabular}{=\meta{table format}}{style, no default}
+  Surrounds the CSV processing with |\begin{tabular}|\marg{table format}
+  at begin and with |\end{tabular}| at end.
+Additionally, the commands defined by the key values of
+  \refKey{/csv/before table}, \refKey{/csv/table head}, \refKey{/csv/table foot},
+  and \refKey{/csv/after table} are executed at the appropriate places.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{centered tabular}{=\meta{table format}}{style, no default}
+  Like \refKey{/csv/tabular} but inside an additional |center| environment.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{longtable}{=\meta{table format}}{style, no default}
+  Like \refKey{/csv/tabular} but for the |longtable| environment.
+  This requires the package |longtable| (not loaded automatically).
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{tabbing}{}{style, no value}
+  Like \refKey{/csv/tabular} but for the |tabbing| environment.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{centered tabbing}{}{style, no value}
+  Like \refKey{/csv/tabbing} but inside an additional |center| environment.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{no table}{}{style, no value}
+  Deactivates |tabular|, |longtable|, and |tabbing|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{before table}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed before |\begin{tabular}| or before |\begin{longtable}|
+  or before |\begin{tabbing}|, respectively.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{table head}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after |\begin{tabular}| or after |\begin{longtable}|
+  or after |\begin{tabbing}|, respectively.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{table foot}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed before |\end{tabular}| or before |\end{longtable}|
+  or before |\end{tabbing}|, respectively.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{after table}{=\meta{macros}}{no default, initially empty}
+  Sets the \meta{macros} to be executed after |\end{tabular}| or after |\end{longtable}|
+  or after |\end{tabbing}|, respectively.
+\end{docCsvKey}
+
+\bigskip
+
+The following |auto| options are the counterparts for the respective quick
+overview commands like \refCom{csvautotabular}. They are listed for
+completeness, but are unlikely to be used directly.
+
+\begin{docCsvKey}{autotabular}{=\meta{file name}}{no default}
+  Reads the whole CSV file denoted \meta{file name} with an automated formatting.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{autolongtable}{=\meta{file name}}{no default}
+  Reads the whole CSV file denoted \meta{file name} with an automated formatting
+  using the required |longtable| package.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{autobooktabular}{=\meta{file name}}{no default}
+  Reads the whole CSV file denoted \meta{file name} with an automated formatting
+  using the required |booktabs| package.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{autobooklongtable}{=\meta{file name}}{no default}
+  Reads the whole CSV file denoted \meta{file name} with an automated formatting
+  using the required |booktabs| and |longtable| packages.
+\end{docCsvKey}
+
+
+\clearpage
+\subsection{Special Characters}\label{subsec:specchar}
+Be default, the CSV content is treated like normal \LaTeX\ text, see
+Subsection~\ref{macrocodexample} on page~\pageref{macrocodexample}.
+But, \TeX\ special characters of the CSV content may also be interpreted
+as normal characters, if one or more of the following options are used.
+
+\begin{docCsvKey}{respect tab}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  tabulator sign
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect percent}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  percent sign \verbbox{\%}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect sharp}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  sharp sign \verbbox{\#}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect dollar}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  dollar sign \verbbox{\$}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect and}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  and sign \verbbox{\&}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect backslash}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  backslash sign \verbbox{\textbackslash}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect underscore}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  underscore sign \verbbox{\_}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect tilde}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  tilde sign \verbbox{\textasciitilde}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect circumflex}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  circumflex sign \verbbox{\textasciicircum}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect leftbrace}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  left brace sign \verbbox{\textbraceleft}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect rightbrace}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If this key is set, every
+  right brace sign \verbbox{\textbraceright}
+  inside the CSV content is a normal character.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect all}{}{style, no value, initially unset}
+  Set all special characters from above to normal characters. This means
+  a quite verbatim interpretation of the CSV content.
+\end{docCsvKey}
+
+\begin{docCsvKey}{respect none}{}{style, no value, initially set}
+  Do not change any special character from above to normal character.
+\end{docCsvKey}
+
+\clearpage
+\subsection{Separators}%
+\begin{docCsvKey}{separator}{=\meta{sign}}{no default, initially |comma|}
+  \catcode `|=12
+  Sets the \meta{sign} which is treates as separator between the data values
+  of a data line. Feasible values are:
+  \begin{itemize}
+  \item\docValue{comma}: This is the initial value with '\texttt{,}' as separator.
+  \medskip
+
+  \item\docValue{semicolon}: Sets the separator to '\texttt{;}'.
+\begin{dispExample}
+% \usepackage{tcolorbox} for tcbverbatimwrite
+\begin{tcbverbatimwrite}{testsemi.csv}
+  name;givenname;matriculation;gender;grade
+  Maier;Hans;12345;m;1.0
+  Huber;Anna;23456;f;2.3
+  Wei\ss{}b\"{a}ck;Werner;34567;m;5.0
+\end{tcbverbatimwrite}
+
+\csvautobooktabular[separator=semicolon]{testsemi.csv}
+\end{dispExample}
+\medskip
+
+\item\docValue{pipe}: Sets the separator to '\texttt{|}'.
+\begin{dispExample}
+% \usepackage{tcolorbox} for tcbverbatimwrite
+\begin{tcbverbatimwrite}{pipe.csv}
+  name|givenname|matriculation|gender|grade
+  Maier|Hans|12345|m|1.0
+  Huber|Anna|23456|f|2.3
+  Wei\ss{}b\"{a}ck|Werner|34567|m|5.0
+\end{tcbverbatimwrite}
+
+\csvautobooktabular[separator=pipe]{pipe.csv}
+\end{dispExample}
+\medskip
+
+\item\docValue{tab}: Sets the separator to the tabulator sign.
+  Automatically, \refKey{/csv/respect tab} is set also.
+  \end{itemize}
+\end{docCsvKey}
+
+\clearpage
+\subsection{Miscellaneous}%
+
+\begin{docCsvKey}{every csv}{}{style, initially empty}
+  A style definition which is used for every following CSV file.
+  This definition can be overwritten with user code.
+\begin{dispListing}
+% Sets a warning message for unfeasible data lines.
+\csvset{every csv/.style={warn on column count error}}
+% Alternatively:
+\csvstyle{every csv}{warn on column count error}
+\end{dispListing}
+\end{docCsvKey}
+
+\begin{docCsvKey}{default}{}{style}
+  A style definition which is used for every following CSV file which
+  resets all settings to default values\footnote{\texttt{default} is used
+  because of the global nature of most settings.}.
+  This key should not be used or changed by the user if there is not a
+  really good reason (and you know what you do).
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{file}{=\meta{file name}}{no default, initially |unknown.csv|}
+  Sets the \meta{file name} of the CSV file to be processed.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{preprocessed file}{=\meta{file name}}{no default, initially \texttt{\textbackslash\detokenize{jobname_sorted.csv}}}
+  Sets the \meta{file name} of the CSV file which is the output of a
+  preprocessor.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{preprocessor}{=\meta{macro}}{no default}
+  Defines a preprocessor for the given CSV file.
+  The \meta{macro} has to have two mandatory arguments. The first argument
+  is the original CSV file which is set by \refKey{/csv/file}.
+  The second argument is the preprocessed CSV file
+  which is set by \refKey{/csv/preprocessed file}.\par\smallskip
+  Typically, the \meta{macro} may call an external program which preprocesses
+  the original CSV file (e.\,g. sorting the file) and creates the
+  preprocessed CSV file. The later file is used by \refCom{csvreader}
+  or \refCom{csvloop}.
+\begin{dispListing}
+\newcommand{\mySortTool}[2]{%
+  % call to an external program to sort file #1 with resulting file #2
+}
+
+\csvreader[%
+  preprocessed file=\jobname_sorted.csv,
+  preprocessor=\mySortTool,
+  ]{some.csv}{}{%
+  % do something
+}
+\end{dispListing}
+See Subsection~\ref{sec:Sorting} on page~\pageref{sec:Sorting} for a
+concrete sorting preprocessing implemented with an external tool.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{no preprocessing}{}{style, no value, initially set}
+  Clears any preprocessing, i.\,e. preprocessing is switched of.
+\end{docCsvKey}
+
+
+
+\clearpage
+\subsection{Sorting}\label{sec:Sorting}%
+\TeX/\LaTeX\ was not born under a sorting planet. |csvsimple| provides no
+sorting of data lines by \LaTeX-methods since sorting can be done much faster
+and much better by external tools.
+
+First, one should consider the appropriate \emph{place} for sorting:
+\begin{itemize}
+\item CSV files may be sorted by a tool \emph{before} the \LaTeX\ document is processed
+  at all. If the CSV data is not likely to change, this is the most efficient method.
+\item CSV files may be sorted by a tool every time before the \LaTeX\ document is compiled.
+  This could be automated by a shell script or some processing tool like |arara|.
+\item CSV files may be sorted on-the-fly by a tool during compilation of
+  a \LaTeX\ document. This is the most elegant but not the most efficient way.
+\end{itemize}
+
+The first two methods are decoupled from anything concerning |csvsimple|.
+For the third method, the \refKey{/csv/preprocessor} option is made for.
+This allows to access an external tool for sorting.
+\emph{Which tool} is your choice.
+
+\csvsorter\ \cite{sturm:2014j}
+was written as a companion tool for |csvsimple|.
+It is an open source Java command-line tool for sorting CSV files, available at\\
+\url{http://T-F-S.github.io/csvsorter/}\quad or\quad
+\url{https://github.com/T-F-S/csvsorter}
+
+It can be
+used for all three sorting approaches described above.
+There is special support for on-the-fly sorting with \csvsorter\ using the
+following options.
+
+\begin{enumerate}\bfseries
+\item To use the sorting options, you have to install \csvsorter\ \cite{sturm:2014j} before!\\
+  |csvsimple| v1.12 or newer needs \csvsorter\ v0.94 of newer!
+\item You have to give permission to call external tools during
+  compilation, i.\,e.\ the command-line options for |latex| have to include
+  |-shell-escape|.
+\end{enumerate}
+
+\bigskip
+
+\begin{docCsvKey}{csvsorter command}{=\meta{system command}}{no default, initially |csvsorter|}
+  The \meta{system command} specifies the system call for \csvsorter\ (without the options).
+  If \csvsorter\ was completely installed following its documentation, there is
+  nothing to change here. If the |csvsorter.jar| file is inside the same
+  directory as the \LaTeX\ source file, you may configure:% preferrably inside the preamble:
+  \begin{dispListing}
+  \csvset{csvsorter command=java -jar csvsorter.jar}
+  \end{dispListing}
+\end{docCsvKey}
+
+\begin{docCsvKey}{csvsorter configpath}{=\meta{path}}{no default, initially |.|}
+  Sorting with \csvsorter\ is done using XML configuration files. If these files
+  are not stored inside the same directory as the \LaTeX\ source file, a
+  \meta{path} to access them can be configured:
+  \begin{dispListing}
+  \csvset{csvsorter configpath=xmlfiles}
+  \end{dispListing}
+  Here, the configuration files would be stored in a subdirectory named |xmlfiles|.
+\end{docCsvKey}
+
+\begin{docCsvKey}{csvsorter log}{=\meta{file name}}{no default, initially |csvsorter.log|}
+  Sets the log file of \csvsorter\ to the given \meta{file name}.
+  \begin{dispListing}
+  \csvset{csvsorter log=outdir/csvsorter.log}
+  \end{dispListing}
+  Here, the log file is written to a subdirectory named |outdir|.
+\end{docCsvKey}
+
+\clearpage
+\begin{docCsvKey}{csvsorter token}{=\meta{file name}}{no default, initially |\textbackslash jobname.csvtoken|}
+  Sets \meta{file name} as token file. This is an auxiliary file which
+  communicates the success of \csvsorter\ to |csvsimple|.
+  \begin{dispListing}
+  \csvset{csvsorter log=outdir/\jobname.csvtoken}
+  \end{dispListing}
+  Here, the token file is written to a subdirectory named |outdir|.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}{sort by}{=\meta{file name}}{style, initially unset}
+  The \meta{file name} denotes an XML configuration file for \csvsorter.
+  Setting this option inside \refCom{csvreader} or
+  \refCom{csvloop} will issue a system call to \csvsorter.
+  \begin{itemize}
+  \item \csvsorter\ uses the given CSV file as input file.
+  \item \csvsorter\ uses \meta{file name} as configuration file.
+  \item The output CSV file is denoted by \refKey{/csv/preprocessed file}
+     which is by default \texttt{\textbackslash\detokenize{jobname_sorted.csv}}.
+     This output file is this actual file processed by \refCom{csvreader} or \refCom{csvloop}.
+  \item \csvsorter\ also generates a log file denoted by \refKey{/csv/csvsorter log} which is by default |csvsorter.log|.
+  \end{itemize}
+
+\par\medskip\textbf{First example:}
+  To sort our example |grade.csv| file according to |name| and |givenname|, we
+  use the following XML configuration file. Since \csvsorter\ uses double quotes
+  as default brackets for column values, we remove bracket recognition to avoid
+  a clash with the escaped umlauts of the example CSV file.\par\smallskip
+
+\xmllisting{namesort}
+\begin{dispExample}
+% \usepackage{booktabs}
+\csvreader[sort by=namesort.xml,
+  head to column names,
+  tabular=>{\color{red}}lllll,
+  table head=\toprule Name & Given Name & Matriculation & Gender & Grade\\\midrule,
+  table foot=\bottomrule]
+  {grade.csv}{}{\csvlinetotablerow}
+\end{dispExample}
+
+\clearpage\textbf{Second example:}
+  To sort our example |grade.csv| file according to |grade|, we
+  use the following XML configuration file. Further, persons with the same |grade|
+  are sorted by |name| and |givenname|. Since \csvsorter\ uses double quotes
+  as default brackets for column values, we remove bracket recognition to avoid
+  a clash with the escaped umlauts of the example CSV file.\par\smallskip
+
+\xmllisting{gradesort}
+\begin{dispExample}
+% \usepackage{booktabs}
+\csvreader[sort by=gradesort.xml,
+  head to column names,
+  tabular=llll>{\color{red}}l,
+  table head=\toprule Name & Given Name & Matriculation & Gender & Grade\\\midrule,
+  table foot=\bottomrule]
+  {grade.csv}{}{\csvlinetotablerow}
+\end{dispExample}
+
+\clearpage\textbf{Third example:}
+  To generate a matriculation/grade list, we sort our example |grade.csv| file
+  using the following XML configuration file.
+  Again, since \csvsorter\ uses double quotes
+  as default brackets for column values, we remove bracket recognition to avoid
+  a clash with the escaped umlauts of the example CSV file.\par\smallskip
+
+\xmllisting{matriculationsort}
+\begin{dispExample}
+% \usepackage{booktabs}
+\csvreader[sort by=matriculationsort.xml,
+  head to column names,
+  tabular=>{\color{red}}ll,
+  table head=\toprule Matriculation & Grade\\\midrule,
+  table foot=\bottomrule]
+  {grade.csv}{}{\matriculation & \grade}
+\end{dispExample}
+\end{docCsvKey}
+
+
+\clearpage
+\begin{docCsvKey}{new sorting rule}{=\marg{name}\marg{file name}}{style, initially unset}
+This is a convenience option to generate a new shortcut for often used
+\refKey{/csv/sort by} applications. It also adds a more semantic touch.
+The new shortcut option is
+\tcbox[on line,size=small,colback=white,colframe=red]{|sort by| \meta{name}} which expands to
+\tcbox[on line,size=small,colback=white,colframe=red]{|sort by=|\marg{file name}}.\par\medskip
+
+Consider the following example:
+\begin{dispExample}
+\csvautotabular[sort by=namesort.xml]{grade.csv}
+\end{dispExample}
+A good place for setting up a new sorting rule would be inside the preamble:
+
+\csvset{new sorting rule={name}{namesort.xml}}
+\begin{dispListing}
+\csvset{new sorting rule={name}{namesort.xml}}
+\end{dispListing}
+
+Now, we can use the new rule:
+\begin{dispExample}
+\csvautotabular[sort by name]{grade.csv}
+\end{dispExample}
+
+\end{docCsvKey}
+
+
+
+\clearpage
+\section{Examples}%
+
+\subsection{A Serial Letter}%
+In this example, a serial letter is to be written to all persons with
+addresses from the following CSV file. Deliberately, the file content is
+not given in very pretty format.
+
+%-- file embedded for simplicity --
+\begin{tcbverbatimwrite}{address.csv}
+name,givenname,gender,degree,street,zip,location,bonus
+Maier,Hans,m,,Am Bachweg 17,10010,Hopfingen,20
+    % next line with a comma in curly braces
+Huber,Erna,f,Dr.,{Moosstra\ss{}e 32, Hinterschlag},10020,\"{O}rtingstetten,30
+Wei\ss{}b\"{a}ck,Werner,m,Prof. Dr.,Brauallee 10,10030,Klingenbach,40
+    % this line is ignored %
+  Siebener ,  Franz,m,   ,  Blaumeisenweg 12  , 10040 ,  Pardauz , 50
+    % preceding and trailing spaces in entries are removed %
+Schmitt,Anton,m,,{\AE{}lfred-Esplanade, T\ae{}g 37}, 10050,\OE{}resung,60
+\end{tcbverbatimwrite}
+%-- end embedded file --
+
+\csvlisting{address}
+
+Firstly, we survey the file content quickly using
+|\csvautotabular|.
+As can be seen, unfeasible lines are ignored automatically.
+
+\begin{dispExample}
+\tiny\csvautotabular{address.csv}
+\end{dispExample}
+
+Now, we create the serial letter where every feasible data line produces
+an own page. Here, we simulate the page by a |tcolorbox| (from the package
+|tcolorbox|).
+For the gender specific salutations, an auxiliary macro |\ifmale| is
+introduced.
+
+\begin{dispExample}
+% this example requires the tcolorbox package
+\newcommand{\ifmale}[2]{\ifthenelse{\equal{\gender}{m}}{#1}{#2}}
+
+\csvreader[head to column names]{address.csv}{}{%
+\begin{tcolorbox}[colframe=DarkGray,colback=White,arc=0mm,width=(\linewidth-2pt)/2,
+      equal height group=letter,before=,after=\hfill,fonttitle=\bfseries,
+      adjusted title={Letter to \name}]
+  \ifthenelse{\equal{\degree}{}}{\ifmale{Mr.}{Ms.}}{\degree}~\givenname~\name\\
+  \street\\\zip~\location
+  \tcblower
+  {\itshape Dear \ifmale{Sir}{Madam},}\\
+  we are pleased to announce you a bonus value of \bonus\%{}
+  which will be delivered to \location\ soon.\\\ldots
+\end{tcolorbox}}
+\end{dispExample}
+
+
+
+\clearpage
+\subsection{A Graphical Presentation}%
+For this example, we use some artificial statistical data given by a CSV file.
+
+%-- file embedded for simplicity --
+\begin{tcbverbatimwrite}{data.csv}
+land,group,amount
+Bayern,A,1700
+Baden-W\"{u}rttemberg,A,2300
+Sachsen,B,1520
+Th\"{u}ringen,A,1900
+Hessen,B,2100
+\end{tcbverbatimwrite}
+%-- end embedded file --
+
+\csvlisting{data}
+
+Firstly, we survey the file content using
+|\csvautobooktabular|.
+
+\begin{dispExample}
+% needs the booktabs package
+\csvautobooktabular{data.csv}
+\end{dispExample}
+
+The amount values are presented in the following diagram by bars where
+the group classification is given using different colors.
+
+\begin{dispExample}
+% This example requires the package tikz
+\begin{tikzpicture}[Group/A/.style={left color=red!10,right color=red!20},
+                    Group/B/.style={left color=blue!10,right color=blue!20}]
+\csvreader[head to column names]{data.csv}{}{%
+  \begin{scope}[yshift=-\thecsvrow cm]
+  \path [draw,Group/\group] (0,-0.45)
+    rectangle node[font=\bfseries] {\amount} (\amount/1000,0.45);
+  \node[left] at (0,0) {\land};
+  \end{scope}  }
+\end{tikzpicture}
+\end{dispExample}
+
+
+\clearpage
+It would be nice to sort the bars by length, i.\,e.\ to sort the CSV file
+by the |amount| column. If the \csvsorter\ program is properly installed,
+see Subsection~\ref{sec:Sorting} on page~\pageref{sec:Sorting},
+this can be done with the following configuration file for \csvsorter:
+
+\xmllisting{amountsort}
+
+Now, we just have to add an option |sort by=amountsort.xml|:
+\begin{dispExample}
+% This example requires the package tikz
+% Also, the CSV-Sorter tool has to be installed
+\begin{tikzpicture}[Group/A/.style={left color=red!10,right color=red!20},
+                    Group/B/.style={left color=blue!10,right color=blue!20}]
+\csvreader[head to column names,sort by=amountsort.xml]{data.csv}{}{%
+  \begin{scope}[yshift=-\thecsvrow cm]
+  \path [draw,Group/\group] (0,-0.45)
+    rectangle node[font=\bfseries] {\amount} (\amount/1000,0.45);
+  \node[left] at (0,0) {\land};
+  \end{scope}  }
+\end{tikzpicture}
+\end{dispExample}
+
+
+
+
+\clearpage
+Next, we create a pie chart by calling |\csvreader| twice.
+In the first step, the total sum of amounts is computed, and in the second
+step the slices are drawn.
+
+\begin{dispExample}
+% Modified example from www.texample.net for pie charts
+% This example needs the packages tikz, xcolor, calc
+\definecolorseries{myseries}{rgb}{step}[rgb]{.95,.85,.55}{.17,.47,.37}
+\resetcolorseries{myseries}%
+
+% a pie slice
+\newcommand{\slice}[4]{
+  \pgfmathsetmacro{\midangle}{0.5*#1+0.5*#2}
+  \begin{scope}
+    \clip (0,0) -- (#1:1) arc (#1:#2:1) -- cycle;
+    \colorlet{SliceColor}{myseries!!+}%
+    \fill[inner color=SliceColor!30,outer color=SliceColor!60] (0,0) circle (1cm);
+  \end{scope}
+  \draw[thick] (0,0) -- (#1:1) arc (#1:#2:1) -- cycle;
+  \node[label=\midangle:#4] at (\midangle:1) {};
+  \pgfmathsetmacro{\temp}{min((#2-#1-10)/110*(-0.3),0)}
+  \pgfmathsetmacro{\innerpos}{max(\temp,-0.5) + 0.8}
+  \node at (\midangle:\innerpos) {#3};
+}
+
+% sum of amounts
+\csvreader[before reading=\def\mysum{0}]{data.csv}{amount=\amount}{%
+  \pgfmathsetmacro{\mysum}{\mysum+\amount}%
+}
+
+% drawing of the pie chart
+\begin{tikzpicture}[scale=3]%
+\def\mya{0}\def\myb{0}
+\csvreader[head to column names]{data.csv}{}{%
+  \let\mya\myb
+  \pgfmathsetmacro{\myb}{\myb+\amount}
+  \slice{\mya/\mysum*360}{\myb/\mysum*360}{\amount}{\land}
+}
+\end{tikzpicture}%
+\end{dispExample}
+
+
+\clearpage
+Finally, the filter option is demonstrated by separating the groups A and B.
+Every item is piled upon the appropriate stack.
+
+\begin{dispExample}
+\newcommand{\drawGroup}[2]{%
+  \def\mya{0}\def\myb{0}
+  \node[below=3mm] at (2.5,0) {\bfseries Group #1};
+  \csvreader[head to column names,filter equal={\group}{#1}]{data.csv}{}{%
+    \let\mya\myb
+    \pgfmathsetmacro{\myb}{\myb+\amount}
+    \path[draw,top color=#2!25,bottom color=#2!50]
+      (0,\mya/1000) rectangle node{\land\ (\amount)} (5,\myb/1000);
+}}
+
+\begin{tikzpicture}
+  \fill[gray!75] (-1,0) rectangle (13,-0.1);
+  \drawGroup{A}{red}
+  \begin{scope}[xshift=7cm]
+  \drawGroup{B}{blue}
+  \end{scope}
+\end{tikzpicture}
+
+\end{dispExample}
+
+
+\clearpage
+\subsection{Macro code inside the data}\label{macrocodexample}%
+
+If needed, the data file may contain macro code. Note that the first character
+of a data line is not allowed to be the backslash '|\|'.
+
+%-- file embedded for simplicity --
+\begin{tcbverbatimwrite}{macrodata.csv}
+type,description,content
+M,A nice \textbf{formula},         $\displaystyle \int\frac{1}{x} = \ln|x|+c$
+G,A \textcolor{red}{colored} ball, {\tikz \shadedraw [shading=ball] (0,0) circle (.5cm);}
+M,\textbf{Another} formula,        $\displaystyle \lim\limits_{n\to\infty} \frac{1}{n}=0$
+\end{tcbverbatimwrite}
+%-- end embedded file --
+
+\csvlisting{macrodata}
+
+Firstly, we survey the file content using
+|\csvautobooktabular|.
+
+\begin{dispExample}
+\csvautobooktabular{macrodata.csv}
+\end{dispExample}
+
+
+\begin{dispExample}
+\csvstyle{my enumerate}{head to column names,
+  before reading=\begin{enumerate},after reading=\end{enumerate}}
+
+\csvreader[my enumerate]{macrodata.csv}{}{%
+  \item \description:\par\content}
+
+\bigskip
+Now, formulas only:
+\csvreader[my enumerate,filter equal={\type}{M}]{macrodata.csv}{}{%
+  \item \description:\qquad\content}
+\end{dispExample}
+
+\clearpage
+\subsection{Tables with Number Formatting}\label{numberformatting}%
+
+We consider a file with numerical data which should be pretty-printed.
+
+%-- file embedded for simplicity --
+\begin{tcbverbatimwrite}{data_numbers.csv}
+month,    dogs, cats
+January,  12.50,12.3e5
+February, 3.32, 8.7e3
+March,    43,   3.1e6
+April,    0.33, 21.2e4
+May,      5.12, 3.45e6
+June,     6.44, 6.66e6
+July,     123.2,7.3e7
+August,   12.3, 5.3e4
+September,2.3,  4.4e4
+October,  6.5,  6.5e6
+November, 0.55, 5.5e5
+December, 2.2,  3.3e3
+\end{tcbverbatimwrite}
+
+\csvlisting{data_numbers}
+
+The |siunitx| \cite{wright:2013a} package provides a new column type |S|
+which can align material using a number of different strategies.
+The following example demonstrates the application with CSV reading.
+The package documentation \cite{wright:2013a} contains a huge amount
+of formatting options.
+
+\begin{dispExample}
+% \usepackage{siunitx,array,booktabs}
+\csvloop{
+  file=data_numbers.csv,
+  head to column names,
+  before reading=\centering\sisetup{table-number-alignment=center},
+  tabular={lSS[table-format=2.2e1]},
+  table head=\toprule\textbf{Month} & \textbf{Dogs} & \textbf{Cats}\\\midrule,
+  command=\month & \dogs & \cats,
+  table foot=\bottomrule}
+\end{dispExample}
+
+\clearpage
+Now, the preceding table shall be sorted by the \emph{cats} values.
+If the \csvsorter\ program is properly installed,
+see Subsection~\ref{sec:Sorting} on page~\pageref{sec:Sorting},
+this can be done with the following configuration file for \csvsorter:
+
+\xmllisting{catsort}
+
+Now, we just have to add an option |sort by=catsort.xml|:
+\begin{dispExample}
+% \usepackage{siunitx,array,booktabs}
+% Also, the CSV-Sorter tool has to be installed
+\csvloop{
+  file=data_numbers.csv,
+  sort by=catsort.xml,
+  head to column names,
+  before reading=\centering\sisetup{table-number-alignment=center},
+  tabular={lSS[table-format=2.2e1]},
+  table head=\toprule\textbf{Month} & \textbf{Dogs} & \textbf{Cats}\\\midrule,
+  command=\month & \dogs & \cats,
+  table foot=\bottomrule}
+\end{dispExample}
+
+
+\clearpage
+\subsection{CSV data without header line}\label{noheader}%
+CSV files with a header line are more semantic than files without header,
+but it's no problem to work with headless files.
+
+For this example, we use again some artificial statistical data given by a CSV file
+but this time without header.
+
+%-- file embedded for simplicity --
+\begin{tcbverbatimwrite}{data_headless.csv}
+Bayern,A,1700
+Baden-W\"{u}rttemberg,A,2300
+Sachsen,B,1520
+Th\"{u}ringen,A,1900
+Hessen,B,2100
+\end{tcbverbatimwrite}
+%-- end embedded file --
+
+\csvlisting{data_headless}
+
+Note that you cannot use the \refKey{/csv/no head} option for the auto tabular
+commands. If no options are given, the first line is interpreted as header line
+which gives an unpleasant result:
+
+\begin{dispExample}
+\csvautobooktabular{data_headless.csv}
+\end{dispExample}
+
+To get the expected result, one can redefine \refKey{/csv/table head}
+using \refCom{csvlinetotablerow} which holds the first line data for the
+|\csvauto...| commands:
+
+\begin{dispExample}
+\csvautobooktabular[table head=\toprule\csvlinetotablerow\\]{data_headless.csv}
+\end{dispExample}
+
+This example can be extended to insert a table head for this headless data:
+
+\begin{dispExample}
+\csvautobooktabular[table head=\toprule\bfseries Land & \bfseries Group
+  & \bfseries Amount\\\midrule\csvlinetotablerow\\]{data_headless.csv}
+\end{dispExample}
+
+\clearpage
+
+For the normal \refCom{csvreader} command, the \refKey{/csv/no head} option
+should be applied. Of course, we cannot use \refKey{/csv/head to column names}
+because there is no head, but the columns can be addressed by their numbers:
+
+\begin{dispExample}
+\csvreader[no head,
+  tabular=lr,
+  table head=\toprule\bfseries Land & \bfseries Amount\\\midrule,
+  table foot=\bottomrule]
+  {data_headless.csv}
+  {1=\land,3=\amount}
+  {\land & \amount}
+\end{dispExample}
+
+
+\clearpage
+\subsection{Imported CSV data}\label{importeddata}%
+If data is important from other applications, there is not always a choice
+to format in comma separated values with curly brackets.
+
+Consider the following example data file:
+
+%-- file embedded for simplicity --
+\begin{tcbverbatimwrite}{imported.csv}
+"name";"address";"email"
+"Frank Smith";"Yellow Road 123, Brimblsby";"frank.smith@organization.org"
+"Mary May";"Blue Alley 2a, London";"mmay@maybe.uk"
+"Hans Meier";"Hauptstrasse 32, Berlin";"hans.meier@corporation.de"
+\end{tcbverbatimwrite}
+%-- end embedded file --
+
+\csvlisting{imported}
+
+If the \csvsorter\ program is properly installed,
+see Subsection~\ref{sec:Sorting} on page~\pageref{sec:Sorting},
+this can be transformed on-the-fly
+with the following configuration file for \csvsorter:
+
+\xmllisting{transform}
+
+Now, we just have to add an option |sort by=transform.xml| to transform
+the input data. Here, we actually do not sort.
+
+\begin{dispExample}
+% \usepackage{booktabs,array}
+% Also, the CSV-Sorter tool has to be installed
+\newcommand{\Header}[1]{\normalfont\bfseries #1}
+
+\csvreader[
+  sort by=transform.xml,
+  tabular=>{\itshape}ll>{\ttfamily}l,
+  table head=\toprule\Header{Name} & \Header{Address} & \Header{email}\\\midrule,
+  table foot=\bottomrule]
+  {imported.csv}{}{\csvlinetotablerow}
+\end{dispExample}
+
+The file which is generated on-the-fly and which is actually read by
+|csvsimple| is the following:
+
+\tcbinputlisting{docexample,listing style=tcbdocumentation,fonttitle=\bfseries,
+  listing only,listing file=\jobname_sorted._csv}
+
+
+\clearpage
+
+% Actually, it is not a good idea to include the references like this!
+% Do not follow this bad example ...
+\begin{tcbverbatimwrite}{\jobname.bib}
+@manual{tantau:2013a,
+   author    = {Till Tantau},
+   title     = {The TikZ and PGF Packages},
+   subtitle  = {Manual for version 3.0.0},
+   url       = {http://sourceforge.net/projects/pgf/},
+   date      = {2013-12-20},
+}
+
+
+@manual{carlisle:2001b,
+   author    = {David Carlisle},
+   title     = {The ifthen package},
+   url       = {http://mirror.ctan.org/macros/latex/base/},
+   Xnote      = {},
+   day       = 26,
+   month     = may,
+   year      = 2001,
+   language  = {english}
+}
+
+@manual{talbot:2014a,
+  author    = {Nicola L. C. Talbot},
+  title     = {User Manual for the datatool bundle version 2.20},
+  url       = {http://mirror.ctan.org/macros/latex/contrib/datatool/datatool.pdf},
+  date      = {2014-02-03},
+}
+
+@manual{sturm:2014j,
+   author      = {Thomas F. Sturm},
+   title       = {The CSV-Sorter program},
+   subtitle    = {Manual for version 0.94 beta},
+   url         = {http://T-F-S.github.io/csvsorter/csvsorter.pdf},
+   date        = {2014-07-14},
+   language    = {english}
+}
+
+@manual{carlisle:2004a,
+   author    = {David Carlisle},
+   title     = {The longtable package},
+   url       = {http://mirror.ctan.org/macros/latex/required/tools/longtable.pdf},
+   date      = {2004-02-01},
+   language  = {english}
+}
+
+@manual{fear:2005a,
+   author    = {Simon Fear},
+   title     = {Publication quality tables in \LaTeX},
+   url       = {http://mirror.ctan.org/macros/latex/contrib/booktabs/booktabs.pdf},
+   date      = {2005-04-15},
+   language  = {english}
+}
+
+@manual{wright:2013a,
+   author    = {Joseph Wright},
+   title     = {siunitx --- A comprehensive (SI) units package},
+   url       = {http://mirror.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf},
+   date      = {2013-07-31},
+   language  = {english}
+}
+
+\end{tcbverbatimwrite}
+
+
+\printbibliography[heading=bibintoc]
+
+\printindex
+
+\end{document}

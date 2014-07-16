@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csv>
+  <bracket empty="true" />
+  <sortlines>
+    <column name="cats" order="ascending" type="double"/>
+  </sortlines>
+</csv>

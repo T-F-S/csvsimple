@@ -1,0 +1,106 @@
+%% The LaTeX package csvsimple - version 1.12 (2014/07/14)
+%% csvsimple-example.tex: an example for csvsimple
+%%
+%% -------------------------------------------------------------------------------------------
+%% Copyright (c) 2008-2014 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% -------------------------------------------------------------------------------------------
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `author-maintained'.
+%%
+%% This work consists of all files listed in README
+%%
+\documentclass{article}
+\usepackage{array,booktabs}
+\usepackage{csvsimple}
+
+\begin{document}
+
+%----------------------------------------------------------
+\section{Automatic table generation (for testing)}
+
+{\small
+\csvautotabular{csvsimple-example.csv}}
+
+
+%----------------------------------------------------------
+\section{My first CSV table}
+\csvreader[tabular=|l|l|,
+  table head=\hline\multicolumn{2}{|c|}{\bfseries My telephone book}\\\hline
+             \bfseries Name & \bfseries Number\\\hline\hline,
+  late after line=\\\hline]%
+  {csvsimple-example.csv}{last name=\surname,first name=\givenname,telephone=\telephone}{%
+    \givenname\ \surname & \telephone
+}
+
+
+%----------------------------------------------------------
+\section{Remembering the names}
+\csvnames{my names}{last name=\surname,first name=\givenname,address=\address,zip=\zip,telephone=\telephone,year of birth=\birthyear}
+
+\csvreader[my names, late after line=\\, late after last line=]%
+  {csvsimple-example.csv}{}{%
+    \givenname\ was born in \birthyear\ and lives in \address.
+}
+
+
+%----------------------------------------------------------
+\section{Filter fun}
+
+\csvreader[my names, filter equal={\address}{Shrimpsbury}, tabbing,
+  table head=\bfseries Shrimpsbury friends: \=\hspace*{3cm}\=\+\kill,
+  before first line=\<\bfseries Shrimpsbury friends:\>]%
+  {csvsimple-example.csv}{}{%
+    \surname, \givenname \> \telephone
+}
+
+
+%----------------------------------------------------------
+\section{More filter fun}
+
+\csvreader[my names, filter=\birthyear<1980, centered tabular=rllr,
+  table head=\multicolumn{4}{c}{\bfseries People born before 1980}\\\toprule
+     \# & Name & Postal address & input line no.\\\midrule,
+     late after line=\\, late after last line=\\\bottomrule]%
+  {csvsimple-example.csv}{}{%
+    \thecsvrow & \givenname\ \surname & \zip\ \address & \thecsvinputline
+}
+
+
+%----------------------------------------------------------
+\section{Again and again}
+
+\csvstyle{my table}{my names,
+  centered tabular=|r|l|l|l|,
+  table head=\hline\multicolumn{4}{|c|}{\bfseries #1}\\\hline
+    \# & Name & Telephone & Postal address\\\hline\hline,
+  late after line=\\, late after last line=\\\hline}
+
+\csvreader[my table=Predefined table]{csvsimple-example.csv}{}{%
+    \thecsvrow & \givenname\ \surname & \telephone & \zip\ \address
+}
+
+\csvreader[my table=Filtering for Smith, filter equal={\surname}{Smith}]%
+    {csvsimple-example.csv}{}{%
+    \thecsvrow & \givenname\ \surname & \telephone & \zip\ \address
+}
+
+\csvstyle{all and everything}{my table=#1, file={csvsimple-example.csv},
+  command=\thecsvrow & \givenname\ \surname & \telephone & \zip\ \address}
+
+\csvloop{all and everything=Loop instead of reader}
+
+\csvloop{all and everything=With Shrimpsbury filter, filter equal={\address}{Shrimpsbury}}
+
+\csvloop{all and everything=A little modification, late after line=\\\hline}
+
+
+\end{document}
+
