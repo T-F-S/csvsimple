@@ -7,7 +7,7 @@ A LaTeX package for lightweight CSV file processing.
 
 ```
 The LaTeX package csvsimple
-Copyright (c) 2008-2014 by Prof. Dr. Dr. Thomas F. Sturm
+Copyright (c) 2008-2016 by Prof. Dr. Dr. Thomas F. Sturm
 
 This work may be distributed and/or modified under the
 conditions of the LaTeX Project Public License, either version 1.3

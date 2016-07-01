@@ -1,7 +1,7 @@
-%% The LaTeX package csvsimple - version 1.12 (2014/07/14)
+%% The LaTeX package csvsimple - version 1.20 (2016/07/01)
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2014 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2016 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -35,6 +35,7 @@ Contents of the package
   'csvsimple-example.pdf'     Compiled example
   'amountsort.xml'            csvsorter configuration file (example)
   'catsort.xml'               csvsorter configuration file (example)
+  'encoding.xml'              csvsorter configuration file (example)
   'gradesort.xml'             csvsorter configuration file (example)
   'matriculationsort.xml'     csvsorter configuration file (example)
   'namesort.xml'              csvsorter configuration file (example)

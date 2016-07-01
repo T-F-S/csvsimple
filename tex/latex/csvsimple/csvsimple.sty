@@ -1,8 +1,8 @@
-%% The LaTeX package csvsimple - version 1.12 (2014/07/14)
+%% The LaTeX package csvsimple - version 1.20 (2016/07/01)
 %% csvsimple.sty: Simple LaTeX CSV file processing
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2014 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2016 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -18,9 +18,9 @@
 %% This work consists of all files listed in README
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{csvsimple}[2014/07/14 version 1.12 LaTeX CSV file processing]
+\ProvidesPackage{csvsimple}[2016/07/01 version 1.20 LaTeX CSV file processing]
 
-\RequirePackage{pgfkeys,ifthen}
+\RequirePackage{pgfkeys,ifthen,etoolbox,shellesc}
 
 
 %---- general
@@ -34,13 +34,6 @@
 \newcounter{csvcol}
 
 \def\csv@empty{}
-
-\def\csv@addto@macro#1#2{%
-  \begingroup%
-    \toks@\expandafter{#1#2}%
-    \xdef#1{\the\toks@}%
-  \endgroup%
-  }
 
 \long\def\csviffirstrow#1#2{%
   \ifnum\c@csvrow=1%
@@ -60,12 +53,16 @@
   \csvifoddrow@doit%
 }
 
-\def\csv@and{&}
-
-\def\csvlinetotablerow{%
-  \setcounter{csvcol}{0}%
-  \stepcounter{csvcol}\csv@current@col%
-  \whiledo{\thecsvcol<\csv@columncount}{\csv@and\stepcounter{csvcol}\csv@current@col}%
+\def\csv@assemble@csvlinetotablerow{%
+  \global\c@csvcol 1\relax%
+  \xdef\csvlinetotablerow{\expandonce{\csname csvcol\romannumeral\c@csvcol\endcsname}}%
+  \ifnum\c@csvcol<\csv@columncount\relax%
+    \loop%
+      \global\advance\c@csvcol 1\relax%
+      \xappto\csvlinetotablerow{\noexpand&\expandonce{\csname csvcol\romannumeral\c@csvcol\endcsname}}%
+    \ifnum\c@csvcol<\csv@columncount\relax\repeat%
+  \fi%
+  \csvlinetotablerow%
 }
 
 
@@ -91,48 +88,48 @@
 \def\csv@breakline@kernel#1{%
   \ifx\csv@termination#1\let\nextcol=\relax\else%
     \let\nextcol=\csv@breakline%
-    \stepcounter{csvcol}%
+    \global\advance\c@csvcol 1\relax%
     \def\csv@col@body{#1}%
     \csv@TrimSpaces\csv@col@body%
     \csv@TrimBraces\csv@col@body%
     \toks@\expandafter{\csv@col@body}%
-    \expandafter\xdef\csname csvcol\roman{csvcol}\endcsname{\the\toks@}%
+    \expandafter\xdef\csname csvcol\romannumeral\c@csvcol\endcsname{\the\toks@}%
   \fi%
   \nextcol%
-  }
+}
 
 % comma
 \def\csv@breakline@A#1,{\csv@breakline@kernel{#1}}
 
 \def\csv@scanline@A#1{%
-  \setcounter{csvcol}{0}%
+  \global\c@csvcol 0\relax%
   \csv@breakline#1,\csv@termination,%
-  }
+}
 
 % semi colon
 \def\csv@breakline@B#1;{\csv@breakline@kernel{#1}}
 
 \def\csv@scanline@B#1{%
-  \setcounter{csvcol}{0}%
+  \global\c@csvcol 0\relax%
   \csv@breakline#1;\csv@termination;%
-  }
+}
 
 % pipe
 \def\csv@breakline@C#1|{\csv@breakline@kernel{#1}}
 
 \def\csv@scanline@C#1{%
-  \setcounter{csvcol}{0}%
+  \global\c@csvcol 0\relax%
   \csv@breakline#1|\csv@termination|%
-  }
+}
 
 % tab
 \catcode`\^^I=12
 \def\csv@breakline@D#1^^I{\csv@breakline@kernel{#1}}
 
 \def\csv@scanline@D#1{%
-  \setcounter{csvcol}{0}%
+  \global\c@csvcol 0\relax%
   \csv@breakline#1^^I\csv@termination^^I%
-  }
+}
 \catcode`\^^I=10
 
 % expands a CSV line and scans content
@@ -140,7 +137,7 @@
   \toks@\expandafter{#1}%
   \edef\@csv@scanline{\noexpand\csv@scanline{\the\toks@}}%
   \@csv@scanline%
-  }
+}
 
 {
   \catcode`\"=12%
@@ -155,7 +152,7 @@
   \immediate\openout\csv@out=\csv@csvsorter@token%
   \immediate\write\csv@out{\string\makeatletter\string\csv@error{Call of CSV-Sorter failed! Use '-shell-escape' option or check log file '\csv@csvsorter@log'.}{}}%
   \immediate\closeout\csv@out%
-  \immediate\write18{\csv@csvsorter@command\space
+  \ShellEscape{\csv@csvsorter@command\space
     -c \csv@passivquotes#1\csv@passivquotes\space
     -l \csv@passivquotes\csv@csvsorter@log\csv@passivquotes\space
     -t \csv@passivquotes\csv@csvsorter@token\csv@passivquotes\space
@@ -178,24 +175,23 @@
 
 %---- the loop
 
-\def\csv@AtEndLoop{\csv@addto@macro\@endloophook}
+\def\csv@AtEndLoop{\gappto\@endloophook}
 \let\@endloophook\csv@empty
 
-\def\csv@current@col{\csname csvcol\roman{csvcol}\endcsname}
+\def\csv@current@col{\csname csvcol\romannumeral\c@csvcol\endcsname}
 
 % auto head names
 \def\set@csv@autohead{%
   \toks0=\expandafter{\csname\csv@current@col\endcsname}%
-  \toks1=\expandafter{\csname csvcol\roman{csvcol}\endcsname}%
+  \toks1=\expandafter{\csname csvcol\romannumeral\c@csvcol\endcsname}%
   \edef\csv@temp{\noexpand\gdef\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\noexpand\gdef\the\toks0{}}}%
   \csv@temp%
 }
 
-
 % head names and numbers
 \def\set@csv@head{%
   \toks0={\gdef##1}%
-  \toks1=\expandafter{\csname csvcol\roman{csvcol}\endcsname}%
+  \toks1=\expandafter{\csname csvcol\romannumeral\c@csvcol\endcsname}%
   \edef\csv@temp{\noexpand\pgfkeysdef{/csv head/\csv@current@col}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
   \csv@temp%
   \edef\csv@temp{\noexpand\pgfkeysdef{/csv head/\thecsvcol}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
@@ -210,12 +206,12 @@
     \else\csv@escanline{\csvline}%
   \fi%
   \xdef\csv@columncount{\thecsvcol}%
-  \setcounter{csvcol}{0}%
+  \global\c@csvcol 0\relax%
   \loop%
-    \stepcounter{csvcol}%
+    \global\advance\c@csvcol 1\relax%
     \csv@opt@headtocolumnames%
     \set@csv@head%
-  \ifnum\thecsvcol<\csv@columncount\repeat%
+  \ifnum\c@csvcol<\csv@columncount\repeat%
   \toks@=\expandafter{\csv@columnnames}%
   \edef\csv@processkeys{\noexpand\pgfkeys{/csv head/.cd,\the\toks@}}%
   \csv@processkeys%
@@ -225,18 +221,18 @@
 % head numbers for no head
 \def\set@csv@nohead{%
   \toks0={\gdef##1}%
-  \toks1=\expandafter{\csname csvcol\roman{csvcol}\endcsname}%
+  \toks1=\expandafter{\csname csvcol\romannumeral\c@csvcol\endcsname}%
   \edef\csv@temp{\noexpand\pgfkeysdef{/csv head/\thecsvcol}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
   \csv@temp%
 }
 
 % no head line
 \def\csv@noheadline{%
-  \setcounter{csvcol}{0}%
+  \global\c@csvcol 0\relax%
   \loop%
-    \stepcounter{csvcol}%
+    \global\advance\c@csvcol 1\relax%
     \set@csv@nohead%
-  \ifnum\thecsvcol<\csv@columncount\repeat%
+  \ifnum\c@csvcol<\csv@columncount\repeat%
   \toks@=\expandafter{\csv@columnnames}%
   \edef\csv@processkeys{\noexpand\pgfkeys{/csv head/.cd,\the\toks@}}%
   \csv@processkeys%
@@ -261,9 +257,9 @@
 
 % check columns
 \def\csv@checkcolumncount{%
-  \ifnum\thecsvcol=\csv@columncount%
+  \ifnum\c@csvcol=\csv@columncount\relax%
     \csv@checkfilter%
-  \else
+  \else%
     \csv@columncounterror%
   \fi%
 }
@@ -288,9 +284,10 @@
 \let\csv@par=\par
 
 % reads and processes a CSV file
-\def\csvloop#1{%
+\long\def\csvloop#1{%
   % reset
   \global\let\@endloophook\csv@empty%
+  \global\let\csvlinetotablerow\csv@assemble@csvlinetotablerow%
   % options
   \csvset{default,every csv,#1}%
   \csv@preprocss%
@@ -403,13 +400,15 @@
   head to column names/true/.code={\global\let\csv@opt@headtocolumnames=\set@csv@autohead},%
   head to column names/false/.code={\global\let\csv@opt@headtocolumnames=\csv@empty},%
   column count/.gstore in=\csv@columncount,%
-  filter/.code={%
-    \def\temp{#1}\toks@=\expandafter{\temp}%
-    \xdef\csv@iffilter{\noexpand\ifthenelse{\the\toks@}}},
+  filter/.code={\gdef\csv@iffilter{\ifthenelse{#1}}},
+  filter ifthen/.code={\gdef\csv@iffilter{\ifthenelse{#1}}},
+  filter test/.code={\gdef\csv@iffilter{#1}},
+  filter expr/.code={\gdef\csv@iffilter{\ifboolexpr{#1}}},
   no filter/.code={\csvfilteraccept},
   filter reject all/.code={\csvfilterreject},
   filter accept all/.code={\csvfilteraccept},
   before filter/.gstore in=\csv@prefiltercommand,
+  full filter/.gstore in=\csv@prefiltercommand,
   before first line/.gstore in=\csv@prefirstline,
   before line/.code={\gdef\csv@preline{#1}\pgfkeysalso{before first line=#1}},
   after first line/.gstore in=\csv@postfirstline,
@@ -483,8 +482,10 @@
   no head/.style={head=false},
   no check column count/.style={check column count=false},
   warn on column count error/.style={on column count error={\csv@warning{>\thecsvcol< instead of >\csv@columncount< columns for input line >\thecsvinputline< of file >\csv@ppfilename<}}},
-  filter equal/.style 2 args={filter=\equal{#1}{#2}},
-  filter not equal/.style 2 args={filter=\not\equal{#1}{#2}},
+  filter equal/.style 2 args={filter ifthen=\equal{#1}{#2}},
+  filter not equal/.style 2 args={filter ifthen=\not\equal{#1}{#2}},
+  filter strcmp/.style 2 args={filter test=\ifcsvstrcmp{#1}{#2}},
+  filter not strcmp/.style 2 args={filter test=\ifcsvnotstrcmp{#1}{#2}},
   tabular/.style={
     @table={\csv@pretable\begin{tabular}{#1}\csv@tablehead}{\csv@tablefoot\end{tabular}\csv@posttable},
     late after line=\\},
@@ -727,3 +728,51 @@
 
 \def\csvnames#1#2{\csvset{#1/.style={column names={#2}}}}
 
+% string comparison
+
+\newrobustcmd{\ifcsvstrequal}[2]{%
+  \begingroup%
+    \protected@edef\csv@tempa{#1}%
+    \protected@edef\csv@tempb{#2}%
+    \edef\csv@tempa{#1}%
+    \edef\csv@tempb{#2}%
+    \ifx\csv@tempa\csv@tempb%
+      \aftergroup\@firstoftwo%
+    \else%
+      \aftergroup\@secondoftwo%
+    \fi%
+  \endgroup%
+}%
+
+\newrobustcmd{\ifcsvprostrequal}[2]{%
+  \begingroup%
+    \protected@edef\csv@tempa{#1}%
+    \protected@edef\csv@tempb{#2}%
+    \ifx\csv@tempa\csv@tempb%
+      \aftergroup\@firstoftwo%
+    \else%
+      \aftergroup\@secondoftwo%
+    \fi%
+  \endgroup%
+}%
+
+\AtBeginDocument{%
+  \ifdefined\pdfstrcmp%
+    \let\csv@strcmp\pdfstrcmp%
+  \else\ifdefined\pdf@strcmp%
+    \let\csv@strcmp\pdf@strcmp%
+  \fi\fi%
+  \ifdefined\csv@strcmp%
+    \newrobustcmd{\ifcsvstrcmp}[2]{%
+      \ifnum\csv@strcmp{#1}{#2}=\z@\relax%
+        \expandafter\@firstoftwo%
+      \else%
+        \expandafter\@secondoftwo%
+      \fi%
+    }%
+  \else%
+    \let\ifcsvstrcmp\ifcsvstrequal%
+  \fi%
+}
+
+\newrobustcmd{\ifcsvnotstrcmp}[4]{\ifcsvstrcmp{#1}{#2}{#4}{#3}}

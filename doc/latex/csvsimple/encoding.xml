@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csv>
+  <noHeader/>
+  <bracket empty="true"/>
+  <charset in="windows-1252" out="UTF-8"/>
+</csv>
