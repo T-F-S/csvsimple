@@ -1,10 +1,10 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 1.20 (2016/07/01)
+%% The LaTeX package csvsimple - version 1.21 (2019/04/09)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2016 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2019 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -124,8 +124,8 @@
   pdfkeywords={csv file, comma separated values, key value syntax}
 }
 
-\def\version{1.20}%
-\def\datum{2016/07/01}%
+\def\version{1.21}%
+\def\datum{2019/04/09}%
 \makeindex
 
 
@@ -166,20 +166,35 @@
 The |csvsimple| package is applied to the processing of
 CSV\footnote{CSV file: file with comma separated values.} files.
 This processing is controlled by key value assignments according to the
-syntax of |pgfkeys| \cite{tantau:2015a}. Sample applications of the package
+syntax of |pgfkeys| \cite{tantau:tikz}. Sample applications of the package
 are tabular lists, serial letters, and charts.
 
-An alternative to |csvsimple| is the |datatool| package \cite{talbot:2016a}
+An alternative to |csvsimple| is the |datatool| package \cite{talbot:datatool}
 which provides considerably more functions and allows sorting of data by \LaTeX.
 |csvsimple| has a different approach for the user interface and
 is deliberately restricted to some basic functions with fast
-processing speed. Sorting is not supported directly but can be done
-with external tools, see Section~\ref{sec:Sorting} on page~\pageref{sec:Sorting}.
+processing speed.
+
+Mind the following restrictions:
+\begin{itemize}
+\item Sorting is not supported directly but can be done
+  with external tools, see \Fullref{sec:Sorting}.
+\item Values are expected to be comma separated, but the package
+  provides support for other separators, see \Fullref{sec:separators}.
+\item Values are expected to be not quoted or quoted with
+  curly braces |{}| of \TeX\ groups. Other quotes like doublequotes
+  are not supported directly, but can be achieved
+  with external tools, see \Fullref{sec:importeddata}.
+\item Every data line is expected to contain the same amount of values.
+  Unfeasible data lines are silently ignored by default, but this can
+  be configured, see \Fullref{sec:consistency}.
+\end{itemize}
+
 
 \subsection{Loading the Package}
 The package |csvsimple| loads the packages
-|pgfkeys| \cite{tantau:2015a},
-|etoolbox| \cite{lehmann:2015a},
+|pgfkeys| \cite{tantau:tikz},
+|etoolbox| \cite{lehmannwright:etoolbox},
 and |ifthen| \cite{carlisle:2014c}.
 |csvsimple| itself is loaded in the usual manner in the preamble:
 \begin{dispListing}
@@ -191,6 +206,8 @@ Not automatically loaded, but used for many examples are the packages
 and
 |booktabs| \cite{fear:2016a}.
 
+
+\clearpage
 \subsection{First Steps}
 Every line of a processable CSV file has to contain an identical amount of
 comma\footnote{See \refKey{/csv/separator} for other separators than comma.} separated values. The curly braces |{}| of \TeX\ groups can be used
@@ -211,7 +228,7 @@ Bauer,Maria,19202,f,3.3
 
 \csvlisting{grade}
 
-
+\smallskip
 The most simple way to display a CSV file in tabular form is the processing
 with the \refCom{csvautotabular} command.
 
@@ -237,6 +254,7 @@ assigned to \TeX\ macros which may be used deliberately.
 \end{dispExample}
 
 
+\clearpage
 |\csvreader| is controlled by a plenty of options. For example, for table
 applications line breaks are easily inserted by
 \refKey{/csv/late after line}. This defines a macro execution just before
@@ -253,6 +271,7 @@ way.
 \end{tabular}
 \end{dispExample}
 
+\smallskip
 An even more comfortable and preferrable way to create a table is setting
 appropriate option keys. Note, that this gives you the possibility to create a
 |pgfkeys| style which contains the whole table creation.
@@ -265,7 +284,7 @@ appropriate option keys. Note, that this gives you the possibility to create a
   {\thecsvrow & \firstname~\name & \matnumber}%
 \end{dispExample}
 
-\clearpage
+\smallskip
 The next example shows such a style definition with the convenience macro
 \refCom{csvstyle}. Here, we see again the automated assignment of header
 entries to column names by \refKey{/csv/head to column names}.
@@ -284,6 +303,7 @@ above.
 \end{dispExample}
 
 
+\clearpage
 Another way to address columns is to use their roman numbers.
 The direct addressing is done by |\csvcoli|, |\csvcolii|, |\csvcoliii|, \ldots:
 
@@ -295,6 +315,7 @@ The direct addressing is done by |\csvcoli|, |\csvcolii|, |\csvcoliii|, \ldots:
   {\thecsvrow & \csvcolii~\csvcoli & \csvcoliii}%
 \end{dispExample}
 
+\smallskip
 And yet another method to assign macros to columns is to use arabic numbers
 for the assignment:
 
@@ -306,7 +327,7 @@ for the assignment:
   {\thecsvrow & \firstname~\name & \matnumber}%
 \end{dispExample}
 
-\clearpage
+\smallskip
 For recurring applications, the |pgfkeys| syntax allows to create own styles
 for a consistent and centralized design. The following example is easily
 modified to obtain more or less option settings.
@@ -327,6 +348,7 @@ modified to obtain more or less option settings.
 \end{dispExample}
 
 
+\clearpage
 Alternatively, column names can be set by \refCom{csvnames}
 and style definitions by \refCom{csvstyle}.
 With this, the last example is rewritten as follows:
@@ -344,7 +366,7 @@ With this, the last example is rewritten as follows:
 {\thecsvrow & \firstname~\name & \grade}%
 \end{dispExample}
 
-\clearpage
+\smallskip
 The data lines of a CSV file can also be filtered. In the following example,
 a certificate is printed only for students with grade unequal to 5.0.
 
@@ -640,7 +662,7 @@ purpose:
 \end{docCommand}
 
 
-\begin{docCommand}[doc updated=2016-00-00]{csvlinetotablerow}{}
+\begin{docCommand}[doc updated=2016-07-01]{csvlinetotablerow}{}
   Typesets the current processed data line with |&| between the entries.
   %Most users will never apply this command.
 \end{docCommand}
@@ -757,8 +779,7 @@ to be used inside these macros.
 \end{dispExample}
 
 Additional command definition keys are provided for the supported tables,
-see section \ref{subsec:tabsupport} from page
-\pageref{subsec:tabsupport}.
+see Section~\ref{subsec:tabsupport} from page~\pageref{subsec:tabsupport}.
 
 
 \subsection{Header Processing and Column Name Assignment}%
@@ -797,11 +818,11 @@ see section \ref{subsec:tabsupport} from page
 
 
 \clearpage
-\subsection{Consistency Check}%
+\subsection{Consistency Check}\label{sec:consistency}%
 
 \begin{docCsvKey}{check column count}{\colOpt{=true\textbar false}}{default |true|, initially |true|}
-  This key defines, if the number of entries in a data line is checked against
-  an expected value.\\
+  This key defines, wether the number of entries in a data line is checked against
+  an expected value or not.\\
   If |true|, every non consistent line is ignored without announcement.\\
   If |false|, every line is accepted and may produce an error during
   further processing.
@@ -834,7 +855,7 @@ see section \ref{subsec:tabsupport} from page
 \clearpage
 \subsection{Filtering}%
 
-\begin{docCsvKey}[][doc new=2016-00-00]{filter test}{=\meta{condition}}{no default}
+\begin{docCsvKey}[][doc new=2016-07-01]{filter test}{=\meta{condition}}{no default}
   Only data lines which fulfill a logical \meta{condition} are accepted.
   For the \meta{condition}, every single test normally employed like
 \begin{dispListing}
@@ -844,7 +865,7 @@ see section \ref{subsec:tabsupport} from page
 \begin{dispListing}
 filter test=\iftest{some testing},
 \end{dispListing}
-  For |\iftest|, tests from the |etoolbox| package \cite{lehmann:2015a} like
+  For |\iftest|, tests from the |etoolbox| package \cite{lehmannwright:etoolbox} like
   |\ifnumcomp|, |\ifdimgreater|, etc. and from \Fullref{sec:stringtests} can be used.
 
 \begin{dispExample}
@@ -873,10 +894,10 @@ filter test=\iftest{some testing},
 \end{docCsvKey}
 
 
-\begin{docCsvKey}[][doc new=2016-00-00]{filter expr}{=\meta{condition}}{no default}
+\begin{docCsvKey}[][doc new=2016-07-01]{filter expr}{=\meta{condition}}{no default}
   Only data lines which fulfill a logical \meta{condition} are accepted.
   For the \meta{condition}, every boolean expression
-  from the |etoolbox| package \cite{lehmann:2015a} is feasible.
+  from the |etoolbox| package \cite{lehmannwright:etoolbox} is feasible.
   To preprocess the data line before testing the \meta{condition},
   the option key \refKey{/csv/before filter} can be used.
 \begin{dispExample}
@@ -893,7 +914,7 @@ filter test=\iftest{some testing},
 \end{docCsvKey}
 
 \clearpage
-\begin{docCsvKey}[][doc new=2016-00-00]{filter ifthen}{=\meta{condition}}{no default}
+\begin{docCsvKey}[][doc new=2016-07-01]{filter ifthen}{=\meta{condition}}{no default}
   Only data lines which fulfill a logical \meta{condition} are accepted.
   For the \meta{condition}, every term from the |ifthen| \cite{carlisle:2014c} package
   is feasible.
@@ -949,7 +970,7 @@ filter test=\iftest{some testing},
 
 
 \enlargethispage*{2cm}
-\begin{docCsvKey}[][doc new=2016-00-00]{full filter}{=\meta{code}}{no default}
+\begin{docCsvKey}[][doc new=2016-07-01]{full filter}{=\meta{code}}{no default}
   Technically, this key is an alias for \refKey{/csv/before filter}.
   Philosophically, \refKey{/csv/before filter} computes something before
   a filter condition is set, but \refKey{/csv/full filter} should implement
@@ -1147,7 +1168,7 @@ as normal characters, if one or more of the following options are used.
 \end{docCsvKey}
 
 \clearpage
-\subsection{Separators}%
+\subsection{Separators}\label{sec:separators}%
 \begin{docCsvKey}{separator}{=\meta{sign}}{no default, initially |comma|}
   \catcode `|=12
   Sets the \meta{sign} which is treates as separator between the data values
@@ -1277,7 +1298,7 @@ For the third method, the \refKey{/csv/preprocessor} option is made for.
 This allows to access an external tool for sorting.
 \emph{Which tool} is your choice.
 
-\csvsorter\ \cite{sturm:2014j}
+\csvsorter\ \cite{sturm:csvsorter}
 was written as a companion tool for |csvsimple|.
 It is an open source Java command-line tool for sorting CSV files, available at\\
 \url{http://T-F-S.github.io/csvsorter/}\quad or\quad
@@ -1289,7 +1310,7 @@ There is special support for on-the-fly sorting with \csvsorter\ using the
 following options.
 
 \begin{enumerate}\bfseries
-\item To use the sorting options, you have to install \csvsorter\ \cite{sturm:2014j} before!\\
+\item To use the sorting options, you have to install \csvsorter\ \cite{sturm:csvsorter} before!\\
   |csvsimple| v1.12 or newer needs \csvsorter\ v0.94 of newer!
 \item You have to give permission to call external tools during
   compilation, i.\,e.\ the command-line options for |latex| have to include
@@ -1436,7 +1457,7 @@ Now, we can use the new rule:
 \section{String Tests}\label{sec:stringtests}%
 
 The following string tests are complementing the string tests
-from the |etoolbox| \cite{lehmann:2015a} package. They all do the same, i.e.,
+from the |etoolbox| \cite{lehmannwright:etoolbox} package. They all do the same, i.e.,
 comparing expanded strings for equality.
 \begin{itemize}
 \item\refCom{ifcsvstrcmp} is the most efficient method, because it uses
@@ -1449,7 +1470,7 @@ comparing expanded strings for equality.
 \end{itemize}
 \medskip
 
-\begin{docCommand}[doc new=2016-00-00]{ifcsvstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+\begin{docCommand}[doc new=2016-07-01]{ifcsvstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
   Compares two strings and executes \meta{true} if they are equal, and \meta{false} otherwise.
   The comparison is done using |\pdfstrcmp|, if compilation is done with pdf\LaTeX.
   The comparison is done using |\pdf@strcmp|, if the package |pdftexcmds| is
@@ -1459,18 +1480,18 @@ comparing expanded strings for equality.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2016-00-00]{ifcsvnotstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+\begin{docCommand}[doc new=2016-07-01]{ifcsvnotstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
   Compares two strings and executes \meta{true} if they are \emph{not} equal, and \meta{false} otherwise.
   The implementation uses \refCom{ifcsvstrcmp}.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2016-00-00]{ifcsvstrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+\begin{docCommand}[doc new=2016-07-01]{ifcsvstrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
   Compares two strings and executes \meta{true} if they are equal, and \meta{false} otherwise.
   The strings are expanded with |\edef| in the test.
 \end{docCommand}
 
-\begin{docCommand}[doc new=2016-00-00]{ifcsvprostrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+\begin{docCommand}[doc new=2016-07-01]{ifcsvprostrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
   Compares two strings and executes \meta{true} if they are equal, and \meta{false} otherwise.
   The strings are expanded with |\protected@edef| in the test, i.e. parts of the
   strings which are protected stay unexpanded.
@@ -1734,10 +1755,10 @@ December, 2.2,  3.3e3
 
 \csvlisting{data_numbers}
 
-The |siunitx| \cite{wright:2016a} package provides a new column type |S|
+The |siunitx| \cite{wright:siuntix} package provides a new column type |S|
 which can align material using a number of different strategies.
 The following example demonstrates the application with CSV reading.
-The package documentation \cite{wright:2016a} contains a huge amount
+The package documentation \cite{wright:siuntix} contains a huge amount
 of formatting options.
 
 \begin{dispExample}
@@ -1758,7 +1779,7 @@ the column type |S|. The number detection of |siunitx| is disturbed by
 the line reading code of |csvsimple| which actually is present at the
 first column. To avoid this problem, the content of the first column
 could be formatted not by the table format definition, but by using a
-suitable |\tablenum| formatting directly, see |siunitx| \cite{wright:2016a}.
+suitable |\tablenum| formatting directly, see |siunitx| \cite{wright:siuntix}.
 
 Another and very nifty workaround suggested by Enrico Gregorio is to
 add an invisible dummy column with |c@{}| as first column:
@@ -1863,7 +1884,7 @@ because there is no head, but the columns can be addressed by their numbers:
 
 
 \clearpage
-\subsection{Imported CSV data}\label{importeddata}%
+\subsection{Imported CSV data}\label{sec:importeddata}%
 If data is imported from other applications, there is not always a choice
 to format in comma separated values with curly brackets.
 
@@ -1998,12 +2019,12 @@ with the following configuration file for \csvsorter:
 % Actually, it is not a good idea to include the references like this!
 % Do not follow this bad example ...
 \begin{tcbverbatimwrite}{\jobname.bib}
-@manual{tantau:2015a,
+@manual{tantau:tikz,
    author    = {Till Tantau},
    title     = {The TikZ and PGF Packages},
-   subtitle  = {Manual for version 3.0.1a},
+   subtitle  = {Manual for version 3.1.2},
    url       = {http://mirrors.ctan.org/graphics/pgf/base/doc/pgfmanual.pdf},
-   date      = {2015-08-29},
+   date      = {2019-04-04},
 }
 
 @manual{carlisle:2014c,
@@ -2015,19 +2036,20 @@ with the following configuration file for \csvsorter:
 }
 
 
-@manual{talbot:2016a,
-  author    = {Nicola L. C. Talbot},
-  title     = {User Manual for the datatool bundle version 2.25},
-  url       = {http://mirrors.ctan.org/macros/latex/contrib/datatool/datatool-user.pdf},
-  date      = {2016-01-18},
+@manual{talbot:datatool,
+   author    = {Nicola L. C. Talbot},
+   title     = {User Manual for the datatool bundle version 2.31},
+   url       = {http://mirrors.ctan.org/macros/latex/contrib/datatool/datatool-user.pdf},
+   date      = {2018-12-07},
+   language  = {english}
 }
 
-@manual{sturm:2014j,
+@manual{sturm:csvsorter,
    author      = {Thomas F. Sturm},
    title       = {The CSV-Sorter program},
-   subtitle    = {Manual for version 0.94 beta},
+   subtitle    = {Manual for version 0.95 beta},
    url         = {http://T-F-S.github.io/csvsorter/csvsorter.pdf},
-   date        = {2014-07-14},
+   date        = {2018-01-11},
    language    = {english}
 }
 
@@ -2048,19 +2070,19 @@ with the following configuration file for \csvsorter:
    language  = {english}
 }
 
-@manual{wright:2016a,
+@manual{wright:siuntix,
    author    = {Joseph Wright},
    title     = {siunitx --- A comprehensive (SI) units package},
    url       = {http://mirror.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf},
-   date      = {2016-03-01},
+   date      = {2018-05-17},
    language  = {english}
 }
 
-@manual{lehmann:2015a,
+@manual{lehmannwright:etoolbox,
    author    = {Philipp Lehman and Joseph Wright},
    title     = {The etoolbox Package},
    url       = {http://mirror.ctan.org/macros/latex/contrib/etoolbox/etoolbox.pdf},
-   date      = {2015-08-02},
+   date      = {2018-08-19},
 }
 
 \end{tcbverbatimwrite}
