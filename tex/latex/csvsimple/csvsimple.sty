@@ -1,8 +1,8 @@
-%% The LaTeX package csvsimple - version 1.21 (2019/04/09)
+%% The LaTeX package csvsimple - version 1.22 (2021/06/07)
 %% csvsimple.sty: Simple LaTeX CSV file processing
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2019 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2021 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -18,7 +18,7 @@
 %% This work consists of all files listed in README
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{csvsimple}[2019/04/09 version 1.21 LaTeX CSV file processing]
+\ProvidesPackage{csvsimple}[2021/06/07 version 1.22 LaTeX CSV file processing]
 
 \RequirePackage{pgfrcs,pgfkeys,ifthen,etoolbox,shellesc}
 
@@ -182,9 +182,9 @@
 
 % auto head names
 \def\set@csv@autohead{%
-  \toks0=\expandafter{\csname\csv@current@col\endcsname}%
+  \toks0=\expandafter{\csname\csv@headnameprefix\csv@current@col\endcsname}%
   \toks1=\expandafter{\csname csvcol\romannumeral\c@csvcol\endcsname}%
-  \edef\csv@temp{\noexpand\gdef\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\noexpand\gdef\the\toks0{}}}%
+  \begingroup\edef\csv@temp{\endgroup\noexpand\gdef\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\noexpand\gdef\the\toks0{}}}%
   \csv@temp%
 }
 
@@ -192,16 +192,16 @@
 \def\set@csv@head{%
   \toks0={\gdef##1}%
   \toks1=\expandafter{\csname csvcol\romannumeral\c@csvcol\endcsname}%
-  \edef\csv@temp{\noexpand\pgfkeysdef{/csv head/\csv@current@col}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
+  \begingroup\edef\csv@temp{\endgroup\noexpand\pgfkeysdef{/csv head/\csv@current@col}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
   \csv@temp%
-  \edef\csv@temp{\noexpand\pgfkeysdef{/csv head/\thecsvcol}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
+  \begingroup\edef\csv@temp{\endgroup\noexpand\pgfkeysdef{/csv head/\thecsvcol}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
   \csv@temp%
 }
 
 % head line
 \def\csv@processheadline{%
   \csvreadnext%
-  \if\csv@par\csvline\relax%
+  \ifx\csv@par\csvline\relax%
     \csv@error{File '\csv@input@filename' starts with an empty line!}{}%
     \else\csv@escanline{\csvline}%
   \fi%
@@ -222,7 +222,7 @@
 \def\set@csv@nohead{%
   \toks0={\gdef##1}%
   \toks1=\expandafter{\csname csvcol\romannumeral\c@csvcol\endcsname}%
-  \edef\csv@temp{\noexpand\pgfkeysdef{/csv head/\thecsvcol}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
+  \begingroup\edef\csv@temp{\endgroup\noexpand\pgfkeysdef{/csv head/\thecsvcol}{\the\toks0{\the\toks1}\noexpand\csv@AtEndLoop{\the\toks0{}}}}%
   \csv@temp%
 }
 
@@ -281,7 +281,7 @@
   \stepcounter{csvinputline}%
 }
 
-\let\csv@par=\par
+\def\csv@par{\par}
 
 % reads and processes a CSV file
 \long\def\csvloop#1{%
@@ -329,7 +329,7 @@
       \global\let\csv@next=\csv@empty%
     \else%
       \global\let\csv@next=\csv@iterate%
-      \if\csv@par\csvline\relax%
+      \ifx\csv@par\csvline\relax%
         \else%
         \csv@escanline{\csvline}%
         % check and decide
@@ -395,6 +395,7 @@
     \pgfkeysalso{check column count}},%
   head/false/.code={\global\let\csv@opt@processheadline=\csv@noheadline%
     \pgfkeysalso{check column count=false,late after head=}},%
+  head to column names prefix/.store in=\csv@headnameprefix,%
   head to column names/.is choice,%
   head to column names/.default=true,%
   head to column names/true/.code={\global\let\csv@opt@headtocolumnames=\set@csv@autohead},%
@@ -456,6 +457,7 @@
     command=\csvline,
     column names reset,
     head,
+    head to column names prefix=,
     head to column names=false,
     column count=10,
     on column count error=,
