@@ -1,0 +1,106 @@
+% !TeX encoding=UTF-8
+%% The LaTeX package csvsimple - version 2.0.0 (2021/06/29)
+%% csvsimple-doc.sty: style file for the documentation
+%%
+%% -------------------------------------------------------------------------------------------
+%% Copyright (c) 2008-2021 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% -------------------------------------------------------------------------------------------
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `author-maintained'.
+%%
+%% This work consists of all files listed in README.md
+%%
+\def\version{2.0.0}%
+\def\datum{2021/06/29}%
+
+\IfFileExists{csvsimple-doc.cfg}{\input{csvsimple-doc.cfg}}{}\providecommand\csvpkgprefix{}
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[english]{babel}
+\RequirePackage{lmodern,parskip,array,ifthen,calc,makeidx}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage[svgnames,table,hyperref]{xcolor}
+\RequirePackage{tikz,siunitx,xfp}
+\RequirePackage{varioref}
+\RequirePackage[pdftex,bookmarks,raiselinks,pageanchor,hyperindex,colorlinks]{hyperref}
+\urlstyle{sf}
+\RequirePackage{cleveref}
+
+\RequirePackage[a4paper,left=2.5cm,right=2.5cm,top=1.5cm,bottom=1.5cm,
+    marginparsep=3mm,marginparwidth=18mm,
+    headheight=0mm,headsep=0cm,
+    footskip=1.5cm,includeheadfoot]{geometry}
+\RequirePackage{fancyhdr}
+\fancyhf{}
+\fancyfoot[C]{\thepage}%
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+\tolerance=2000%
+\setlength{\emergencystretch}{20pt}%
+
+\RequirePackage{longtable,booktabs,ifthen,etoolbox}
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins,xparse,minted,breakable,documentation,raster}
+
+\definecolor{Green_Dark}{rgb}{0.078431,0.407843,0.176471}
+\definecolor{Blue_Dark}{rgb}{0.090196,0.211765,0.364706}
+\definecolor{Blue_Bright}{rgb}{0.858824,0.898039,0.945098}
+
+\tcbset{skin=enhanced,
+  minted options={fontsize=\footnotesize},
+  doc head={colback=yellow!10!white,interior style=fill},
+  doc head key={colback=magenta!5!white,interior style=fill},
+  color key=DarkViolet,
+  color value=Teal,
+  color color=Teal,
+  color counter=Orange!85!black,
+  color length=Orange!85!black,
+  index colorize,
+  index annotate,
+  beforeafter example/.style={
+    before skip=4pt plus 2pt minus 1pt,
+    after skip=8pt plus 4pt minus 2pt
+  },
+  docexample/.style={bicolor,
+    beforeafter example,
+    arc is angular,fonttitle=\bfseries,
+    fontlower=\footnotesize,
+    colframe=green!25!yellow!50!black,
+    colback=green!25!yellow!7,
+    colbacklower=white,
+    drop fuzzy shadow=green!25!yellow!50!black,
+    listing engine=minted,
+    documentation minted style=colorful,
+    documentation minted options={fontsize=\footnotesize},
+    },
+}
+
+\renewcommand*{\tcbdocnew}[1]{\textcolor{green!50!black}{\sffamily\bfseries N} #1}
+\renewcommand*{\tcbdocupdated}[1]{\textcolor{blue!75!black}{\sffamily\bfseries U} #1}
+
+\NewDocumentCommand{\csvsorter}{}{\textsf{\bfseries\color{red!20!black}CSV-Sorter}}
+
+\newtcbinputlisting{\csvlisting}[1]{docexample,minted options={fontsize=\footnotesize},minted language=latex,
+  fonttitle=\bfseries,listing only,title={CSV file \flqq\texttt{\detokenize{#1.csv}}\frqq},listing file=#1.csv}
+
+\newtcbinputlisting{\xmllisting}[1]{docexample,minted options={fontsize=\footnotesize},minted language=xml,
+  fonttitle=\bfseries,listing only,title={Configuration file \flqq\texttt{\detokenize{#1.xml}}\frqq},listing file=#1.xml}
+
+\NewTotalTCBox{\verbbox}{m}{enhanced,on line,size=fbox,frame empty,colback=red!5!white,
+  colupper=red!85!black,fontupper=\bfseries\ttfamily}{\detokenize{"}#1\detokenize{"}}
+
+
+\makeindex
+
+\pdfsuppresswarningpagegroup=1

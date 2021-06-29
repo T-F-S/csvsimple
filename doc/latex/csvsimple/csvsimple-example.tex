@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 1.22 (2021/06/07)
+%% The LaTeX package csvsimple - version 2.0.0 (2021/06/29)
 %% csvsimple-example.tex: an example for csvsimple
 %%
 %% -------------------------------------------------------------------------------------------
@@ -15,11 +15,15 @@
 %%
 %% This work has the LPPL maintenance status `author-maintained'.
 %%
-%% This work consists of all files listed in README
+%% This work consists of all files listed in README.md
 %%
 \documentclass{article}
-\usepackage{array,booktabs}
-\usepackage{csvsimple}
+\usepackage{ifthen,array,booktabs}
+
+\IfFileExists{csvsimple-doc.cfg}{\input{csvsimple-doc.cfg}}{}% ignore this line
+\providecommand\csvpkgprefix{}                               % ignore this line
+
+\usepackage{\csvpkgprefix csvsimple-l3}%  \usepackage{csvsimple-l3}
 
 \begin{document}
 
@@ -65,7 +69,7 @@
 %----------------------------------------------------------
 \section{More filter fun}
 
-\csvreader[my names, filter=\birthyear<1980, centered tabular=rllr,
+\csvreader[my names, filter ifthen=\birthyear<1980, centered tabular=rllr,
   table head=\multicolumn{4}{c}{\bfseries People born before 1980}\\\toprule
      \# & Name & Postal address & input line no.\\\midrule,
      late after line=\\, late after last line=\\\bottomrule]%
