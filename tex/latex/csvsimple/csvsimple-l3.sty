@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.0.0 (2021/06/29)
+%% The LaTeX package csvsimple - version 2.1.0 (2021/07/06)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2021/06/29}{2.0.0}
+\ProvidesExplPackage{csvsimple-l3}{2021/07/06}{2.1.0}
   {LaTeX3 CSV file processing}
 
 
@@ -40,10 +40,12 @@
 %---- declarations and expl3 variants
 
 \bool_new:N \g__csvsim_check_column_count_bool
+\bool_new:N \g__csvsim_collect_data_bool
 \bool_new:N \g__csvsim_firstline_bool
 \bool_new:N \g__csvsim_head_bool
 \bool_new:N \g__csvsim_head_to_colnames_bool
 \bool_new:N \g__csvsim_line_accepted_bool
+\bool_new:N \g__csvsim_line_firstline_bool
 \bool_new:N \l__csvsim_respect_and_bool
 \bool_new:N \l__csvsim_respect_backslash_bool
 \bool_new:N \l__csvsim_respect_circumflex_bool
@@ -82,9 +84,12 @@
 \tl_new:N \g__csvsim_body_tl
 \tl_new:N \g__csvsim_catcode_tl
 
+\tl_new:N \g__csvsim_collect_tl
 \tl_new:N \g__csvsim_columnnames_tl
+\tl_new:N \g__csvsim_data_collection_tl
 \tl_new:N \g__csvsim_filter_tl
 \tl_new:N \g__csvsim_headname_prefix_tl
+\tl_new:N \g__csvsim_hook_after_filter_tl
 \tl_new:N \g__csvsim_hook_after_first_line_tl
 \tl_new:N \g__csvsim_hook_after_head_tl
 \tl_new:N \g__csvsim_hook_after_line_tl
@@ -104,6 +109,7 @@
 \tl_new:N \g__csvsim_separator_tl
 \tl_new:N \g__csvsim_table_foot_tl
 \tl_new:N \g__csvsim_table_head_tl
+
 
 \group_begin:
   \char_set_catcode_other:n { 9 }
@@ -204,7 +210,7 @@
         \msg_error:nnx { csvsimple }{ empty-head }{ \g__csvsim_filename_str }
       }
       {
-        \int_zero:N \g_csvsim_columncount_int
+        \int_gzero:N \g_csvsim_columncount_int
         \__csvsim_scan_line:
         \int_step_function:nN \g_csvsim_columncount_int \__csvsim_process_head_name:n
       }
@@ -265,6 +271,10 @@
     \int_gzero:N    \g_csvsim_inputline_int
     \int_gzero:N    \g_csvsim_row_int
     \int_gset_eq:NN \g__csvsim_colmax_int \c_one_int
+    \bool_if:NT \g__csvsim_collect_data_bool
+      {
+        \__csvsim_collect_data:
+      }
 
     % open file
     \g__csvsim_hook_before_reading_tl
@@ -317,6 +327,7 @@
                               {
                                 \g__csvsim_hook_late_after_head_tl
                               }
+                            \g__csvsim_hook_after_filter_tl
                             \g__csvsim_hook_before_first_line_tl
                             \g__csvsim_body_tl
                             \g__csvsim_hook_after_first_line_tl
@@ -324,6 +335,7 @@
                           }
                           {
                             \g__csvsim_hook_late_after_line_tl
+                            \g__csvsim_hook_after_filter_tl
                             \g__csvsim_hook_before_line_tl
                             \g__csvsim_body_tl
                             \g__csvsim_hook_after_line_tl
@@ -354,6 +366,11 @@
       }
     \g__csvsim_hook_table_end_tl
     \g__csvsim_hook_after_reading_tl
+    \bool_if:NT \g__csvsim_collect_data_bool
+      {
+        \exp_args:NV \tl_gset_eq:NN \g__csvsim_data_collection_tl \g__csvsim_collect_tl
+        \tl_gclear:N \g__csvsim_collect_tl
+      }
   }
 
 
@@ -561,10 +578,10 @@
             \tl_gput_right:Nn \g__csvsim_columnnames_tl {,#1}
           }
       },
-    command               .tl_gset:N   = \g__csvsim_body_tl,
-    check~column~count    .bool_gset:N = \g__csvsim_check_column_count_bool,
-    on~column~count~error .tl_gset:N   = \g__csvsim_hook_columncounterror_tl,
-    head                  .bool_gset:N = \g__csvsim_head_bool,
+    command                     .tl_gset:N   = \g__csvsim_body_tl,
+    check~column~count          .bool_gset:N = \g__csvsim_check_column_count_bool,
+    on~column~count~error       .tl_gset:N   = \g__csvsim_hook_columncounterror_tl,
+    head                        .bool_gset:N = \g__csvsim_head_bool,
     head~to~column~names~prefix .tl_gset:N   = \g__csvsim_headname_prefix_tl,
     head~to~column~names        .bool_gset:N = \g__csvsim_head_to_colnames_bool,
     column~count                .int_gset:N  = \g_csvsim_columncount_int,
@@ -607,6 +624,7 @@
     before~reading        .tl_gset:N = \g__csvsim_hook_before_reading_tl,
     after~head            .tl_gset:N = \g__csvsim_hook_after_head_tl,
     before~filter         .tl_gset:N = \g__csvsim_hook_before_filter_tl,
+    after~filter          .tl_gset:N = \g__csvsim_hook_after_filter_tl,
     late~after~head       .tl_gset:N = \g__csvsim_hook_late_after_head_tl,
     late~after~first~line .tl_gset:N = \g__csvsim_hook_late_after_first_line_tl,
     late~after~last~line  .tl_gset:N = \g__csvsim_hook_late_after_last_line_tl,
@@ -852,6 +870,81 @@
 
 
 
+%---- data collection
+
+\cs_new_protected_nopar:Npn \__csvsim_gset_tl_to_collect:N #1
+  {
+    \tl_gset:Nx #1
+      {
+        \exp_not:N \tl_gput_right:Nn
+        \exp_not:N \g__csvsim_collect_tl
+        {\exp_not:V #1}
+      }
+  }
+
+
+\cs_new_protected_nopar:Npn \__csvsim_gset_tl_to_collect_expanded:N #1
+  {
+    \tl_gset:Nx #1
+      {
+        \exp_not:N \tl_gput_right:Nx
+        \exp_not:N \g__csvsim_collect_tl
+        {\exp_not:V #1}
+      }
+  }
+
+
+\cs_new_protected_nopar:Npn \__csvsim_collect_data:
+  {
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_head_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_line_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_before_first_line_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_before_line_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_late_after_first_line_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_late_after_head_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_late_after_last_line_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_late_after_line_tl
+    \__csvsim_gset_tl_to_collect_expanded:N \g__csvsim_body_tl
+    \tl_gclear:N \g__csvsim_collect_tl
+  }
+
+
+\cs_set_eq:NN \csvexpval \exp_not:V
+\cs_set_eq:NN \csvexpnot \exp_not:N
+
+
+\NewDocumentCommand{ \csvcollectn }{ +m }
+  {
+    \tl_gput_right:Nn \g__csvsim_collect_tl {#1}
+  }
+
+
+\NewDocumentCommand{ \csvcollectx }{ +m }
+  {
+    \tl_gput_right:Nx \g__csvsim_collect_tl {#1}
+  }
+
+
+\NewDocumentCommand{ \csvcollectV }{ m }
+  {
+    \tl_gput_right:NV \g__csvsim_collect_tl #1
+  }
+
+
+\keys_define:nn { csvsim }
+  {
+    collect~data    .bool_gset:N = \g__csvsim_collect_data_bool,
+    data~collection .tl_gset:N   = \g__csvsim_data_collection_tl,
+  }
+
+
+\keys_set:nn { csvsim }
+  {
+    data~collection = \csvdatacollection,
+  }
+
+
+
 %---- catcodes
 
 \cs_new_protected_nopar:Npn \__csvsim_setup_catcode_list:
@@ -983,6 +1076,48 @@
         late~after~line      = \\,
         late~after~last~line =
       },
+    tabularray .meta:n =
+      {
+        collect~data,
+        _table_ =
+          {
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_before_table_tl
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{tblr}{#1} }
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_head_tl
+          }
+          {
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_foot_tl
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{tblr} }
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_after_table_tl
+          },
+        late~after~line = \\,
+        after~reading   =
+          {
+            \tl_use:N \g__csvsim_collect_tl
+          },
+      },
+    centered~tabularray .meta:n =
+      {
+        collect~data,
+        _table_ =
+          {
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{center} }
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_before_table_tl
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{tblr}{#1} }
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_head_tl
+          }
+          {
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_foot_tl
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{tblr} }
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_after_table_tl
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{center} }
+          },
+        late~after~line = \\,
+        after~reading   =
+          {
+            \tl_use:N \g__csvsim_collect_tl
+          },
+      },
     _autotab_ .meta:n =
       {
         file                 = #1,
@@ -1001,7 +1136,7 @@
         _autotabular_        = #1,
         head,
         after~head           = \g__csvsim_before_table_tl
-                               \begin{tabular}{|*{\int_use:N\g__csvsim_col_int}{l|}}
+                               \begin{tabular}{|*{\int_use:N\g_csvsim_columncount_int}{l|}}
                                \g__csvsim_table_head_tl,
         table~head           = \hline\csvlinetotablerow\\\hline,
         table~foot           = \\\hline,
@@ -1011,7 +1146,7 @@
         _autotabular_        = #1,
         no~head,
         before~first~line    = \g__csvsim_before_table_tl
-                               \begin{tabular}{|*{\int_use:N\g__csvsim_col_int}{l|}}
+                               \begin{tabular}{|*{\int_use:N\g_csvsim_columncount_int}{l|}}
                                \g__csvsim_table_head_tl,
         table~head           = \hline,
         table~foot           = \\\hline,
@@ -1021,7 +1156,7 @@
         _autotabular_        = #1,
         head,
         after~head           = \g__csvsim_before_table_tl
-                               \begin{tabular}{*{\int_use:N\g__csvsim_col_int}{l}}
+                               \begin{tabular}{*{\int_use:N\g_csvsim_columncount_int}{l}}
                                \g__csvsim_table_head_tl,
         table~head           = \toprule\csvlinetotablerow\\\midrule,
         table~foot           = \\\bottomrule,
@@ -1031,7 +1166,7 @@
         _autotabular_      = #1,
         no~head,
         before~first~line    = \g__csvsim_before_table_tl
-                               \begin{tabular}{*{\int_use:N\g__csvsim_col_int}{l}}
+                               \begin{tabular}{*{\int_use:N\g_csvsim_columncount_int}{l}}
                                \g__csvsim_table_head_tl,
         table~head           = \toprule,
         table~foot           = \\\bottomrule,
@@ -1047,7 +1182,7 @@
         _autolongtable_      = #1,
         head,
         after~head           = \g__csvsim_before_table_tl
-                               \begin{longtable}{|*{\int_use:N\g__csvsim_col_int}{l|}}
+                               \begin{longtable}{|*{\int_use:N\g_csvsim_columncount_int}{l|}}
                                \g__csvsim_table_head_tl,
         table~head           = \hline\csvlinetotablerow\\\hline\endhead
                                \hline\endfoot,
@@ -1057,7 +1192,7 @@
         _autolongtable_      = #1,
         no~head,
         before~first~line    = \g__csvsim_before_table_tl
-                               \begin{longtable}{|*{\int_use:N\g__csvsim_col_int}{l|}}
+                               \begin{longtable}{|*{\int_use:N\g_csvsim_columncount_int}{l|}}
                                \g__csvsim_table_head_tl,
         table~head           = \hline\endhead
                                \hline\endfoot,
@@ -1067,7 +1202,7 @@
         _autolongtable_      = #1,
         head,
         after~head           = \g__csvsim_before_table_tl
-                               \begin{longtable}{*{\int_use:N\g__csvsim_col_int}{l}}
+                               \begin{longtable}{*{\int_use:N\g_csvsim_columncount_int}{l}}
                                \g__csvsim_table_head_tl,
         table~head           = \toprule\csvlinetotablerow\\\midrule\endhead
                                \bottomrule\endfoot,
@@ -1077,7 +1212,7 @@
         _autolongtable_      = #1,
         no~head,
         before~first~line    = \g__csvsim_before_table_tl
-                               \begin{longtable}{*{\int_use:N\g__csvsim_col_int}{l}}
+                               \begin{longtable}{*{\int_use:N\g_csvsim_columncount_int}{l}}
                                \g__csvsim_table_head_tl,
         table~head           = \toprule\endhead
                                \bottomrule\endfoot,
@@ -1157,7 +1292,7 @@
 
 \keys_define:nn { csvsim }
   {
-    preprocessor         .tl_gset:N = \l__csvsim_preprocessor_tl,
+    preprocessor         .tl_set:N  = \l__csvsim_preprocessor_tl,
     preprocessed~file    .code:n    = \__csvsim_set_filename:Nn  \l__csvsim_ppfilename_str {#1},
     csvsorter~command    .code:n    = \__csvsim_set_filename:Nn \l__csvsim_csvsorter_command_str  {#1},
     csvsorter~configpath .code:n    = \__csvsim_set_filename:Nn\l__csvsim_csvsorter_configpath_str  {#1},
@@ -1233,10 +1368,13 @@
         check~column~count,
         head~to~column~names~prefix = ,
         head~to~column~names        = false,
+        collect~data                = false,
         column~count                = 0,
         on~column~count~error       =,
+        range                       =,
         no~filter,
         before~filter               =,
+        after~filter                =,
         before~line                 =,
         after~line                  =,
         late~after~line             =,

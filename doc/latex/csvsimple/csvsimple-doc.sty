@@ -1,5 +1,5 @@
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.0.0 (2021/06/29)
+%% The LaTeX package csvsimple - version 2.1.0 (2021/07/06)
 %% csvsimple-doc.sty: style file for the documentation
 %%
 %% -------------------------------------------------------------------------------------------
@@ -18,8 +18,8 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\def\version{2.0.0}%
-\def\datum{2021/06/29}%
+\def\version{2.1.0}%
+\def\datum{2021/07/06}%
 
 \IfFileExists{csvsimple-doc.cfg}{\input{csvsimple-doc.cfg}}{}\providecommand\csvpkgprefix{}
 
@@ -29,7 +29,7 @@
 \RequirePackage{lmodern,parskip,array,ifthen,calc,makeidx}
 \RequirePackage{amsmath,amssymb}
 \RequirePackage[svgnames,table,hyperref]{xcolor}
-\RequirePackage{tikz,siunitx,xfp}
+\RequirePackage{tikz,siunitx,xfp,tabularray}
 \RequirePackage{varioref}
 \RequirePackage[pdftex,bookmarks,raiselinks,pageanchor,hyperindex,colorlinks]{hyperref}
 \urlstyle{sf}
@@ -100,6 +100,10 @@
 \NewTotalTCBox{\verbbox}{m}{enhanced,on line,size=fbox,frame empty,colback=red!5!white,
   colupper=red!85!black,fontupper=\bfseries\ttfamily}{\detokenize{"}#1\detokenize{"}}
 
+\NewDocumentCommand{\ctanpkg}{m}
+  {%
+     \href{https://ctan.org/pkg/#1}{\texttt{#1}}%
+  }
 
 \makeindex
 

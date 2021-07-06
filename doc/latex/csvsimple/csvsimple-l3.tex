@@ -1,6 +1,6 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.0.0 (2021/06/29)
+%% The LaTeX package csvsimple - version 2.1.0 (2021/07/06)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -19,6 +19,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
+% \RequirePackage[check-declarations,enable-debug]{expl3}
 \documentclass[a4paper,11pt]{ltxdoc}
 \usepackage{csvsimple-doc}
 
@@ -102,7 +103,7 @@ This processing is controlled by key value assignments according to the
 syntax of |l3keys|. Sample applications of the package
 are tabular lists, serial letters, and charts.
 
-An alternative to |csvsimple-l3| is the |datatool| package
+An alternative to |csvsimple-l3| is the \ctanpkg{datatool} package
 which provides considerably more functions and allows sorting of data by \LaTeX.
 |csvsimple-l3| has a different approach for the user interface and
 is deliberately restricted to some basic functions with fast
@@ -134,7 +135,7 @@ alternatives inside the preamble:
 \end{dispListing}
 
 Not automatically loaded, but used for many examples are the packages
-|longtable|, |booktabs|, |ifthen|, and |booktabs|.
+\ctanpkg{longtable}, \ctanpkg{booktabs}, \ctanpkg{ifthen}, and \ctanpkg{etoolbox}.
 
 
 \clearpage
@@ -788,10 +789,19 @@ to be used inside these macros.
 
 \begin{docCsvKey}{before filter}{=\meta{code}}{no default, initially empty}
   Sets the \meta{code} to be executed after reading and consistency checking
-  of a data line. They are executed before any filter condition is checked,
-  see e.g. \refKey{/csvsim/filter ifthen}.
-  Also see \refKey{/csvsim/full filter}.
+  of a data line. It is executed before any filter condition is checked,
+  see e.g. \refKey{/csvsim/filter ifthen} and
+  also see \refKey{/csvsim/full filter}.
+  No additions to the input stream should be given here.
   All line entries are available.
+\end{docCsvKey}
+
+\begin{docCsvKey}[][doc new=2021-07-06]{after filter}{=\meta{code}}{no default, initially empty}
+  Sets the \meta{code} to be executed for an accepted line after
+  \refKey{/csvsim/late after line} and before \refKey{/csvsim/before line}.
+  All line entries are available.
+  No additions to the input stream should be given here. \meta{code} may
+  contain processing of data content to generate new values.
 \end{docCsvKey}
 
 \begin{docCsvKey}{late after head}{=\meta{code}}{no default, initially empty}
@@ -833,7 +843,7 @@ to be used inside these macros.
 
 
 \begin{docCsvKey}{before line}{=\meta{code}}{no default, initially empty}
-  Sets the \meta{code} to be executed after \refKey{/csvsim/late after line}
+  Sets the \meta{code} to be executed after \refKey{/csvsim/after filter}
   and before \refKey{/csvsim/command}.
   All line entries are available.
   \refKey{/csvsim/before line} overwrites
@@ -848,6 +858,7 @@ to be used inside these macros.
   This key has to be set after \refKey{/csvsim/before line}.
 \end{docCsvKey}
 
+\pagebreak
 
 \begin{docCsvKey}{command}{=\meta{code}}{no default, initially \cs{csvline}}
   Sets the \meta{code} to be executed for every accepted data line.
@@ -856,8 +867,6 @@ to be used inside these macros.
   entries. \refCom{csvreader} sets \refKey{/csvsim/command} as mandatory
   parameter.
 \end{docCsvKey}
-
-\pagebreak
 
 \begin{docCsvKey}{after line}{=\meta{code}}{no default, initially empty}
   Sets the \meta{code} to be executed for every accepted data line
@@ -889,6 +898,7 @@ parameter of \refCom{csvreader}.
   before reading        = \meta{before reading}\\,
   after head            = \meta{after head},
   before filter         = \\\meta{before filter},
+  after filter          = \meta{after filter},
   late after head       = \meta{late after head},
   late after line       = \meta{late after line},
   late after first line = \meta{late after first line},
@@ -1041,20 +1051,20 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
 \begin{docCsvKey}{filter equal}{=\marg{stringA}\marg{stringB}}{style, no default}
   Only lines where \meta{stringA} and \meta{stringB} are equal after expansion
   are accepted.
-  The implementation is done with the |ifthen| package (loading required!).
+  The implementation is done with the \ctanpkg{ifthen} package (loading required!).
 \end{docCsvKey}
 
 
 \begin{docCsvKey}{filter not equal}{=\marg{stringA}\marg{stringB}}{style, no default}
   Only lines where \meta{stringA} and \meta{stringB} are not equal after expansion
   are accepted.
-  The implementation is done with the |ifthen| package (loading required!).
+  The implementation is done with the \ctanpkg{ifthen} package (loading required!).
 \end{docCsvKey}
 
 
 \begin{docCsvKey}[][doc new=2021-06-25]{filter fp}{=\meta{floating point expression}}{no default}
   Only data lines which fulfill a \LaTeX3 \meta{floating point expression}
-    (|l3fp|, |xfp|) are accepted.
+    (|l3fp|, \ctanpkg{xfp}) are accepted.
 \begin{dispExample}
 % \usepackage{booktabs}
 \csvreader[
@@ -1146,7 +1156,7 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
 \begin{dispListing}
 filter test=\iftest{some testing},
 \end{dispListing}
-  For |\iftest|, tests from the |etoolbox| package like
+  For |\iftest|, tests from the \ctanpkg{etoolbox} package like
   |\ifnumcomp|, |\ifdimgreater|, etc. and from \Fullref{sec:stringtests} can be used.
   Also, arbitrary own macros fulfilling this signature can be applied.
 \begin{dispExample}
@@ -1169,7 +1179,7 @@ filter test=\iftest{some testing},
 \begin{docCsvKey}[][doc new=2016-07-01]{filter expr}{=\meta{boolean expression}}{no default}
   Only data lines which fulfill a \meta{boolean expression} are accepted.
   Every \meta{boolean expression}
-  from the |etoolbox| package is feasible (package loading required!).
+  from the \ctanpkg{etoolbox} package is feasible (package loading required!).
   To preprocess the data line before testing the \meta{condition},
   the option key \refKey{/csvsim/before filter} can be used.
 \begin{dispExample}
@@ -1193,7 +1203,7 @@ filter test=\iftest{some testing},
 \clearpage
 \begin{docCsvKey}[][doc new=2016-07-01]{filter ifthen}{=\meta{boolean expression}}{no default}
   Only data lines which fulfill a \meta{boolean expression} are accepted.
-  For the \meta{boolean expression}, every term from the |ifthen| package
+  For the \meta{boolean expression}, every term from the \ctanpkg{ifthen} package
   is feasible (package loading required!).
   To preprocess the data line before testing the \meta{condition},
   the option key \refKey{/csvsim/before filter} can be used.
@@ -1372,7 +1382,7 @@ The following example displays the last three line numbers:
 \begin{docCsvKey}{tabular}{=\meta{table format}}{style, no default}
   Surrounds the CSV processing with |\begin{tabular}|\marg{table format}
   at begin and with |\end{tabular}| at end.
-Additionally, the commands defined by the key values of
+  Additionally, the commands defined by the key values of
   \refKey{/csvsim/before table}, \refKey{/csvsim/table head}, \refKey{/csvsim/table foot},
   and \refKey{/csvsim/after table} are executed at the appropriate places.
 \end{docCsvKey}
@@ -1385,7 +1395,7 @@ Additionally, the commands defined by the key values of
 
 \begin{docCsvKey}{longtable}{=\meta{table format}}{style, no default}
   Like \refKey{/csvsim/tabular} but for the |longtable| environment.
-  This requires the package |longtable| (not loaded automatically).
+  This requires the package \ctanpkg{longtable} (not loaded automatically).
 \end{docCsvKey}
 
 
@@ -1396,6 +1406,21 @@ Additionally, the commands defined by the key values of
 
 \begin{docCsvKey}{centered tabbing}{}{style, no value}
   Like \refKey{/csvsim/tabbing} but inside an additional |center| environment.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}[][doc new=2021-07-06]{tabularray}{=\meta{table format}}{style, no default}
+  Like \refKey{/csvsim/tabular} but for the |tblr| environment.
+  This requires the package \ctanpkg{tabularray} (not loaded automatically).
+  This also sets \refKey{/csvsim/collect data} since this kind of table
+  needs collected content, see \Fullref{sec:datacollection}.
+  Note that \refKey{/csvsim/after reading} is set to use the collected
+  data immediately. See \Fullref{sec:tabularray} for examples.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}[][doc new=2021-07-06]{centered tabularray}{=\meta{table format}}{style, no default}
+  Like \refKey{/csvsim/tabularray} but inside an additional |center| environment.
 \end{docCsvKey}
 
 
@@ -1879,6 +1904,118 @@ Now, we can use the new rule:
 
 
 \clearpage
+\subsection{Data Collection}\label{sec:datacollection}
+
+|csvsimple-l3| reads and processes a CSV file line by line. Accordingly, the \TeX{}
+input stream is filled line by line.
+Although this is an efficient procedure, for some applications like tables with
+the \ctanpkg{tabularray} package, collecting the data from the CSV file into a macro is needed.
+This macro can be given to the target application for further processing.
+
+
+\begin{docCsvKey}[][doc new=2021-07-06]{collect data}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+|csvsimple-l3| provides limited and experimental support to collect the input data
+from the CSV file plus user additions into a macro named \refCom{csvdatacollection}.
+Setting \refKey{/csvsim/collect data} adds the contents of the following keys
+to \refCom{csvdatacollection}:
+\begin{itemize}
+\item\refKey{/csvsim/after head}
+\item\refKey{/csvsim/after line}
+\item\refKey{/csvsim/before first line}
+\item\refKey{/csvsim/before line}
+\item\refKey{/csvsim/late after first line}
+\item\refKey{/csvsim/late after head}
+\item\refKey{/csvsim/late after last line}
+\item\refKey{/csvsim/late after line}
+\end{itemize}
+Also, the \emph{expanded} content of
+\begin{itemize}
+\item\refKey{/csvsim/command}
+\end{itemize}
+is added to \docAuxCommand{csvdatacollection}.
+Note that for \refKey{/csvsim/command} special care has to be taken
+\emph{what} should be protected from expansion and \emph{what not}.
+Observe the following hints for \refKey{/csvsim/command}:
+\begin{itemize}
+\item For data macros like |\csvcoli| use |\csvexpval\csvcoli| to add
+  the \emph{value} of this macro to \refCom{csvdatacollection}.
+  This is optional, if |\csvcoli| contains numbers or text without active
+  characters, but essential, if it contains macros.
+\item For macros like |\textbf| use  |\csvexpnot\textbf| to \emph{prevent}
+  expansion.
+\item Using computations or not expandable conditionals may likely cause
+  compilation errors.
+\end{itemize}
+
+\begin{dispExample}
+\csvreader[
+    collect data,
+    head to column names,
+    late after line=\\,
+    late after last line=,
+  ]{grade.csv}{}{%
+    \thecsvrow. \csvexpval\givenname\ \csvexpnot\textbf{\csvexpval\name}
+  }
+Collected data:\par
+\csvdatacollection
+\end{dispExample}
+
+Note that data collection is \emph{limited} to some special cases and does not
+allow to save all possible content. Table options like \refKey{/csvsim/longtable}
+are generally not supported with the important exception of \refKey{/csvsim/tabularray}
+which uses \refKey{/csvsim/collect data} automatically.\par
+See \Fullref{sec:tabularray} for examples.
+\end{docCsvKey}
+
+\clearpage
+
+\begin{docCsvKey}[][doc new=2021-07-06]{data collection}{=\meta{macro}}{no default, initially \refCom{csvdatacollection}}
+Sets the collection macro to an alternative for \refCom{csvdatacollection}.
+\begin{dispListing}
+  data collection = \myData,    %  instead of \csvdatacollection
+\end{dispListing}
+\end{docCsvKey}
+
+
+\begin{docCommand}[doc new=2021-07-26]{csvdatacollection}{}
+  Macro which contains the collected data of a CSV file processed with
+  \refKey{/csvsim/collect data}. This macro name can be changed by
+  settiing \refKey{/csvsim/data collection}.
+\end{docCommand}
+
+
+\begin{docCommand}[doc new=2021-07-26]{csvexpval}{\meta{macro}}
+  Recovers the content of the given \meta{macro} and prevents further
+  expansion. This is a wrapper for \docAuxCommand*{exp_not:V}.
+  Alternatively, |\expandonce| from \ctanpkg{etoolbox} could be used.
+\end{docCommand}
+
+
+\begin{docCommand}[doc new=2021-07-26]{csvexpnot}{\meta{macro}}
+  Prevents the expansion of the given \meta{macro}. This is a wrapper
+  for \docAuxCommand*{exp_not:N}.
+  Alternatively, |\noexpand| could be used.
+\end{docCommand}
+
+
+\begin{docCommand}[doc new=2021-07-26]{csvcollectn}{\marg{code}}
+  Appends the given \meta{code} to \refCom{csvdatacollection}.\\
+  This corresponds to \docAuxCommand*{tl_gput_right:Nn}.
+\end{docCommand}
+
+
+\begin{docCommand}[doc new=2021-07-26]{csvcollectx}{\marg{code}}
+  Appends the expansion of the given \meta{code} to \refCom{csvdatacollection}.\\
+  This corresponds to \docAuxCommand*{tl_gput_right:Nx}.
+\end{docCommand}
+
+\begin{docCommand}[doc new=2021-07-26]{csvcollectV}{\meta{macro}}
+  Appends the content of the given \meta{macro} to \refCom{csvdatacollection}.\\
+  This corresponds to \docAuxCommand*{tl_gput_right:NV}.
+\end{docCommand}
+
+
+\clearpage
 \section{String and Number Tests}\label{sec:stringtests}%
 
 The following string tests are complementing the string tests
@@ -2003,7 +2140,7 @@ introduced.
 
 
 \clearpage
-\subsection{A Graphical Presentation}%
+\subsection{A Graphical Presentation}\label{sec:examgrapghpres}%
 For this example, we use some artificial statistical data given by a CSV file.
 
 %-- file embedded for simplicity --
@@ -2202,10 +2339,10 @@ December, 2.2,  3.3e3
 
 \medskip
 
-The |siunitx| package provides a huge amount of formatting options for
-numbers. A good and robust way to apply formatting by |siunitx| inside
+The \ctanpkg{siunitx} package provides a huge amount of formatting options for
+numbers. A good and robust way to apply formatting by \ctanpkg{siunitx} inside
 tables generated by |csvsimple-l3| is the |\tablenum| macro from
-|siunitx|.
+\ctanpkg{siunitx}.
 
 \begin{dispExample}
 % \usepackage{siunitx,array,booktabs}
@@ -2364,6 +2501,113 @@ because there is no head, but the columns can be addressed by their numbers:
   { 1=\land, 3=\amount }
   {\land & \amount}
 \end{dispExample}
+
+
+
+\clearpage
+\subsection{Tables with \texttt{tabularray}}\label{sec:tabularray}%
+
+The \ctanpkg{tabularray} package gives extended control for generating
+tables. \refKey{/csvsim/tabularray} and \refKey{/csvsim/centered tabularray}
+support such tables. A distinctiveness is that for \ctanpkg{tabularray}
+data from a CSV file has to be \emph{collected} first (into a macro)
+and applied afterwards. The process is hidden from the user view, but
+has to be taken into account when \refKey{/csvsim/command} is set up,
+see \Fullref{sec:datacollection}.
+
+The following examples uses |data.csv| from \Fullref{sec:examgrapghpres}.
+
+\begin{dispExample}
+% \usepackage{tabularray,siunitx,xfp}
+\csvreader[
+    head to column names,
+    centered tabularray =
+      {
+        rowsep = 1mm,
+        colsep = 5mm,
+        rows   = {blue7},
+        hlines = {2pt, white},
+        vlines = {2pt, white},
+        row{1} = {bg=azure3, fg=white, font=\bfseries\large, 8mm},
+      },
+    table head = {\SetCell[c=4]{c} Important Data Table \\},
+  ]{data.csv}{}{
+       \ifcsvstrcmp{\group}{A}{\csvexpnot\SetRow{brown7}}{}
+       \csvexpnot\SetCell{bg=purple7}
+       \csvexpval\land
+     & \csvexpval\group
+     & \csvexpval\amount
+     & \csvexpnot\tablenum[exponent-mode=scientific, round-precision=3,
+         round-mode=places, table-format=1.3e1]{\fpeval{pi*\amount}}
+  }
+\end{dispExample}
+
+Note in the example above that
+\begin{itemize}
+\item \refKey{/csvsim/table head} is \emph{collected} unexpanded, i.e.
+  |\SetCell| has not to be protected. On the other hand, CSV data could not
+  be used here.
+\item \refKey{/csvsim/command} is \emph{collected} expanded. This is identical
+  to the mandatory last argument of \refCom{csvreader}.
+  \begin{itemize}
+  \item Therefore, expansion of |\SetRow|, |\SetCell|, etc. is prevented by \refCom{csvexpnot}.
+  \item The \emph{values} (content) of |\land|, |\group|, etc. are recovered by
+        \refCom{csvexpval}.
+  \item |\ifcsvstrcmp| and |\fpeval| are \emph{expandable} and therefore the
+    results of these commands are \emph{collected}.
+  \end{itemize}
+\end{itemize}
+
+\clearpage
+
+Filters and line ranges can be used for \ctanpkg{tabularray} and all
+data collections without restriction:
+
+\begin{dispExample}
+% \usepackage{tabularray}
+Display group `A` only:\par
+\csvreader[
+    head to column names,
+    filter strcmp = {\group}{A},
+    centered tabularray =
+      {
+        rowsep = 1mm,
+        colsep = 5mm,
+        column{1} = {r, fg=yellow5, colsep=2pt},
+        column{2} = {r, yellow8!10, font=\bfseries},
+        column{3} = {l, yellow8},
+        hlines    = {2pt, white},
+      },
+  ]{data.csv}{}{
+       \thecsvrow
+     & \csvexpval\land
+     & \csvexpval\amount
+  }
+\end{dispExample}
+
+
+\begin{dispExample}
+% \usepackage{tabularray}
+Display data from line 3 on:\par
+\csvreader[
+    head to column names,
+    range = 3-,
+    centered tabularray =
+      {
+        rowsep = 1mm,
+        colsep = 5mm,
+        column{1} = {r, fg=violet5, colsep=2pt},
+        column{2} = {r, violet8!10, font=\bfseries},
+        column{3} = {l, violet8},
+        hlines    = {2pt, white},
+      },
+  ]{data.csv}{}{
+       \thecsvrow
+     & \csvexpval\land
+     & \csvexpval\amount
+  }
+\end{dispExample}
+
 
 
 \clearpage

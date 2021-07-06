@@ -8,6 +8,36 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+
+## [2.1.0] - 2021-07-06
+
+### Added
+- Support for (limited) data collection (issue #15)
+- Support for package `tabularray` (part of issue #12)
+- Option `after filter`
+- Option `collect data`
+- Option `data collection`
+- Option `tabularray`
+- Option `centered tabularray`
+- `\csvdatacollection`
+- `\csvexpval`
+- `\csvexpnot`
+- `\csvcollectn`
+- `\csvcollectx`
+- `\csvcollectV`
+
+### Fixed
+- Line Range was not resetted
+- Wrong link and word inside documentation `csvsimple.pdf` (issue #13, issue #15)
+- Several inconsistent local/global assignment errors
+
 
 
 ## [2.0.0] - 2021-06-29
@@ -74,7 +104,6 @@ and this project adheres to
 - Option `filter`
 - Option `nofilter`
 - Option `nohead`
-
 
 
 
