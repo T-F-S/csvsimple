@@ -1,6 +1,6 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.1.0 (2021/07/06)
+%% The LaTeX package csvsimple - version 2.2.0 (2021/09/09)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -1379,12 +1379,15 @@ The following example displays the last three line numbers:
 \clearpage
 \subsection{Table Support}\label{subsec:tabsupport}%--------%[[
 
+\subsubsection{Predefined Tables}\label{subsubsec:table_predef}
+
 \begin{docCsvKey}{tabular}{=\meta{table format}}{style, no default}
   Surrounds the CSV processing with |\begin{tabular}|\marg{table format}
   at begin and with |\end{tabular}| at end.
   Additionally, the commands defined by the key values of
   \refKey{/csvsim/before table}, \refKey{/csvsim/table head}, \refKey{/csvsim/table foot},
   and \refKey{/csvsim/after table} are executed at the appropriate places.
+  \refKey{/csvsim/late after line} is set to \cs{}\cs{}.
 \end{docCsvKey}
 
 
@@ -1419,40 +1422,128 @@ The following example displays the last three line numbers:
 \end{docCsvKey}
 
 
+\begin{docCsvKey}[][doc new=2021-07-23]{long tabularray}{=\meta{table format}}{style, no default}
+  Like \refKey{/csvsim/tabularray} but using the |longtblr| environment
+  from the package \ctanpkg{tabularray} (not loaded automatically).
+\end{docCsvKey}
+
+
 \begin{docCsvKey}[][doc new=2021-07-06]{centered tabularray}{=\meta{table format}}{style, no default}
   Like \refKey{/csvsim/tabularray} but inside an additional |center| environment.
 \end{docCsvKey}
 
 
 \begin{docCsvKey}{no table}{}{style, no value}
-  Deactivates |tabular|, |longtable|, and |tabbing|.
+  Deactivates |tabular|-like environments activated by
+  \refKey{/csvsim/tabular}, \refKey{/csvsim/longtable}, etc.
+  Note that not all settings of \refKey{/csvsim/tabularray} are reverted.
 \end{docCsvKey}
 
 
+\clearpage
+\subsubsection{Additional Options for Tables}\label{subsubsec:table_options}
+
 \begin{docCsvKey}{before table}{=\meta{code}}{no default, initially empty}
-  Sets the \meta{code} to be executed before |\begin{tabular}| or before |\begin{longtable}|
-  or before |\begin{tabbing}|, respectively.
+  Sets the \meta{code} to be executed before the begin of |tabular|-like environments,
+  i.e. immediately before |\begin{tabular}|, etc.
 \end{docCsvKey}
 
 
 \begin{docCsvKey}{table head}{=\meta{code}}{no default, initially empty}
-  Sets the \meta{code} to be executed after |\begin{tabular}| or after |\begin{longtable}|
-  or after |\begin{tabbing}|, respectively.
+  Sets the \meta{code} to be executed after the begin of |tabular|-like environments,
+  i.e. immediately after |\begin{tabular}|, etc.
 \end{docCsvKey}
 
 
 \begin{docCsvKey}{table foot}{=\meta{code}}{no default, initially empty}
-  Sets the \meta{code} to be executed before |\end{tabular}| or before |\end{longtable}|
-  or before |\end{tabbing}|, respectively.
+  Sets the \meta{code} to be executed before the end of |tabular|-like environments,
+  i.e. immediately before |\end{tabular}|, etc.
 \end{docCsvKey}
 
 
 \begin{docCsvKey}{after table}{=\meta{code}}{no default, initially empty}
-  Sets the \meta{code} to be executed after |\end{tabular}| or after |\end{longtable}|
-  or after |\end{tabbing}|, respectively.
+  Sets the \meta{code} to be executed after the end of |tabular|-like environments,
+  i.e. immediately after |\end{tabular}|, etc.
 \end{docCsvKey}
 
+
+\begin{docCsvKey}[][doc new=2021-09-09]{table centered}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+  If |true|, the table is put inside an additional |center| environment.
+  This environment begins before \refKey{/csvsim/before table}
+  and ends after \refKey{/csvsim/after table}. The predefined |tabular|-like environments
+  from Section~\fullref{subsubsec:table_predef} use this option internally,
+  i.e. \mbox{|centered tabular={ccc}|} is identical to
+  \mbox{|tabular={ccc}, table centered|}.
+\end{docCsvKey}
+
+
 \clearpage
+\subsubsection{Generic Tables}\label{subsubsec:table_generic}
+In Section~\fullref{subsubsec:table_predef}, several |tabular|-like environments
+are described with predefined keys. The following keys allow to use further
+|tabular|-like environments with configurable names and options.
+
+
+\begin{docCsvKey}[][doc new=2021-09-09]{generic table}{=\meta{name}}{no default, initially empty}
+  Surrounds the CSV processing with \cs{begin}\marg{name}
+  at begin and with \cs{end}\marg{name} at end.
+  Additionally, the commands defined by the key values of
+  \refKey{/csvsim/before table}, \refKey{/csvsim/table head}, \refKey{/csvsim/table foot},
+  and \refKey{/csvsim/after table} are executed at the appropriate places.
+  \refKey{/csvsim/late after line} is set to \cs{}\cs{}.\par
+  If the environment \meta{name} takes options, these have to be set using
+  \refKey{/csvsim/generic table options}.
+
+\begin{dispListing}
+  % The `tabular` environment would be used like the following example
+  ...
+  generic table         = tabular,
+  generic table options = {{ccllrr}},
+  ...
+\end{dispListing}
+\end{docCsvKey}
+
+
+\begin{docCsvKey}[][doc new=2021-09-09]{generic collected table}{=\meta{name}}{no default, initially empty}
+  Like \refKey{/csvsim/generic table} but for environments which need
+  collected content, e.g. |tblr| from package \ctanpkg{tabularray}, see \Fullref{sec:datacollection}.
+  Note that \refKey{/csvsim/after reading} is set to use the collected
+  data immediately.
+
+\begin{dispListing}
+  % The `tblr` environment from package `tabularray` would be used
+  % like the following example
+  ...
+  generic collected table = tblr,
+  generic table options   = {{rowsep=1mm, colsep=5mm}},
+  ...
+\end{dispListing}
+\end{docCsvKey}
+
+
+\begin{docCsvKey}[][doc new=2021-09-09]{generic table options}{=\marg{code}}{no default, initially empty}
+  Places \meta{code} immediately after \cs{begin}\marg{name} set up with
+  \refKey{/csvsim/generic table} or \refKey{/csvsim/generic collected table}.
+  \meta{code} may contain any parameters the environment \meta{name} needs to have.
+  \textbf{\color{red!50!black}You are strongly advised to use an extra pair of
+  curly brackets \marg{code} around \meta{code}}, because the outer pair of braces is
+  removed during option processing, see examples above.
+\begin{dispListing}
+  % Environment without parameters:
+  generic table options =,
+  % Environment with a mandatory parameter:
+  generic table options = {{parameter}},
+  % Environment with an optional and a mandatory parameter:
+  generic table options = {[optional]{mandatory}},
+  % Environment with two mandatory parameters:
+  generic table options = {{mandatory 1}{mandatory 2}},
+\end{dispListing}
+
+\end{docCsvKey}
+
+
+\clearpage
+\subsubsection{General Survey Tables}\label{subsubsec:table_survey}
 
 The following |auto| options are the counterparts for the respective quick
 overview commands like \refCom{csvautotabular}. They are listed for
@@ -1977,39 +2068,39 @@ Sets the collection macro to an alternative for \refCom{csvdatacollection}.
 \end{docCsvKey}
 
 
-\begin{docCommand}[doc new=2021-07-26]{csvdatacollection}{}
+\begin{docCommand}[doc new=2021-07-06]{csvdatacollection}{}
   Macro which contains the collected data of a CSV file processed with
   \refKey{/csvsim/collect data}. This macro name can be changed by
   settiing \refKey{/csvsim/data collection}.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2021-07-26]{csvexpval}{\meta{macro}}
+\begin{docCommand}[doc new=2021-07-06]{csvexpval}{\meta{macro}}
   Recovers the content of the given \meta{macro} and prevents further
   expansion. This is a wrapper for \docAuxCommand*{exp_not:V}.
   Alternatively, |\expandonce| from \ctanpkg{etoolbox} could be used.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2021-07-26]{csvexpnot}{\meta{macro}}
+\begin{docCommand}[doc new=2021-07-06]{csvexpnot}{\meta{macro}}
   Prevents the expansion of the given \meta{macro}. This is a wrapper
   for \docAuxCommand*{exp_not:N}.
   Alternatively, |\noexpand| could be used.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2021-07-26]{csvcollectn}{\marg{code}}
+\begin{docCommand}[doc new=2021-07-06]{csvcollectn}{\marg{code}}
   Appends the given \meta{code} to \refCom{csvdatacollection}.\\
   This corresponds to \docAuxCommand*{tl_gput_right:Nn}.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2021-07-26]{csvcollectx}{\marg{code}}
+\begin{docCommand}[doc new=2021-07-06]{csvcollectx}{\marg{code}}
   Appends the expansion of the given \meta{code} to \refCom{csvdatacollection}.\\
   This corresponds to \docAuxCommand*{tl_gput_right:Nx}.
 \end{docCommand}
 
-\begin{docCommand}[doc new=2021-07-26]{csvcollectV}{\meta{macro}}
+\begin{docCommand}[doc new=2021-07-06]{csvcollectV}{\meta{macro}}
   Appends the content of the given \meta{macro} to \refCom{csvdatacollection}.\\
   This corresponds to \docAuxCommand*{tl_gput_right:NV}.
 \end{docCommand}
@@ -2537,7 +2628,7 @@ The following examples uses |data.csv| from \Fullref{sec:examgrapghpres}.
        \csvexpval\land
      & \csvexpval\group
      & \csvexpval\amount
-     & \csvexpnot\tablenum[exponent-mode=scientific, round-precision=3,
+     & \tablenum[exponent-mode=scientific, round-precision=3,
          round-mode=places, table-format=1.3e1]{\fpeval{pi*\amount}}
   }
 \end{dispExample}
@@ -2555,6 +2646,9 @@ Note in the example above that
         \refCom{csvexpval}.
   \item |\ifcsvstrcmp| and |\fpeval| are \emph{expandable} and therefore the
     results of these commands are \emph{collected}.
+  \item |\tablenum| from \ctanpkg{siunitx} is a robust command and therefore
+    needs no protection. If you are not sure, if a command is robust or not, it
+    does not hurt add the prefix \refCom{csvexpnot}, i.e. use |\csvexpnot\tablenum|.
   \end{itemize}
 \end{itemize}
 

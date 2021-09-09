@@ -16,6 +16,26 @@ and this project adheres to
 ### Security
 
 
+
+## [2.2.0] - 2021-09-09
+
+### Added
+- Configurable usage of tabular-like environments (issue #12)
+- Option `table centered`
+- Option `generic table`
+- Option `generic collected table`
+- Option `generic table options`
+
+### Changed
+- The implementation of all tabular-like environments uses the new
+  generic environments now internally. Should be unnoticeable for a user.
+
+### Fixed
+- documentation typo correction and small improvents (issue #15)
+- Option `long tabularray`
+
+
+
 ## [2.1.0] - 2021-07-06
 
 ### Added

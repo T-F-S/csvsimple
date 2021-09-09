@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.1.0 (2021/07/06)
+%% The LaTeX package csvsimple - version 2.2.0 (2021/09/09)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2021/07/06}{2.1.0}
+\ProvidesExplPackage{csvsimple-l3}{2021/09/09}{2.2.0}
   {LaTeX3 CSV file processing}
 
 
@@ -79,15 +79,18 @@
 
 \tl_const:Nn \c__csvsim_par_tl { \par }
 
+
 \tl_new:N \g__csvsim_after_table_tl
 \tl_new:N \g__csvsim_before_table_tl
+\tl_new:N \g__csvsim_begin_table_center_tl
 \tl_new:N \g__csvsim_body_tl
 \tl_new:N \g__csvsim_catcode_tl
-
 \tl_new:N \g__csvsim_collect_tl
 \tl_new:N \g__csvsim_columnnames_tl
 \tl_new:N \g__csvsim_data_collection_tl
+\tl_new:N \g__csvsim_end_table_center_tl
 \tl_new:N \g__csvsim_filter_tl
+\tl_new:N \g__csvsim_generic_table_options_tl
 \tl_new:N \g__csvsim_headname_prefix_tl
 \tl_new:N \g__csvsim_hook_after_filter_tl
 \tl_new:N \g__csvsim_hook_after_first_line_tl
@@ -1038,86 +1041,120 @@
 
 \keys_define:nn { csvsim }
   {
-    before~table .tl_gset:N = \g__csvsim_before_table_tl,
-    after~table  .tl_gset:N = \g__csvsim_after_table_tl,
-    table~head   .tl_gset:N = \g__csvsim_table_head_tl,
-    table~foot   .tl_gset:N = \g__csvsim_table_foot_tl,
-    _table_      .code:n    = \__csvsim_key_table:nn #1,
-    no~table     .meta:n    = { _table_={}{} },
-    tabular      .meta:n =
+    before~table          .tl_gset:N = \g__csvsim_before_table_tl,
+    after~table           .tl_gset:N = \g__csvsim_after_table_tl,
+    table~head            .tl_gset:N = \g__csvsim_table_head_tl,
+    table~foot            .tl_gset:N = \g__csvsim_table_foot_tl,
+    generic~table~options .tl_gset:N = \g__csvsim_generic_table_options_tl,
+    table~centered .choice:,
+    table~centered .default:n   = true,
+    table~centered/true .code:n =
       {
-        _table_ = { \g__csvsim_before_table_tl\begin{tabular}{#1}\g__csvsim_table_head_tl }
-                  { \g__csvsim_table_foot_tl\end{tabular}\g__csvsim_after_table_tl },
+        \tl_gset:Nn \g__csvsim_begin_table_center_tl {\begin{center}}
+        \tl_gset:Nn \g__csvsim_end_table_center_tl   {\end{center}}
+      },
+    table~centered/false .code:n =
+      {
+        \tl_gclear:N \g__csvsim_begin_table_center_tl
+        \tl_gclear:N \g__csvsim_end_table_center_tl
+      },
+    _table_ .code:n = \__csvsim_key_table:nn #1,
+    no~table .meta:n =
+      {
+         _table_               = {}{},
+         generic~table~options = ,
+         table~centered        = false,
+      },
+    generic~table .meta:n =
+      {
+        _table_ =
+          {
+            \g__csvsim_begin_table_center_tl
+            \g__csvsim_before_table_tl
+            \tl_gset:Nn \g_tmpa_tl {\begin{#1}}
+            \tl_gput_right:NV \g_tmpa_tl \g__csvsim_generic_table_options_tl
+            \g_tmpa_tl
+            \g__csvsim_table_head_tl
+          }
+          {
+            \g__csvsim_table_foot_tl
+            \end{#1}
+            \g__csvsim_after_table_tl
+            \g__csvsim_end_table_center_tl
+          },
         late~after~line = \\
+      },
+    generic~collected~table .meta:n =
+      {
+        collect~data,
+        _table_ =
+          {
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_begin_table_center_tl
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_before_table_tl
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{#1} }
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_generic_table_options_tl
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_head_tl
+          }
+          {
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_foot_tl
+            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{#1} }
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_after_table_tl
+            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_end_table_center_tl
+          },
+        late~after~line = \\,
+        after~reading   =
+          {
+            \tl_use:N \g__csvsim_collect_tl
+          },
+      },
+  }
+
+
+\keys_define:nn { csvsim }
+  {
+    tabular .meta:n =
+      {
+        generic~table         = tabular,
+        generic~table~options = {{#1}},
       },
     centered~tabular .meta:n =
       {
-        _table_ = { \begin{center}\g__csvsim_before_table_tl\begin{tabular}{#1}\g__csvsim_table_head_tl }
-                  { \g__csvsim_table_foot_tl\end{tabular}\g__csvsim_after_table_tl\end{center} },
-        late~after~line = \\
+        tabular = {#1}, table~centered
       },
     longtable .meta:n =
       {
-        _table_ = { \g__csvsim_before_table_tl\begin{longtable}{#1}\g__csvsim_table_head_tl }
-                  { \g__csvsim_table_foot_tl\end{longtable}\g__csvsim_after_table_tl },
-        late~after~line = \\
+        generic~table         = longtable,
+        generic~table~options = {{#1}},
       },
     tabbing .meta:n =
       {
-        _table_ = { \g__csvsim_before_table_tl\begin{tabbing}\g__csvsim_table_head_tl }
-                  { \g__csvsim_table_foot_tl\end{tabbing}\g__csvsim_after_table_tl },
-        late~after~line      = \\,
-        late~after~last~line =
+        generic~table         = tabbing,
+        generic~table~options =,
+        late~after~last~line  =
       },
-    centered~tabbing .meta:n =
+    centered tabbing .meta:n =
       {
-        _table_ = { \begin{center}\g__csvsim_before_table_tl\begin{tabbing}\g__csvsim_table_head_tl }
-                  { \g__csvsim_table_foot_tl\end{tabbing}\g__csvsim_after_table_tl\end{center} },
-        late~after~line      = \\,
-        late~after~last~line =
+        tabbing, table~centered
       },
     tabularray .meta:n =
       {
-        collect~data,
-        _table_ =
-          {
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_before_table_tl
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{tblr}{#1} }
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_head_tl
-          }
-          {
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_foot_tl
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{tblr} }
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_after_table_tl
-          },
-        late~after~line = \\,
-        after~reading   =
-          {
-            \tl_use:N \g__csvsim_collect_tl
-          },
+        generic~collected~table = tblr,
+        generic~table~options   = {{#1}},
       },
     centered~tabularray .meta:n =
       {
-        collect~data,
-        _table_ =
-          {
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{center} }
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_before_table_tl
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{tblr}{#1} }
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_head_tl
-          }
-          {
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_foot_tl
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{tblr} }
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_after_table_tl
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{center} }
-          },
-        late~after~line = \\,
-        after~reading   =
-          {
-            \tl_use:N \g__csvsim_collect_tl
-          },
+        tabularray = {#1}, table~centered
       },
+    long~tabularray .meta:n =
+      {
+        generic~collected~table = longtblr,
+        generic~table~options   = {{#1}},
+      },
+  }
+
+
+\keys_define:nn { csvsim }
+  {
     _autotab_ .meta:n =
       {
         file                 = #1,
