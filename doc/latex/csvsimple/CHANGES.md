@@ -17,6 +17,13 @@ and this project adheres to
 
 
 
+## [2.2.1] - 2022-01-07
+
+### Fixed
+- Option `late after first line` ignored for `csvsimple-l3` (issue #17)
+
+
+
 ## [2.2.0] - 2021-09-09
 
 ### Added

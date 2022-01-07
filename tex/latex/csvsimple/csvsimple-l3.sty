@@ -1,8 +1,8 @@
-%% The LaTeX package csvsimple - version 2.2.0 (2021/09/09)
+%% The LaTeX package csvsimple - version 2.2.1 (2022/01/07)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2021 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2022 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2021/09/09}{2.2.0}
+\ProvidesExplPackage{csvsimple-l3}{2022/01/07}{2.2.1}
   {LaTeX3 CSV file processing}
 
 
@@ -106,6 +106,7 @@
 \tl_new:N \g__csvsim_hook_late_after_head_tl
 \tl_new:N \g__csvsim_hook_late_after_last_line_tl
 \tl_new:N \g__csvsim_hook_late_after_line_tl
+\tl_new:N \g__csvsim_hook_late_after_line_application_tl
 \tl_new:N \g__csvsim_hook_table_begin_tl
 \tl_new:N \g__csvsim_hook_table_end_tl
 \tl_new:N \g__csvsim_preprocessor_tl
@@ -297,6 +298,11 @@
       }
 
     % read body lines
+    \tl_gset:Nn \g__csvsim_hook_late_after_line_application_tl
+      {
+        \g__csvsim_hook_late_after_first_line_tl
+        \tl_gset_eq:NN \g__csvsim_hook_late_after_line_application_tl \g__csvsim_hook_late_after_line_tl
+      }
     \bool_gset_true:N \g__csvsim_line_firstline_bool
     \bool_until_do:nn {\ior_if_eof_p:N \g__csvsim_ior}
       {
@@ -337,7 +343,7 @@
                             \bool_gset_false:N \g__csvsim_line_firstline_bool
                           }
                           {
-                            \g__csvsim_hook_late_after_line_tl
+                            \g__csvsim_hook_late_after_line_application_tl
                             \g__csvsim_hook_after_filter_tl
                             \g__csvsim_hook_before_line_tl
                             \g__csvsim_body_tl
