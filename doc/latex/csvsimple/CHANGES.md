@@ -17,6 +17,20 @@ and this project adheres to
 
 
 
+## [2.3.0] - 2022-02-01
+
+### Added
+- Option `column names detection` (related to issue #16)
+- Documentation: csvautotabular inspired example for tabularray.
+
+### Changed
+- `\csvlinetotablerow` changed to be expandable and to be
+    usable inside a *Data Collection* (issue #16)
+- Options `autotabular`, `autobooktabular`, `autolongtable`, `autobooklongtable`
+    use `column names detection=false` now.
+
+
+
 ## [2.2.1] - 2022-01-07
 
 ### Fixed

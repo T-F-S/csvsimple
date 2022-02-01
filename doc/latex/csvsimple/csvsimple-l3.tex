@@ -1,6 +1,6 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.2.1 (2022/01/07)
+%% The LaTeX package csvsimple - version 2.3.0 (2022/02/01)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -708,12 +708,13 @@ purpose:
 \end{docCommand}
 
 
-\begin{docCommand}[doc updated=2016-07-01]{csvlinetotablerow}{}
+\clearpage
+\begin{docCommand}[doc updated=2022-01-11]{csvlinetotablerow}{}
   Typesets the current processed data line with |&| between the entries.
-  %Most users will never apply this command.
+  This macro is \emph{expandable}.
 \end{docCommand}
 
-\clearpage
+
 \begin{docCommands}{
     { doc name = thecsvrow       , doc updated = 2021-06-25 },
     { doc name = g_csvsim_row_int, doc new     = 2021-06-25 }
@@ -972,6 +973,16 @@ see Section~\ref{subsec:tabsupport} from page~\pageref{subsec:tabsupport}.
 \end{dispListing}
   a header entry |section| will generate the corresponding macro
   |\MYsection| instead of destroying the standard \LaTeX\ |\section| macro.
+\end{docCsvKey}
+
+
+\begin{docCsvKey}[][doc new=2022-02-01]{column names detection}{\colOpt{=true\textbar false}}{default |true|, initially |true|}
+  If this key is set, the header line is detected for names which can be used
+  for \refKey{/csvsim/column names} and \refKey{/csvsim/head to column names}.
+  Otherwise, these options are not functional.\\
+  This key can and should be set to |false|, if the header line contains
+  macros or characters not allowed inside \LaTeX\ control sequences, because
+  otherwise compilation error are to be expected.
 \end{docCsvKey}
 
 
@@ -1554,7 +1565,7 @@ completeness, but are unlikely to be used directly.
     doc description = no default,
   ]
   {
-    { doc name = autotabular  },
+    { doc name = autotabular, doc updated = {2022-02-01} },
     { doc name = autotabular* },
   }
   Reads the whole CSV file denoted \meta{file name} with an automated formatting.
@@ -1567,7 +1578,7 @@ completeness, but are unlikely to be used directly.
     doc description = no default,
   ]
   {
-    { doc name = autolongtable  },
+    { doc name = autolongtable, doc updated = {2022-02-01}  },
     { doc name = autolongtable* },
   }
   Reads the whole CSV file denoted \meta{file name} with an automated formatting
@@ -1581,7 +1592,7 @@ completeness, but are unlikely to be used directly.
     doc description = no default,
   ]
   {
-    { doc name = autobooktabular  },
+    { doc name = autobooktabular, doc updated = {2022-02-01}  },
     { doc name = autobooktabular* },
   }
   Reads the whole CSV file denoted \meta{file name} with an automated formatting
@@ -1595,7 +1606,7 @@ completeness, but are unlikely to be used directly.
     doc description = no default,
   ]
   {
-    { doc name = autobooklongtable  },
+    { doc name = autobooklongtable, doc updated = {2022-02-01}  },
     { doc name = autobooklongtable* },
   }
   Reads the whole CSV file denoted \meta{file name} with an automated formatting
@@ -2032,6 +2043,7 @@ Observe the following hints for \refKey{/csvsim/command}:
   the \emph{value} of this macro to \refCom{csvdatacollection}.
   This is optional, if |\csvcoli| contains numbers or text without active
   characters, but essential, if it contains macros.
+\item \refCom{csvlinetotablerow} is to be used \emph{without} |\csvexpval|.
 \item For macros like |\textbf| use  |\csvexpnot\textbf| to \emph{prevent}
   expansion.
 \item Using computations or not expandable conditionals may likely cause
@@ -2071,7 +2083,7 @@ Sets the collection macro to an alternative for \refCom{csvdatacollection}.
 \begin{docCommand}[doc new=2021-07-06]{csvdatacollection}{}
   Macro which contains the collected data of a CSV file processed with
   \refKey{/csvsim/collect data}. This macro name can be changed by
-  settiing \refKey{/csvsim/data collection}.
+  setting \refKey{/csvsim/data collection}.
 \end{docCommand}
 
 
@@ -2088,6 +2100,8 @@ Sets the collection macro to an alternative for \refCom{csvdatacollection}.
   Alternatively, |\noexpand| could be used.
 \end{docCommand}
 
+The following macros can only be used inside keys which are \emph{not}
+collected to \refCom{csvdatacollection}, e.g. inside \refKey{/csvsim/after filter}.
 
 \begin{docCommand}[doc new=2021-07-06]{csvcollectn}{\marg{code}}
   Appends the given \meta{code} to \refCom{csvdatacollection}.\\
@@ -2702,6 +2716,30 @@ Display data from line 3 on:\par
   }
 \end{dispExample}
 
+
+\clearpage
+
+The following example displays a \ctanpkg{tabularray} variant of the
+\refCom{csvautotabular} command. Note the \refKey{/csvsim/no head} option
+to read the first line as data line. Also note that \refCom{csvlinetotablerow}
+is used without preceding modifier.
+
+\begin{dispExample}
+% \usepackage{tabularray}
+\csvreader[
+    no head,
+    centered tabularray =
+      {
+        row{odd} = {blue!85!gray!7},
+        row{1}   = {blue!50!gray!25, font=\bfseries},
+      },
+    table head = {\hline[0.1em,blue!50!black]},
+    table foot = {\hline[0.1em,blue!50!black]},
+    late after first line = {\\\hline[blue!50!black]},
+]{data.csv}{}{%
+  \csvlinetotablerow%
+}
+\end{dispExample}
 
 
 \clearpage

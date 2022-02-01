@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.2.1 (2022/01/07)
+%% The LaTeX package csvsimple - version 2.3.0 (2022/02/01)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2022/01/07}{2.2.1}
+\ProvidesExplPackage{csvsimple-l3}{2022/02/01}{2.3.0}
   {LaTeX3 CSV file processing}
 
 
@@ -41,6 +41,7 @@
 
 \bool_new:N \g__csvsim_check_column_count_bool
 \bool_new:N \g__csvsim_collect_data_bool
+\bool_new:N \g__csvsim_colnames_detection_bool
 \bool_new:N \g__csvsim_firstline_bool
 \bool_new:N \g__csvsim_head_bool
 \bool_new:N \g__csvsim_head_to_colnames_bool
@@ -196,7 +197,6 @@
   {
     \tl_set:No \l_tmpa_tl {\cs:w csvcol\int_to_roman:n{#1} \cs_end:}
     \exp_args:NnV \cs_set_nopar:cpn {__csvsim__/\l_tmpa_tl} \l_tmpa_tl
-
     \bool_if:NT \g__csvsim_head_to_colnames_bool
       {
         \tl_set:No \l_tmpb_tl {\cs:w \g__csvsim_headname_prefix_tl \l_tmpa_tl \cs_end:}
@@ -216,7 +216,10 @@
       {
         \int_gzero:N \g_csvsim_columncount_int
         \__csvsim_scan_line:
-        \int_step_function:nN \g_csvsim_columncount_int \__csvsim_process_head_name:n
+        \bool_if:NT \g__csvsim_colnames_detection_bool
+          {
+            \int_step_function:nN \g_csvsim_columncount_int \__csvsim_process_head_name:n
+          }
       }
   }
 
@@ -401,22 +404,28 @@
 
 %---- auxiliary user macros
 
-\NewDocumentCommand \csvlinetotablerow { }
+% \NewDocumentCommand \csvlinetotablerow { }
+  % {
+    % \tl_clear:N \l_tmpa_tl
+    % \bool_set_false:N \l_tmpa_bool
+    % \seq_map_inline:Nn \g__csvsim_line_seq
+      % {
+        % \bool_if:NTF \l_tmpa_bool
+          % {
+            % \tl_put_right:Nn \l_tmpa_tl { & ##1 }
+          % }
+          % {
+            % \tl_put_right:Nn \l_tmpa_tl { ##1 }
+            % \bool_set_true:N \l_tmpa_bool
+          % }
+      % }
+    % \l_tmpa_tl
+  % }
+
+
+\NewExpandableDocumentCommand \csvlinetotablerow { }
   {
-    \tl_clear:N \l_tmpa_tl
-    \bool_set_false:N \l_tmpa_bool
-    \seq_map_inline:Nn \g__csvsim_line_seq
-      {
-        \bool_if:NTF \l_tmpa_bool
-          {
-            \tl_put_right:Nn \l_tmpa_tl { & ##1 }
-          }
-          {
-            \tl_put_right:Nn \l_tmpa_tl { ##1 }
-            \bool_set_true:N \l_tmpa_bool
-          }
-      }
-    \l_tmpa_tl
+    \seq_use:Nn \g__csvsim_line_seq { & }
   }
 
 
@@ -593,6 +602,7 @@
     head                        .bool_gset:N = \g__csvsim_head_bool,
     head~to~column~names~prefix .tl_gset:N   = \g__csvsim_headname_prefix_tl,
     head~to~column~names        .bool_gset:N = \g__csvsim_head_to_colnames_bool,
+    column~names~detection      .bool_gset:N = \g__csvsim_colnames_detection_bool,
     column~count                .int_gset:N  = \g_csvsim_columncount_int,
     separator       .choice:,
     separator/comma .code:n =
@@ -1178,6 +1188,7 @@
       {
         _autotabular_        = #1,
         head,
+        column~names~detection = false,
         after~head           = \g__csvsim_before_table_tl
                                \begin{tabular}{|*{\int_use:N\g_csvsim_columncount_int}{l|}}
                                \g__csvsim_table_head_tl,
@@ -1198,6 +1209,7 @@
       {
         _autotabular_        = #1,
         head,
+        column~names~detection = false,
         after~head           = \g__csvsim_before_table_tl
                                \begin{tabular}{*{\int_use:N\g_csvsim_columncount_int}{l}}
                                \g__csvsim_table_head_tl,
@@ -1224,6 +1236,7 @@
       {
         _autolongtable_      = #1,
         head,
+        column~names~detection = false,
         after~head           = \g__csvsim_before_table_tl
                                \begin{longtable}{|*{\int_use:N\g_csvsim_columncount_int}{l|}}
                                \g__csvsim_table_head_tl,
@@ -1244,6 +1257,7 @@
       {
         _autolongtable_      = #1,
         head,
+        column~names~detection = false,
         after~head           = \g__csvsim_before_table_tl
                                \begin{longtable}{*{\int_use:N\g_csvsim_columncount_int}{l}}
                                \g__csvsim_table_head_tl,
@@ -1408,6 +1422,7 @@
         command                     = \csvline,
         column~names~reset,
         head,
+        column~names~detection,
         check~column~count,
         head~to~column~names~prefix = ,
         head~to~column~names        = false,
