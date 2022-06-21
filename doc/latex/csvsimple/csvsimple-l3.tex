@@ -1,6 +1,6 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.3.0 (2022/02/01)
+%% The LaTeX package csvsimple - version 2.3.1 (2022/06/21)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -1098,7 +1098,7 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
 \begin{docCsvKey}[][doc new=2021-06-25]{filter bool}{=\meta{boolean expression}}{no default}
   Only data lines which fulfill a \LaTeX3 \meta{boolean expression} are accepted.
   Note that such an \meta{boolean expression} needs expl3 code.
-  To preprocess the data line before testing the \meta{condition},
+  To preprocess the data line before testing the \meta{boolean expression},
   the option key \refKey{/csvsim/before filter} can be used.
 \begin{dispExample}
 % For convenience, we save the filter
@@ -1191,7 +1191,7 @@ filter test=\iftest{some testing},
   Only data lines which fulfill a \meta{boolean expression} are accepted.
   Every \meta{boolean expression}
   from the \ctanpkg{etoolbox} package is feasible (package loading required!).
-  To preprocess the data line before testing the \meta{condition},
+  To preprocess the data line before testing the \meta{boolean expression},
   the option key \refKey{/csvsim/before filter} can be used.
 \begin{dispExample}
 % \usepackage{etoolbox,booktabs}
@@ -1216,7 +1216,7 @@ filter test=\iftest{some testing},
   Only data lines which fulfill a \meta{boolean expression} are accepted.
   For the \meta{boolean expression}, every term from the \ctanpkg{ifthen} package
   is feasible (package loading required!).
-  To preprocess the data line before testing the \meta{condition},
+  To preprocess the data line before testing the \meta{boolean expression},
   the option key \refKey{/csvsim/before filter} can be used.
 
 \begin{dispExample}

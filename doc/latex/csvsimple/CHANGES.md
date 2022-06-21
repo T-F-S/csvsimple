@@ -17,6 +17,14 @@ and this project adheres to
 
 
 
+## [2.3.1] - 2022-06-21
+
+### Fixed
+- Documentation: placeholder names corrected (issue #21)
+- Use built-in constants instead of integers for boolexpr (issue #22)
+
+
+
 ## [2.3.0] - 2022-02-01
 
 ### Added
