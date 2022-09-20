@@ -17,6 +17,13 @@ and this project adheres to
 
 
 
+## [2.3.2 - 2022-09-20]
+
+### Fixed
+- The `\ifcsvfirstrow` command doesn't work (issue #23)
+
+
+
 ## [2.3.1] - 2022-06-21
 
 ### Fixed

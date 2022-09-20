@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.3.1 (2022/06/21)
+%% The LaTeX package csvsimple - version 2.3.2 (2022/09/20)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2022/06/21}{2.3.1}
+\ProvidesExplPackage{csvsimple-l3}{2022/09/20}{2.3.2}
   {LaTeX3 CSV file processing}
 
 
@@ -42,7 +42,6 @@
 \bool_new:N \g__csvsim_check_column_count_bool
 \bool_new:N \g__csvsim_collect_data_bool
 \bool_new:N \g__csvsim_colnames_detection_bool
-\bool_new:N \g__csvsim_firstline_bool
 \bool_new:N \g__csvsim_head_bool
 \bool_new:N \g__csvsim_head_to_colnames_bool
 \bool_new:N \g__csvsim_line_accepted_bool
@@ -449,13 +448,13 @@
 
 \NewExpandableDocumentCommand \ifcsvfirstrow { }
   {
-    \bool_if:NTF \g__csvsim_firstline_bool
+    \bool_if:NTF \g__csvsim_line_firstline_bool
   }
 
 % deprecated
 \NewExpandableDocumentCommand \csviffirstrow { }
   {
-    \bool_if:NTF \g__csvsim_firstline_bool
+    \bool_if:NTF \g__csvsim_line_firstline_bool
   }
 
 
