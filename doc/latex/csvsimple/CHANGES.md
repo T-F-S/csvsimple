@@ -16,8 +16,28 @@ and this project adheres to
 ### Security
 
 
+## [2.4.0] - 2023-05-09
 
-## [2.3.2 - 2022-09-20]
+### Added
+- New additive filter options (issue #24):
+    - `and filter bool`
+    - `and filter fp`
+    - `and filter strcmp`
+    - `and filter not strcmp`
+    - `or filter bool`
+    - `or filter fp`
+    - `or filter strcmp`
+    - `or filter not strcmp`
+- Hook `csvsimple/csvline` added with example for doublequote replacement (issue #19)
+- Option setting `separator = space` (issue #20)
+
+### Changed
+- The content of `range` is now expanded before processing it
+- Implementation of `filter bool`, `filter fp`, `filter strcmp`, `filter not strcmp`
+
+
+
+## [2.3.2] - 2022-09-20
 
 ### Fixed
 - The `\ifcsvfirstrow` command doesn't work (issue #23)

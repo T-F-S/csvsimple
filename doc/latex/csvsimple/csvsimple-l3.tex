@@ -1,10 +1,10 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.3.2 (2022/09/20)
+%% The LaTeX package csvsimple - version 2.4.0 (2023/05/09)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2022 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2023 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -51,7 +51,7 @@
 \end{tcolorbox}
 {\large Thomas F.~Sturm%
   \footnote{Prof.~Dr.~Dr.~Thomas F.~Sturm, Institut f\"{u}r Mathematik und Informatik,
-    Universit\"{a}t der Bundeswehr M\"{u}nchen, D-85577 Neubiberg, Germany;
+    University of the Bundeswehr Munich, D-85577 Neubiberg, Germany;
      email: \href{mailto:thomas.sturm@unibw.de}{thomas.sturm@unibw.de}}\par\medskip
 \normalsize\url{https://www.ctan.org/pkg/csvsimple}\par
 \url{https://github.com/T-F-S/csvsimple}
@@ -116,9 +116,10 @@ Mind the following restrictions:
 \item Values are expected to be comma separated, but the package
   provides support for other separators, see \Fullref{sec:separators}.
 \item Values are expected to be either not quoted or quoted with
-  curly braces |{}| of \TeX\ groups. Other quotes like doublequotes
+  curly braces |{}| of \TeX\ groups. Other quotes like double-quotes
   are not supported directly, but can be achieved
   with external tools, see \Fullref{sec:importeddata}.
+  For approximate patching see \Fullref{sec:hooks}.
 \item Every data line is expected to contain the same amount of values.
   Unfeasible data lines are silently ignored by default, but this can
   be configured, see \Fullref{sec:consistency}.
@@ -209,7 +210,7 @@ way.
 \end{dispExample}
 
 \smallskip
-An even more comfortable and preferrable way to create a table is setting
+An even more comfortable and preferable way to create a table is setting
 appropriate option keys. Note, that this gives you the possibility to create a
 meta key (called style here) which contains the whole table creation
 using \refCom{csvstyle} or |keys_define:nn| from |l3keys|.
@@ -741,7 +742,7 @@ purpose:
 \csvreader{grade.csv}{}{}%
 The last file consists of \thecsvcolumncount{} columns and
 \thecsvrow{} accepted data lines. The total number of lines
-ist \thecsvinputline{}.
+is \thecsvinputline{}.
 \end{dispExample}
 \end{docCommands}
 
@@ -754,7 +755,7 @@ ist \thecsvinputline{}.
   current number of all data lines including the header line and all
   lines filtered out.
   Despite of the name, there is no associated \LaTeX\ counter |csvinputline|,
-  but \refCom{thecsvinputline} is an accessor the \LaTeX3 integer
+  but \refCom{thecsvinputline} accesses the \LaTeX3 integer
   \refCom{g_csvsim_inputline_int}.
 \begin{dispExample}
 \csvreader[
@@ -990,7 +991,7 @@ see Section~\ref{subsec:tabsupport} from page~\pageref{subsec:tabsupport}.
 \subsection{Consistency Check}\label{sec:consistency}%
 
 \begin{docCsvKey}{check column count}{\colOpt{=true\textbar false}}{default |true|, initially |true|}
-  This key defines, wether the number of entries in a data line is checked against
+  This key defines, whether the number of entries in a data line is checked against
   an expected value or not.\\
   If |true|, every non consistent line is ignored without announcement.\\
   If |false|, every line is accepted and may produce an error during
@@ -1033,10 +1034,10 @@ if they fulfill a given \emph{condition}.
 The following string compare filters \refKey{/csvsim/filter strcmp} and
 \refKey{/csvsim/filter equal} are identical by logic, but differ in implementation.
 
-\begin{docCsvKey}{filter strcmp}{=\marg{stringA}\marg{stringB}}{style, no default}
+\begin{docCsvKey}[][doc updated=2022-10-21]{filter strcmp}{=\marg{stringA}\marg{stringB}}{no default}
   Only lines where \meta{stringA} and \meta{stringB} are equal after expansion
   are accepted.
-  The implementation is done with \refCom{ifcsvstrcmp}.
+  The implementation is done with \docAuxCommand*{str_if_eq_p:ee}.
 \begin{dispExample}
 % \usepackage{booktabs}
 \csvreader[
@@ -1052,28 +1053,28 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
 \end{docCsvKey}
 
 
-\begin{docCsvKey}{filter not strcmp}{=\marg{stringA}\marg{stringB}}{style, no default}
+\begin{docCsvKey}[][doc updated=2022-10-21]{filter not strcmp}{=\marg{stringA}\marg{stringB}}{no default}
   Only lines where \meta{stringA} and \meta{stringB} are not equal after expansion
   are accepted.
-  The implementation is done with \refCom{ifcsvnotstrcmp}.
+  The implementation is done with \docAuxCommand*{str_if_eq_p:ee}.
 \end{docCsvKey}
 
 
-\begin{docCsvKey}{filter equal}{=\marg{stringA}\marg{stringB}}{style, no default}
+\begin{docCsvKey}{filter equal}{=\marg{stringA}\marg{stringB}}{no default}
   Only lines where \meta{stringA} and \meta{stringB} are equal after expansion
   are accepted.
   The implementation is done with the \ctanpkg{ifthen} package (loading required!).
 \end{docCsvKey}
 
 
-\begin{docCsvKey}{filter not equal}{=\marg{stringA}\marg{stringB}}{style, no default}
+\begin{docCsvKey}{filter not equal}{=\marg{stringA}\marg{stringB}}{no default}
   Only lines where \meta{stringA} and \meta{stringB} are not equal after expansion
   are accepted.
   The implementation is done with the \ctanpkg{ifthen} package (loading required!).
 \end{docCsvKey}
 
 
-\begin{docCsvKey}[][doc new=2021-06-25]{filter fp}{=\meta{floating point expression}}{no default}
+\begin{docCsvKey}[][doc new and updated={2021-06-25}{2022-10-21}]{filter fp}{=\marg{floating point expression}}{no default}
   Only data lines which fulfill a \LaTeX3 \meta{floating point expression}
     (|l3fp|, \ctanpkg{xfp}) are accepted.
 \begin{dispExample}
@@ -1095,7 +1096,7 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
 
 \clearpage
 
-\begin{docCsvKey}[][doc new=2021-06-25]{filter bool}{=\meta{boolean expression}}{no default}
+\begin{docCsvKey}[][doc new and updated={2021-06-25}{2022-10-21}]{filter bool}{=\marg{boolean expression}}{no default}
   Only data lines which fulfill a \LaTeX3 \meta{boolean expression} are accepted.
   Note that such an \meta{boolean expression} needs expl3 code.
   To preprocess the data line before testing the \meta{boolean expression},
@@ -1108,8 +1109,8 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
   {
     filter~bool =
       {
-        \int_compare_p:n   { \matriculation > 20000 } &&
-        \str_compare_p:eNe { \gender } = { m }
+        \int_compare_p:n { \matriculation > 20000 } &&
+        \str_if_eq_p:ee  { \gender }{ m }
       }
   }
 \ExplSyntaxOff
@@ -1136,8 +1137,8 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
 %>> list only matriculation numbers greater than 20000, list only men <<
 \csvfilterbool{myfilter}
   {
-    \int_compare_p:n   { \matriculation > 20000 } &&
-    \str_compare_p:eNe { \gender } = { m }
+    \int_compare_p:n { \matriculation > 20000 } &&
+    \str_if_eq_p:ee  { \gender }{ m }
   }
 \ExplSyntaxOff
 
@@ -1153,6 +1154,85 @@ The following string compare filters \refKey{/csvsim/filter strcmp} and
 \end{dispExample}
 \end{docCommand}
 
+
+\clearpage
+
+The following filter options are \emph{appendable} to the expl3 based
+filter options:
+\begin{itemize}
+\item \refKey{/csvsim/filter strcmp}
+\item \refKey{/csvsim/filter not strcmp}
+\item \refKey{/csvsim/filter fp}
+\item \refKey{/csvsim/filter bool}
+\end{itemize}
+
+\begin{docCsvKeys}[
+    doc parameter   = {=\marg{stringA}\marg{stringB}},
+    doc description = {no default},
+    doc new = {2022-10-21}
+  ]
+  {
+    { doc name = and filter strcmp  },
+    { doc name = or filter strcmp },
+  }
+  Like \refKey{/csvsim/filter strcmp}, but appended to a required existing
+  expl3 based filter with \emph{and} (|&&|) resp. \emph{or} (\texttt{\textbar\textbar}).
+
+\begin{dispExample}
+\csvreader[
+    head to column names,
+    tabular    = llll,
+    table head = \toprule & \bfseries Name & \bfseries Matr & \bfseries Grade\\\midrule,
+    table foot = \bottomrule,
+    filter fp  = {\matriculation>20000},
+    and filter strcmp = {\gender}{m},
+  ]{grade.csv}{}{%
+    \thecsvrow & \slshape\name, \givenname & \matriculation & \grade
+  }
+\end{dispExample}
+\end{docCsvKeys}
+
+
+\begin{docCsvKeys}[
+    doc parameter   = {=\marg{stringA}\marg{stringB}},
+    doc description = {no default},
+    doc new = {2022-10-21}
+  ]
+  {
+    { doc name = and filter not strcmp  },
+    { doc name = or filter not strcmp },
+  }
+  Like \refKey{/csvsim/filter not strcmp}, but appended to a required existing
+  expl3 based filter with \emph{and} (|&&|) resp. \emph{or} (\texttt{\textbar\textbar}).
+\end{docCsvKeys}
+
+
+\begin{docCsvKeys}[
+    doc parameter   = {=\marg{floating point expression}},
+    doc description = {style,no default},
+    doc new = {2022-10-21}
+  ]
+  {
+    { doc name = and filter fp  },
+    { doc name = or filter fp },
+  }
+  Like \refKey{/csvsim/filter fp}, but appended to a required existing
+  expl3 based filter with \emph{and} (|&&|) resp. \emph{or} (\texttt{\textbar\textbar}).
+\end{docCsvKeys}
+
+
+\begin{docCsvKeys}[
+    doc parameter   = {=\marg{boolean expression}},
+    doc description = {style,no default},
+    doc new = {2022-10-21}
+  ]
+  {
+    { doc name = and filter bool },
+    { doc name = or filter bool },
+  }
+  Like \refKey{/csvsim/filter bool}, but appended to a required existing
+  expl3 based filter with \emph{and} (|&&|) resp. \emph{or} (\texttt{\textbar\textbar}).
+\end{docCsvKeys}
 
 
 \clearpage
@@ -1291,7 +1371,7 @@ and 42 lines are accepted, a \emph{range} could select the first 20 of them or
 line 10 to 30 of the accepted lines.
 
 
-\begin{docCsvKey}[][doc new=2021-06-29]{range}{=\brackets{\meta{range1},\meta{range2},\meta{range3},... }}{no default, initially empty}
+\begin{docCsvKey}[][doc new and updated={2021-06-29}{2022-09-21}]{range}{=\brackets{\meta{range1},\meta{range2},\meta{range3},... }}{no default, initially empty}
   Defines a comma separated list of line ranges. If a line number \refCom{thecsvrow}
   satisfies one or more of the given \meta{range1}, \meta{range2}, \ldots,
   the corresponding line is processed and displayed.
@@ -1701,7 +1781,7 @@ as normal characters (|\catcode| 12, other), if one or more of the following opt
 \subsection{Separators}\label{sec:separators}%
 \begin{docCsvKey}{separator}{=\meta{sign}}{no default, initially |comma|}
   \catcode `|=12
-  Sets the \meta{sign} which is treates as separator between the data values
+  Sets the \meta{sign} which is treated as separator between the data values
   of a data line. Feasible values are:
   \begin{itemize}
   \item\docValue{comma}: This is the initial value with '\texttt{,}' as separator.
@@ -1737,6 +1817,23 @@ as normal characters (|\catcode| 12, other), if one or more of the following opt
 
 \item\docValue{tab}: Sets the separator to the tabulator sign.
   Automatically, \refKey{/csvsim/respect tab} is set also.
+
+\clearpage
+\item\docValue{space}:\tcbdocmarginnote{\tcbdocnew{2023-05-08}}
+  Sets the separator to space(s).
+\begin{dispExample}
+% \usepackage{tcolorbox} for tcbverbatimwrite
+\begin{tcbverbatimwrite}{space.csv}
+  name     givenname matriculation gender grade
+  Maier    Hans      12345         m      1.0
+  Huber    Anna      23456         f      2.3
+  Weißbäck Werner    34567         m      5.0
+\end{tcbverbatimwrite}
+
+\csvautobooktabular[separator=space]{space.csv}
+\end{dispExample}
+  Note that leading spaces are ignored and multiple spaces are treated as one space.
+  To denote an empty data cell insert \verb+{}+, e.g. \verb*+1 {} 3+.
   \end{itemize}
 \end{docCsvKey}
 
@@ -2188,6 +2285,31 @@ The following number tests are wrappers for corresponding \LaTeX3 conditionals.
 
 
 \clearpage
+\section{Hooks}\label{sec:hooks}%
+The following hook(s) are present following \LaTeX's hook management.
+
+\begin{description}
+\item[\textcolor{DarkViolet}{\ttfamily csvsimple/csvline}]
+  \tcbdocmarginnote{\tcbdocnew{2023-05-08}}
+  This hook adds code after reading
+  a line into \refCom{csvline} and before processing this line.
+  The token list \refCom{csvline} may be manipulated with a global assignment.\par
+  The following example replaces every \verb+"..."+ by \verb+{...}+ to
+  approximate double-quote processing within \LaTeX. Still, masking of double-quotes
+  or nesting will not work.
+\begin{dispListing}
+\AddToHook{csvsimple/csvline}
+  {
+    \tl_set_eq:NN \l_tmpa_tl \csvline
+    \regex_replace_all:nnN { "([^"]+)" } { {\1} } \l_tmpa_tl
+    \tl_gset_eq:NN \csvline \l_tmpa_tl
+  }
+\end{dispListing}
+
+\end{description}
+
+
+\clearpage
 \section{Examples}%
 
 \subsection{A Serial Letter}%
@@ -2465,7 +2587,7 @@ tables generated by |csvsimple-l3| is the |\tablenum| macro from
 
 \clearpage
 
-It is also possible to create on-the-fly tables using calcations of
+It is also possible to create on-the-fly tables using calculations of
 the given data. The following example shows cat values bisected and
 dog values doubled.
 

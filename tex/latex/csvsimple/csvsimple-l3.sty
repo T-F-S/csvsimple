@@ -1,8 +1,8 @@
-%% The LaTeX package csvsimple - version 2.3.2 (2022/09/20)
+%% The LaTeX package csvsimple - version 2.4.0 (2023/05/09)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2022 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2023 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2022/09/20}{2.3.2}
+\ProvidesExplPackage{csvsimple-l3}{2023/05/09}{2.4.0}
   {LaTeX3 CSV file processing}
 
 
@@ -79,7 +79,6 @@
 
 \tl_const:Nn \c__csvsim_par_tl { \par }
 
-
 \tl_new:N \g__csvsim_after_table_tl
 \tl_new:N \g__csvsim_before_table_tl
 \tl_new:N \g__csvsim_begin_table_center_tl
@@ -114,6 +113,8 @@
 \tl_new:N \g__csvsim_table_foot_tl
 \tl_new:N \g__csvsim_table_head_tl
 
+\tl_new:N \l__csvsim_filter_condition_tl
+
 
 \group_begin:
   \char_set_catcode_other:n { 9 }
@@ -122,6 +123,7 @@
 
 \regex_const:Nn \c__csvsim_integer_regex {\A\d+\Z}
 
+\cs_generate_variant:Nn \bool_gset:Nn { NV }
 \cs_generate_variant:Nn \seq_gset_split:Nnn { NVV }
 
 
@@ -156,6 +158,8 @@
 
 %---- core loop processing
 
+\NewHook{csvsimple/csvline}
+
 \cs_new_protected_nopar:Npn \__csvsim_read_line:
   {
     \group_begin:
@@ -169,6 +173,7 @@
         \msg_error:nnx { csvsimple }{ file-error }{ \g__csvsim_curfilename_str }
       }
     \group_end:
+    \UseHook{csvsimple/csvline}
   }
 
 
@@ -621,6 +626,10 @@
         \tl_gset:NV \g__csvsim_separator_tl \c__csvsim_tab_str
         \csvset{respect~tab}
       },
+    separator/space .code:n =
+      {
+        \tl_gset:Nn \g__csvsim_separator_tl {~}
+      },
     every~csv                  .meta:n = {},
     no~head                    .meta:n = { head=false },
     no~check~column~count      .meta:n = { check~column~count=false },
@@ -679,6 +688,16 @@
   }
 
 
+\cs_new_protected_nopar:Npn \__csvsim_set_filter_bool:n #1
+  {
+    \tl_set:Nn \l__csvsim_filter_condition_tl { #1 }
+    \tl_gset:Nn \g__csvsim_filter_tl
+      {
+        \bool_gset:NV \g__csvsim_line_accepted_bool \l__csvsim_filter_condition_tl
+      }
+  }
+
+
 \NewDocumentCommand \csvfilteraccept { }
   {
     \__csvsim_set_filter:n
@@ -723,20 +742,52 @@
       },
     filter~bool .code:n =
       {
-        \__csvsim_set_filter:n
-          {
-            \bool_gset:Nn \g__csvsim_line_accepted_bool { #1 }
-          }
+        \__csvsim_set_filter_bool:n { #1 }
       },
     filter~fp .code:n =
       {
-        \__csvsim_set_filter:n
-          {
-            \bool_gset:Nn \g__csvsim_line_accepted_bool { \fp_compare_p:n{#1} }
-          }
+        \__csvsim_set_filter_bool:n { \fp_compare_p:n {#1} }
       },
-    filter~strcmp     .meta:n = { filter~test=\ifcsvstrcmp #1 },
-    filter~not~strcmp .meta:n = { filter~test=\ifcsvnotstrcmp #1 },
+    filter~strcmp .code:n =
+      {
+        \__csvsim_set_filter_bool:n { \str_if_eq_p:ee #1 }
+      },
+    filter~not~strcmp .code:n =
+      {
+        \__csvsim_set_filter_bool:n { !\str_if_eq_p:ee #1 }
+      },
+    and~filter~bool .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { && #1 }
+      },
+    and~filter~fp .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { && \fp_compare_p:n {#1} }
+      },
+    and~filter~strcmp .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { && \str_if_eq_p:ee #1 }
+      },
+    and~filter~not~strcmp .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { && !\str_if_eq_p:ee #1 }
+      },
+    or~filter~bool .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { || #1 }
+      },
+    or~filter~fp .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { || \fp_compare_p:n {#1} }
+      },
+    or~filter~strcmp .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { || \str_if_eq_p:ee #1 }
+      },
+    or~filter~not~strcmp .code:n =
+      {
+        \tl_put_right:Nn \l__csvsim_filter_condition_tl { || !\str_if_eq_p:ee #1 }
+      },
   }
 
 
@@ -846,12 +897,13 @@
         { #1 }
   }
 
+\cs_generate_variant:Nn \__csvsim_set_range:n { e }
 
 \keys_define:nn { csvsim }
   {
     range .code:n =
       {
-        \__csvsim_set_range:n {#1}
+        \__csvsim_set_range:e {#1}
       },
   }
 

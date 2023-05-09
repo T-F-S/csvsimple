@@ -1,7 +1,7 @@
-# The LaTeX package csvsimple - version 2.3.2 (2022/09/20)
+# The LaTeX package csvsimple - version 2.4.0 (2023/05/09)
 
 
-> Copyright (c) 2008-2022 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+> Copyright (c) 2008-2023 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 
 > This work may be distributed and/or modified under the
 > conditions of the LaTeX Project Public License, either version 1.3
