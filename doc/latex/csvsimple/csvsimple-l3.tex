@@ -723,7 +723,7 @@ purpose:
   Typesets the current data line number. This is the
   current number of accepted data lines without the header line.
   Despite of the name, there is no associated \LaTeX\ counter |csvrow|,
-  but \refCom{thecsvrow} is an accessor the \LaTeX3 integer
+  but \refCom{thecsvrow} being an accessor of the \LaTeX3 integer
   \refCom{g_csvsim_row_int}.
 \end{docCommands}
 
@@ -736,7 +736,7 @@ purpose:
   is either computed from the first valid line (header or data) or
   given by \refKey{/csvsim/column count}.
   Despite of the name, there is no associated \LaTeX\ counter |csvcolumncount|,
-  but \refCom{thecsvcolumncount} is an accessor the \LaTeX3 integer
+  but \refCom{thecsvcolumncount} being an accessor of the \LaTeX3 integer
   \refCom{g_csvsim_columncount_int}.
 \begin{dispExample}
 \csvreader{grade.csv}{}{}%
@@ -755,7 +755,7 @@ is \thecsvinputline{}.
   current number of all data lines including the header line and all
   lines filtered out.
   Despite of the name, there is no associated \LaTeX\ counter |csvinputline|,
-  but \refCom{thecsvinputline} accesses the \LaTeX3 integer
+  but \refCom{thecsvinputline} being an accessor of the \LaTeX3 integer
   \refCom{g_csvsim_inputline_int}.
 \begin{dispExample}
 \csvreader[
@@ -1209,7 +1209,7 @@ filter options:
 
 \begin{docCsvKeys}[
     doc parameter   = {=\marg{floating point expression}},
-    doc description = {style,no default},
+    doc description = {style, no default},
     doc new = {2022-10-21}
   ]
   {
@@ -1223,7 +1223,7 @@ filter options:
 
 \begin{docCsvKeys}[
     doc parameter   = {=\marg{boolean expression}},
-    doc description = {style,no default},
+    doc description = {style, no default},
     doc new = {2022-10-21}
   ]
   {
