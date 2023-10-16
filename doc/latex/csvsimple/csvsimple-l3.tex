@@ -1,6 +1,7 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.4.0 (2023/05/09)
+% !TeX spellcheck=en_US
+%% The LaTeX package csvsimple - version 2.5.0 (2023/10/16)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@
 {\large Thomas F.~Sturm%
   \footnote{Prof.~Dr.~Dr.~Thomas F.~Sturm, Institut f\"{u}r Mathematik und Informatik,
     University of the Bundeswehr Munich, D-85577 Neubiberg, Germany;
-     email: \href{mailto:thomas.sturm@unibw.de}{thomas.sturm@unibw.de}}\par\medskip
+    email: \href{mailto:thomas.sturm@unibw.de}{thomas.sturm@unibw.de}}\par\medskip
 \normalsize\url{https://www.ctan.org/pkg/csvsimple}\par
 \url{https://github.com/T-F-S/csvsimple}
 }
@@ -429,109 +430,6 @@ is useless for |\csvreader|.
 \end{dispExample}
 \end{docCommand}
 
-\bigskip
-
-The following |\csvauto...| commands are intended for quick data overview
-with limited formatting potential.
-See Subsection~\ref{subsec:tabsupport} on page \pageref{subsec:tabsupport}
-for the general table options in combination with \refCom{csvreader} and
-\refCom{csvloop}.
-
-\begin{docCommands}[
-    doc parameter = \oarg{options}\marg{file name}
-  ]
-  {
-    { doc name = csvautotabular  },
-    { doc name = csvautotabular*, doc new = 2021-06-25 }
-  }
-  |\csvautotabular| or |\csvautotabular*|
-  is an abbreviation for the application of the option key
-  \refKey{/csvsim/autotabular} or \refKey{/csvsim/autotabular*}
-  together with other \meta{options} to \refCom{csvloop}.
-  This macro reads the whole CSV file denoted by \meta{file name}
-  with an automated formatting.
-  The star variant treats the first line as data line and not as header line.
-\begin{dispExample}
-\csvautotabular*{grade.csv}
-\end{dispExample}
-\begin{dispExample}
-\csvautotabular[filter equal={\csvcoliv}{f}]{grade.csv}
-\end{dispExample}
-\end{docCommands}
-
-\clearpage
-
-\begin{docCommands}[
-    doc parameter = \oarg{options}\marg{file name}
-  ]
-  {
-    { doc name = csvautolongtable  },
-    { doc name = csvautolongtable*, doc new = 2021-06-25 }
-  }
-  |\csvautolongtable| or |\csvautolongtable*|
-  is an abbreviation for the application of the option key
-  \refKey{/csvsim/autolongtable} or \refKey{/csvsim/autolongtable*}
-  together with other \meta{options} to \refCom{csvloop}.
-  This macro reads the whole CSV file denoted by \meta{file name}
-  with an automated formatting.
-  For application, the package |longtable| is required which has to be
-  loaded in the preamble.
-  The star variant treats the first line as data line and not as header line.
-\begin{dispListing}
-\csvautolongtable{grade.csv}
-\end{dispListing}
-\csvautolongtable{grade.csv}
-\end{docCommands}
-
-
-
-\begin{docCommands}[
-    doc parameter = \oarg{options}\marg{file name}
-  ]
-  {
-    { doc name = csvautobooktabular  },
-    { doc name = csvautobooktabular*, doc new = 2021-06-25 }
-  }
-  |\csvautobooktabular| or |\csvautobooktabular*|
-  is an abbreviation for the application of the option key
-  \refKey{/csvsim/autobooktabular} or \refKey{/csvsim/autobooktabular*}
-  together with other \meta{options} to \refCom{csvloop}.
-  This macro reads the whole CSV file denoted by \meta{file name}
-  with an automated formatting.
-  For application, the package |booktabs| is required which has to be
-  loaded in the preamble.
-  The star variant treats the first line as data line and not as header line.
-\begin{dispExample}
-\csvautobooktabular{grade.csv}
-\end{dispExample}
-\end{docCommands}
-
-
-\begin{docCommands}[
-    doc parameter = \oarg{options}\marg{file name}
-  ]
-  {
-    { doc name = csvautobooklongtable  },
-    { doc name = csvautobooklongtable*, doc new = 2021-06-25 }
-  }
-  |\csvautobooklongtable| or |\csvautobooklongtable*|
-  is an abbreviation for the application of the option key
-  \refKey{/csvsim/autobooklongtable} or \refKey{/csvsim/autobooklongtable*}
-  together with other \meta{options} to \refCom{csvloop}.
-  This macro reads the whole CSV file denoted by \meta{file name}
-  with an automated formatting.
-  For application, the packages |booktabs| and |longtable| are required which have to be
-  loaded in the preamble.
-  The star variant treats the first line as data line and not as header line.
-\begin{dispListing}
-\csvautobooklongtable{grade.csv}
-\end{dispListing}
-\csvautobooklongtable{grade.csv}
-\end{docCommands}
-
-
-
-\clearpage
 
 \begin{docCommand}[doc updated = 2021-06-25]{csvset}{\marg{options}}
   Sets \meta{options} for every following
@@ -564,6 +462,7 @@ The following students passed the test in mathematics:\\
 \end{dispExample}
 \end{docCommand}
 
+\enlargethispage*{1cm}
 
 \begin{docCommand}{csvnames}{\marg{key}\marg{assignments}}
   Abbreviation for |\csvstyle{|\meta{key}|}{column names=|\marg{assignments}|}|
@@ -723,7 +622,7 @@ purpose:
   Typesets the current data line number. This is the
   current number of accepted data lines without the header line.
   Despite of the name, there is no associated \LaTeX\ counter |csvrow|,
-  but \refCom{thecsvrow} being an accessor of the \LaTeX3 integer
+  but \refCom{thecsvrow} accesses the \LaTeX3 integer
   \refCom{g_csvsim_row_int}.
 \end{docCommands}
 
@@ -736,7 +635,7 @@ purpose:
   is either computed from the first valid line (header or data) or
   given by \refKey{/csvsim/column count}.
   Despite of the name, there is no associated \LaTeX\ counter |csvcolumncount|,
-  but \refCom{thecsvcolumncount} being an accessor of the \LaTeX3 integer
+  but \refCom{thecsvcolumncount} accesses the \LaTeX3 integer
   \refCom{g_csvsim_columncount_int}.
 \begin{dispExample}
 \csvreader{grade.csv}{}{}%
@@ -755,7 +654,7 @@ is \thecsvinputline{}.
   current number of all data lines including the header line and all
   lines filtered out.
   Despite of the name, there is no associated \LaTeX\ counter |csvinputline|,
-  but \refCom{thecsvinputline} being an accessor of the \LaTeX3 integer
+  but \refCom{thecsvinputline} accesses the \LaTeX3 integer
   \refCom{g_csvsim_inputline_int}.
 \begin{dispExample}
 \csvreader[
@@ -769,6 +668,210 @@ is \thecsvinputline{}.
 
 
 
+\clearpage
+\section{Macros for Automatic Survey Tables}\label{sec:autotable}%
+
+The following |\csvauto...| commands are intended for quick data overview
+with \emph{limited} formatting potential.
+The most customizable |\csvauto...| commands are
+\refCom{csvautotabularray} and friends.
+
+For full control see Subsection~\ref{subsec:tabsupport} on page \pageref{subsec:tabsupport}
+for the general table options in combination with \refCom{csvreader} and
+\refCom{csvloop}.
+
+\begin{docCommands}[
+    doc parameter = \oarg{options}\marg{file name}
+  ]
+  {
+    { doc name = csvautotabular  },
+    { doc name = csvautotabular*, doc new = 2021-06-25 }
+  }
+  |\csvautotabular| or |\csvautotabular*|
+  is an abbreviation for the application of the option key
+  \refKey{/csvsim/autotabular} or \refKey{/csvsim/autotabular*}
+  together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  The star variant treats the first line as data line and not as header line.
+\begin{dispExample}
+\csvautotabular*{grade.csv}
+\end{dispExample}
+\begin{dispExample}
+\csvautotabular[filter equal={\csvcoliv}{f}]{grade.csv}
+\end{dispExample}
+\end{docCommands}
+
+
+
+\begin{docCommands}[
+    doc parameter = \oarg{options}\marg{file name}
+  ]
+  {
+    { doc name = csvautolongtable  },
+    { doc name = csvautolongtable*, doc new = 2021-06-25 }
+  }
+  |\csvautolongtable| or |\csvautolongtable*|
+  is an abbreviation for the application of the option key
+  \refKey{/csvsim/autolongtable} or \refKey{/csvsim/autolongtable*}
+  together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  For application, the package \ctanpkg{longtable} is required which has to be
+  loaded in the preamble.
+  The star variant treats the first line as data line and not as header line.
+\begin{dispListing}
+\csvautolongtable{grade.csv}
+\end{dispListing}
+\csvautolongtable{grade.csv}
+\end{docCommands}
+
+
+\clearpage
+
+
+\begin{docCommands}[
+    doc parameter = \oarg{options}\marg{file name}
+  ]
+  {
+    { doc name = csvautobooktabular  },
+    { doc name = csvautobooktabular*, doc new = 2021-06-25 }
+  }
+  |\csvautobooktabular| or |\csvautobooktabular*|
+  is an abbreviation for the application of the option key
+  \refKey{/csvsim/autobooktabular} or \refKey{/csvsim/autobooktabular*}
+  together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  For application, the package \ctanpkg{booktabs} is required which has to be
+  loaded in the preamble.
+  The star variant treats the first line as data line and not as header line.
+\begin{dispExample}
+\csvautobooktabular{grade.csv}
+\end{dispExample}
+\end{docCommands}
+
+
+\begin{docCommands}[
+    doc parameter = \oarg{options}\marg{file name}
+  ]
+  {
+    { doc name = csvautobooklongtable  },
+    { doc name = csvautobooklongtable*, doc new = 2021-06-25 }
+  }
+  |\csvautobooklongtable| or |\csvautobooklongtable*|
+  is an abbreviation for the application of the option key
+  \refKey{/csvsim/autobooklongtable} or \refKey{/csvsim/autobooklongtable*}
+  together with other \meta{options} to \refCom{csvloop}.
+  This macro reads the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  For application, the packages \ctanpkg{booktabs} and \ctanpkg{longtable} are required which have to be
+  loaded in the preamble.
+  The star variant treats the first line as data line and not as header line.
+\begin{dispListing}
+\csvautobooklongtable{grade.csv}
+\end{dispListing}
+\csvautobooklongtable{grade.csv}
+\end{docCommands}
+
+
+\clearpage
+
+\begin{docCommands}[
+    doc parameter = \oarg{options}\marg{file name}\oarg{taboptions 1}\oarg{taboptions 2},
+    doc new = 2023-10-13
+  ]
+  {
+    { doc name = csvautotabularray  },
+    { doc name = csvautotabularray* },
+    { doc name = csvautolongtabularray  },
+    { doc name = csvautolongtabularray* },
+  }
+  These macros are abbreviations for the application of the option keys
+  \refKey{/csvsim/autotabularray}, \refKey{/csvsim/autotabularray*},\\
+  \refKey{/csvsim/autolongtabularray}, or \refKey{/csvsim/autolongtabularray*}
+  together with other \meta{options} to \refCom{csvloop}.
+  These macros read the whole CSV file denoted by \meta{file name}
+  with an automated formatting.
+  For application, the package \ctanpkg{tabularray} is required which has to be
+  loaded in the preamble.
+  \refCom{csvautotabularray} uses the \docAuxEnvironment*{tblr} environment and
+  \refCom{csvautolongtabularray} uses the \docAuxEnvironment*{longtblr} environment.
+  The star variants treat the first line as data line and not as header line.\par
+  Options to the table environments from \ctanpkg{tabularray} may be given
+  by either setting \refKey{/csvsim/generic table options} or
+  using \meta{taboptions 1} and \meta{taboptions 2}.\par
+  The default setting is
+\begin{dispListing}
+generic table options =
+  { {
+    row{1}     = {font=\bfseries},
+    hline{1,Z} = {0.8pt},
+    hline{2}   = {0.4pt},
+  } }
+\end{dispListing}
+  For the star variants, the default setting is
+\begin{dispListing}
+generic table options =
+  { {
+    hline{1,Z} = {0.8pt},
+  } }
+\end{dispListing}
+
+Examples:
+
+\begin{dispExample}
+\csvautotabularray{grade.csv}
+\end{dispExample}
+
+\begin{dispExample}
+\csvautotabularray[table centered,
+    generic table options =
+    {{
+      row{odd}   = {red!85!gray!7},
+      row{1}     = {bg=red!85!gray, fg=white, font=\bfseries},
+    }}
+  ]
+  {grade.csv}
+\end{dispExample}
+
+\clearpage
+
+Alternatively to \refKey{/csvsim/generic table options}
+(and overruling this option), one may give options to
+\docAuxEnvironment*{tblr} or \docAuxEnvironment*{longtblr}
+using \meta{taboptions 1} and \meta{taboptions 2}.
+If \meta{taboptions 2} is \emph{not present}, then \meta{taboptions 1}
+is used as mandatory argument.
+Otherwise, \meta{taboptions 1} is used as optional argument and
+\meta{taboptions 2} as mandatory argument.
+
+\begin{dispExample}
+\csvautotabularray[table centered]
+  {grade.csv}
+  [
+    row{odd}   = {red!85!gray!7},
+    row{1}     = {bg=red!85!gray, fg=white, font=\bfseries},
+  ]
+\end{dispExample}
+
+
+\begin{dispExample}
+\csvautotabularray[table centered]
+  {grade.csv}
+  [
+    tall,
+    caption      = {My table},
+    remark{Note} = {My remark},
+  ]
+  [
+    row{odd}   = {red!85!gray!7},
+    row{1}     = {bg=red!85!gray, fg=white, font=\bfseries},
+  ]
+\end{dispExample}
+
+
+\end{docCommands}
 
 
 \clearpage
@@ -1637,7 +1740,8 @@ are described with predefined keys. The following keys allow to use further
 \subsubsection{General Survey Tables}\label{subsubsec:table_survey}
 
 The following |auto| options are the counterparts for the respective quick
-overview commands like \refCom{csvautotabular}. They are listed for
+overview commands like \refCom{csvautotabular}, see Section~\ref{sec:autotable}.
+They are listed for
 completeness, but are unlikely to be used directly.
 
 \begin{docCsvKeys}[
@@ -1692,6 +1796,25 @@ completeness, but are unlikely to be used directly.
   Reads the whole CSV file denoted \meta{file name} with an automated formatting
   using the required |booktabs| and |longtable| packages.
   The star variant treats the first line as data line and not as header line.
+\end{docCsvKeys}
+
+
+\begin{docCsvKeys}[
+    doc parameter   = {=\meta{file name}},
+    doc description = no default,
+    doc new = {2023-10-13}
+  ]
+  {
+    { doc name = autotabularray },
+    { doc name = autotabularray* },
+    { doc name = autolongtabularray },
+    { doc name = autolongtabularray* },
+  }
+  Reads the whole CSV file denoted \meta{file name} with an automated formatting
+  using the required |tabularray| package.
+  \refKey{/csvsim/autotabularray} uses the \docAuxEnvironment*{tblr} environment and
+  \refKey{/csvsim/autolongtabularray} uses the \docAuxEnvironment*{longtblr} environment.
+  The star variants treat the first line as data line and not as header line.
 \end{docCsvKeys}
 
 
@@ -2841,27 +2964,21 @@ Display data from line 3 on:\par
 
 \clearpage
 
-The following example displays a \ctanpkg{tabularray} variant of the
-\refCom{csvautotabular} command. Note the \refKey{/csvsim/no head} option
-to read the first line as data line. Also note that \refCom{csvlinetotablerow}
-is used without preceding modifier.
+The following example uses \refCom{csvautotabularray} to display the whole
+table. Note that the \ctanpkg{tabularray} options are given as last
+optional argument.
 
 \begin{dispExample}
 % \usepackage{tabularray}
-\csvreader[
-    no head,
-    centered tabularray =
-      {
-        row{odd} = {blue!85!gray!7},
-        row{1}   = {blue!50!gray!25, font=\bfseries},
-      },
-    table head = {\hline[0.1em,blue!50!black]},
-    table foot = {\hline[0.1em,blue!50!black]},
-    late after first line = {\\\hline[blue!50!black]},
-]{data.csv}{}{%
-  \csvlinetotablerow%
-}
+\csvautotabularray[table centered]{data.csv}
+  [
+    row{odd}   = {blue!85!gray!7},
+    row{1}     = {blue!50!gray!25, font=\bfseries},
+    hline{1,Z} = {0.1em, blue!50!black},
+    hline{2}   = {blue!50!black}
+  ]
 \end{dispExample}
+
 
 
 \clearpage

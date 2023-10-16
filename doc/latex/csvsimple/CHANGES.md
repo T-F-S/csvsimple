@@ -16,6 +16,29 @@ and this project adheres to
 ### Security
 
 
+## [2.5.0] - 2023-10-16
+
+### Added
+- New survey tables (issue #29):
+    - `\csvautotabularray`
+    - `\csvautotabularray*`
+    - `\csvautolongtabularray`
+    - `\csvautolongtabularray*`
+- New corresponding options (issue #29)
+    - `autotabularray`
+    - `autotabularray*`
+    - `autolongtabularray`
+    - `autolongtabularray*`
+
+### Changed
+- Documentation typos fixed (issue #30)
+- Survey tables moved into a separate section
+
+### Fixed
+- `collect data` does not collect `after first line` (issue #28)
+
+
+
 ## [2.4.0] - 2023-05-09
 
 ### Added

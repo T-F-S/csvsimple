@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.4.0 (2023/05/09)
+%% The LaTeX package csvsimple - version 2.5.0 (2023/10/16)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2023/05/09}{2.4.0}
+\ProvidesExplPackage{csvsimple-l3}{2023/10/16}{2.5.0}
   {LaTeX3 CSV file processing}
 
 
@@ -967,6 +967,7 @@
 \cs_new_protected_nopar:Npn \__csvsim_collect_data:
   {
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_head_tl
+    \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_first_line_tl
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_line_tl
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_before_first_line_tl
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_before_line_tl
@@ -1325,6 +1326,56 @@
         table~head           = \toprule\endhead
                                \bottomrule\endfoot,
       },
+    _autotabularray_ .meta:n =
+      {
+        file                    = {#1},
+        command                 = \csvlinetotablerow,
+        no~head,
+        generic~collected~table = tblr,
+      },
+    autotabularray   .meta:n =
+      {
+        _autotabularray_        = {#1},
+        generic~table~options   =
+          { {
+            row{1}     = {font=\bfseries},
+            hline{1,Z} = {0.8pt},
+            hline{2}   = {0.4pt},
+          } }
+      },
+    autotabularray*  .meta:n =
+      {
+        _autotabularray_        = {#1},
+        generic~table~options   =
+          { {
+            hline{1,Z} = {0.8pt},
+          } }
+      },
+    _autolongtabularray_ .meta:n =
+      {
+        file                    = {#1},
+        command                 = \csvlinetotablerow,
+        no~head,
+        generic~collected~table = longtblr,
+      },
+    autolongtabularray   .meta:n =
+      {
+        _autolongtabularray_    = {#1},
+        generic~table~options   =
+          { {
+            row{1}     = {font=\bfseries},
+            hline{1,Z} = {0.8pt},
+            hline{2}   = {0.4pt},
+          } }
+      },
+    autolongtabularray*  .meta:n =
+      {
+        _autolongtabularray_    = {#1},
+        generic~table~options   =
+          { {
+            hline{1,Z} = {0.8pt},
+          } }
+      },
   }
 
 
@@ -1379,6 +1430,53 @@
     \__csvsim_loop:
   }
 
+
+\NewDocumentCommand \csvautotabularray { s +O{} m +o +o }
+  {
+    \keys_set:nn { csvsim } { default, every~csv }
+    \IfBooleanTF {#1}
+      {
+        \keys_set:nn { csvsim } { autotabularray*={#3}, #2}
+      }
+      {
+        \keys_set:nn { csvsim } { autotabularray={#3}, #2}
+      }
+    \IfNoValueF {#4}
+      {
+        \IfNoValueTF {#5}
+          {
+            \keys_set:nn { csvsim } { generic~table~options = { { #4 } } }
+          }
+          {
+            \keys_set:nn { csvsim } { generic~table~options = { [ #4 ]{ #5 } } }
+          }
+      }
+    \__csvsim_loop:
+  }
+
+
+\NewDocumentCommand \csvautolongtabularray { s +O{} m +o +o }
+  {
+    \keys_set:nn { csvsim } { default, every~csv }
+    \IfBooleanTF {#1}
+      {
+        \keys_set:nn { csvsim } { autolongtabularray*={#3}, #2}
+      }
+      {
+        \keys_set:nn { csvsim } { autolongtabularray={#3}, #2}
+      }
+    \IfNoValueF {#4}
+      {
+        \IfNoValueTF {#5}
+          {
+            \keys_set:nn { csvsim } { generic~table~options = { { #4 } } }
+          }
+          {
+            \keys_set:nn { csvsim } { generic~table~options = { [ #4 ]{ #5 } } }
+          }
+      }
+    \__csvsim_loop:
+  }
 
 
 %---- sorting
