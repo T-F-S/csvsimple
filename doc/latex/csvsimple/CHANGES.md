@@ -16,6 +16,24 @@ and this project adheres to
 ### Security
 
 
+
+## [2.5.1]
+
+### Added
+
+### Changed
+- Default settings for `\csvautotabularray` and friends slightly changed
+    (line width and added uppercase setting)
+- In documentation for `collect data`, `after first line` is 
+    added to the list of collected keys (issue/pull request #31)
+
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+
+
 ## [2.5.0] - 2023-10-16
 
 ### Added

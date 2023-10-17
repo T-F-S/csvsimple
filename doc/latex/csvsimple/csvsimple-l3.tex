@@ -1,7 +1,7 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
 % !TeX spellcheck=en_US
-%% The LaTeX package csvsimple - version 2.5.0 (2023/10/16)
+%% The LaTeX package csvsimple - version 2.5.1pre1 (2023/10/17)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -709,7 +709,7 @@ for the general table options in combination with \refCom{csvreader} and
   ]
   {
     { doc name = csvautolongtable  },
-    { doc name = csvautolongtable*, doc new = 2021-06-25 }
+    { doc name = csvautolongtable*, doc new= 2021-06-25 }
   }
   |\csvautolongtable| or |\csvautolongtable*|
   is an abbreviation for the application of the option key
@@ -779,10 +779,9 @@ for the general table options in combination with \refCom{csvreader} and
 
 \begin{docCommands}[
     doc parameter = \oarg{options}\marg{file name}\oarg{taboptions 1}\oarg{taboptions 2},
-    doc new = 2023-10-13
   ]
   {
-    { doc name = csvautotabularray  },
+    { doc name = csvautotabularray, doc new and updated={2023-10-13}{2023-10-17}, },
     { doc name = csvautotabularray* },
     { doc name = csvautolongtabularray  },
     { doc name = csvautolongtabularray* },
@@ -805,16 +804,16 @@ for the general table options in combination with \refCom{csvreader} and
 \begin{dispListing}
 generic table options =
   { {
-    row{1}     = {font=\bfseries},
-    hline{1,Z} = {0.8pt},
-    hline{2}   = {0.4pt},
+    row{1}     = {font=\bfseries,preto=\MakeUppercase},
+    hline{1,Z} = {0.08em},
+    hline{2}   = {0.05em},
   } }
 \end{dispListing}
   For the star variants, the default setting is
 \begin{dispListing}
 generic table options =
   { {
-    hline{1,Z} = {0.8pt},
+    hline{1,Z} = {0.08em},
   } }
 \end{dispListing}
 
@@ -829,10 +828,10 @@ Examples:
     generic table options =
     {{
       row{odd}   = {red!85!gray!7},
-      row{1}     = {bg=red!85!gray, fg=white, font=\bfseries},
+      row{1}     = {bg=red!85!gray, fg=white,
+                    font=\bfseries, preto=\MakeUppercase},
     }}
-  ]
-  {grade.csv}
+  ] {grade.csv}
 \end{dispExample}
 
 \clearpage
@@ -842,16 +841,21 @@ Alternatively to \refKey{/csvsim/generic table options}
 \docAuxEnvironment*{tblr} or \docAuxEnvironment*{longtblr}
 using \meta{taboptions 1} and \meta{taboptions 2}.
 If \meta{taboptions 2} is \emph{not present}, then \meta{taboptions 1}
-is used as mandatory argument.
-Otherwise, \meta{taboptions 1} is used as optional argument and
-\meta{taboptions 2} as mandatory argument.
+is used as
+mandatory argument (\ctanpkg{tabularray} inner specification).
+Otherwise, \meta{taboptions 1} is used as
+optional argument (\ctanpkg{tabularray} outer specification)
+and
+\meta{taboptions 2} as
+mandatory argument (\ctanpkg{tabularray} inner specification).
 
 \begin{dispExample}
 \csvautotabularray[table centered]
   {grade.csv}
   [
     row{odd}   = {red!85!gray!7},
-    row{1}     = {bg=red!85!gray, fg=white, font=\bfseries},
+    row{1}     = {bg=red!85!gray, fg=white,
+                  font=\bfseries, preto=\MakeUppercase},
   ]
 \end{dispExample}
 
@@ -866,7 +870,8 @@ Otherwise, \meta{taboptions 1} is used as optional argument and
   ]
   [
     row{odd}   = {red!85!gray!7},
-    row{1}     = {bg=red!85!gray, fg=white, font=\bfseries},
+    row{1}     = {bg=red!85!gray, fg=white,
+                  font=\bfseries, preto=\MakeUppercase},
   ]
 \end{dispExample}
 
@@ -2235,13 +2240,14 @@ the \ctanpkg{tabularray} package, collecting the data from the CSV file into a m
 This macro can be given to the target application for further processing.
 
 
-\begin{docCsvKey}[][doc new=2021-07-06]{collect data}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+\begin{docCsvKey}[][doc new and updated={2021-07-06}{2023-10-17}]{collect data}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
 |csvsimple-l3| provides limited and experimental support to collect the input data
 from the CSV file plus user additions into a macro named \refCom{csvdatacollection}.
 Setting \refKey{/csvsim/collect data} adds the contents of the following keys
 to \refCom{csvdatacollection}:
 \begin{itemize}
 \item\refKey{/csvsim/after head}
+\item\refKey{/csvsim/after first line}
 \item\refKey{/csvsim/after line}
 \item\refKey{/csvsim/before first line}
 \item\refKey{/csvsim/before line}
@@ -2973,7 +2979,7 @@ optional argument.
 \csvautotabularray[table centered]{data.csv}
   [
     row{odd}   = {blue!85!gray!7},
-    row{1}     = {blue!50!gray!25, font=\bfseries},
+    row{1}     = {blue!50!gray!25, font=\bfseries, preto=\MakeUppercase},
     hline{1,Z} = {0.1em, blue!50!black},
     hline{2}   = {blue!50!black}
   ]
