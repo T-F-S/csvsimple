@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Added
 ### Changed
+- In `collect data` documentation, add `after first line` to list of collected keys (issue #28)
+
 ### Deprecated
 ### Removed
 ### Fixed
