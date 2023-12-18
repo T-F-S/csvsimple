@@ -17,15 +17,23 @@ and this project adheres to
 
 
 
-## [2.5.1]
+## [2.6.0]
 
 ### Added
+- `consume collected data`
+- `\csvcollecte` (replacement for `\csvcollectx`)
 
 ### Changed
 - Default settings for `\csvautotabularray` and friends slightly changed
     (line width and added uppercase setting)
 - In documentation for `collect data`, `after first line` is 
     added to the list of collected keys (issue/pull request #31)
+- Expl3 scratch variables like `\l_tmpa_tl` replaced by package variables like `\l__csvsim_tmpa_tl`
+- Implementation of `\csvexpval` changed from `\exp_not:V` to `\exp_not:o`
+- Implementation of `data collection` changed to piecewise token list constructions
+- Implementation of `generic collected table` does not alter `after reading` anymore
+- Implementation of `\ifcsvstrcmp` and `\ifcsvstrequal` changed
+- Several minor changes
 
 ### Deprecated
 ### Removed

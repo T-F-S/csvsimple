@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.5.1pre1 (2023/10/17)
+%% The LaTeX package csvsimple - version 2.6.0pre2 (2023/12/18)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2023/10/17}{2.5.1pre1}
+\ProvidesExplPackage{csvsimple-l3}{2023/12/18}{2.6.0pre2}
   {LaTeX3 CSV file processing}
 
 
@@ -42,10 +42,12 @@
 \bool_new:N \g__csvsim_check_column_count_bool
 \bool_new:N \g__csvsim_collect_data_bool
 \bool_new:N \g__csvsim_colnames_detection_bool
+\bool_new:N \g__csvsim_consume_collected_data_bool
 \bool_new:N \g__csvsim_head_bool
 \bool_new:N \g__csvsim_head_to_colnames_bool
 \bool_new:N \g__csvsim_line_accepted_bool
 \bool_new:N \g__csvsim_line_firstline_bool
+
 \bool_new:N \l__csvsim_respect_and_bool
 \bool_new:N \l__csvsim_respect_backslash_bool
 \bool_new:N \l__csvsim_respect_circumflex_bool
@@ -60,22 +62,30 @@
 
 \int_new:N \g__csvsim_col_int
 \int_new:N \g__csvsim_colmax_int
+\int_new:N \g_csvsim_columncount_int
 \int_new:N \g_csvsim_inputline_int
 \int_new:N \g_csvsim_row_int
-\int_new:N \g_csvsim_columncount_int
+
+\int_new:N \l__csvsim_tmpa_int
+\int_new:N \l__csvsim_tmpb_int
 
 \seq_new:N \g__csvsim_colname_seq
 \seq_new:N \g__csvsim_line_seq
 \seq_new:N \g__csvsim_range_seq
 
+\seq_new:N \l__csvsim_tmpa_seq
+
 \str_new:N \g__csvsim_curfilename_str
 \str_new:N \g__csvsim_filename_str
+
 \str_new:N \l__csvsim_csvsorter_command_str
 \str_new:N \l__csvsim_csvsorter_configpath_str
 \str_new:N \l__csvsim_csvsorter_log_str
 \str_new:N \l__csvsim_csvsorter_token_str
 \str_new:N \l__csvsim_ppfilename_str
 \str_new:N \l__csvsim_temp_filename_str
+\str_new:N \l__csvsim_tmpa_str
+\str_new:N \l__csvsim_tmpb_str
 
 \tl_const:Nn \c__csvsim_par_tl { \par }
 
@@ -104,16 +114,19 @@
 \tl_new:N \g__csvsim_hook_late_after_first_line_tl
 \tl_new:N \g__csvsim_hook_late_after_head_tl
 \tl_new:N \g__csvsim_hook_late_after_last_line_tl
-\tl_new:N \g__csvsim_hook_late_after_line_tl
 \tl_new:N \g__csvsim_hook_late_after_line_application_tl
+\tl_new:N \g__csvsim_hook_late_after_line_tl
 \tl_new:N \g__csvsim_hook_table_begin_tl
 \tl_new:N \g__csvsim_hook_table_end_tl
 \tl_new:N \g__csvsim_preprocessor_tl
 \tl_new:N \g__csvsim_separator_tl
 \tl_new:N \g__csvsim_table_foot_tl
 \tl_new:N \g__csvsim_table_head_tl
+\tl_new:N \g__csvsim_tmpa_tl
 
 \tl_new:N \l__csvsim_filter_condition_tl
+\tl_new:N \l__csvsim_tmpa_tl
+\tl_new:N \l__csvsim_tmpb_tl
 
 
 \group_begin:
@@ -164,9 +177,9 @@
   {
     \group_begin:
     \g__csvsim_catcode_tl
-    \ior_get:NNTF \g__csvsim_ior \l_tmpa_tl
+    \ior_get:NNTF \g__csvsim_ior \l__csvsim_tmpa_tl
       {
-        \tl_gset_eq:NN \csvline \l_tmpa_tl
+        \tl_gset_eq:NN \csvline \l__csvsim_tmpa_tl
         \int_gincr:N \g_csvsim_inputline_int
       }
       {
@@ -199,13 +212,15 @@
 
 \cs_new_protected_nopar:Npn \__csvsim_process_head_name:n #1
   {
-    \tl_set:No \l_tmpa_tl {\cs:w csvcol\int_to_roman:n{#1} \cs_end:}
-    \exp_args:NnV \cs_set_nopar:cpn {__csvsim__/\l_tmpa_tl} \l_tmpa_tl
+    \tl_set:No \l__csvsim_tmpa_tl {\cs:w csvcol\int_to_roman:n{#1} \cs_end:}
+    \exp_args:NnV \cs_set_nopar:cpn {__csvsim__/\l__csvsim_tmpa_tl} \l__csvsim_tmpa_tl
     \bool_if:NT \g__csvsim_head_to_colnames_bool
       {
-        \tl_set:No \l_tmpb_tl {\cs:w \g__csvsim_headname_prefix_tl \l_tmpa_tl \cs_end:}
-        \tl_put_right:NV \l_tmpb_tl \l_tmpa_tl
-        \exp_args:NNV \seq_gput_right:Nn \g__csvsim_colname_seq \l_tmpb_tl
+        \exp_args:NNe \seq_gput_right:Nn \g__csvsim_colname_seq
+          {
+            \exp_not:o { \cs:w \g__csvsim_headname_prefix_tl \l__csvsim_tmpa_tl \cs_end: }
+            \exp_not:o { \l__csvsim_tmpa_tl }
+          }
       }
   }
 
@@ -215,7 +230,7 @@
     \__csvsim_read_line:
     \tl_if_eq:NNTF \csvline \c__csvsim_par_tl
       {
-        \msg_error:nnx { csvsimple }{ empty-head }{ \g__csvsim_filename_str }
+        \msg_error:nne { csvsimple }{ empty-head }{ \g__csvsim_filename_str }
       }
       {
         \int_gzero:N \g_csvsim_columncount_int
@@ -232,20 +247,24 @@
   {
     \cs_if_exist:cTF {__csvsim__/#1}
       {
-        \tl_set:Nv \l_tmpa_tl {__csvsim__/#1}
-        \tl_put_left:Nn \l_tmpa_tl {#2}
-        \exp_args:NNV \seq_gput_right:Nn \g__csvsim_colname_seq \l_tmpa_tl
+        \exp_args:NNe \seq_gput_right:Nn \g__csvsim_colname_seq
+          {
+            \exp_not:n { #2 }
+            \exp_not:v { __csvsim__/#1 }
+          }
       }
       {
         \regex_match:NnTF \c__csvsim_integer_regex {#1}
           {
-            \tl_set:No \l_tmpa_tl {\cs:w csvcol\int_to_roman:n{#1} \cs_end:}
-            \tl_put_left:Nn \l_tmpa_tl {#2}
-            \exp_args:NNV \seq_gput_right:Nn \g__csvsim_colname_seq \l_tmpa_tl
+            \exp_args:NNe \seq_gput_right:Nn \g__csvsim_colname_seq
+              {
+                \exp_not:n { #2 }
+                \exp_not:o { \cs:w csvcol\int_to_roman:n{#1} \cs_end: }
+              }
           }
           {
-            \str_set:Nn \l_tmpb_str {#2}
-            \msg_error:nnxx { csvsimple }{ column-name }{ #1 }{ \l_tmpb_str }
+            \str_set:Nn \l__csvsim_tmpb_str {#2}
+            \msg_error:nnee { csvsimple }{ column-name }{ #1 }{ \l__csvsim_tmpb_str }
           }
       }
   }
@@ -284,7 +303,7 @@
     \int_gset_eq:NN \g__csvsim_colmax_int \c_one_int
     \bool_if:NT \g__csvsim_collect_data_bool
       {
-        \__csvsim_collect_data:
+        \__csvsim_collect_data_begin:
       }
 
     % open file
@@ -368,10 +387,10 @@
     % clear macros
     \int_step_inline:nn \g__csvsim_colmax_int
       {
-        \tl_set:No \l_tmpa_tl {\cs:w csvcol\int_to_roman:n{##1} \cs_end:}
-        \use:x
+        \tl_set:No \l__csvsim_tmpa_tl {\cs:w csvcol\int_to_roman:n{##1} \cs_end:}
+        \use:e
           {
-            \exp_not:N\tl_gclear:N \exp_not:V\l_tmpa_tl
+            \exp_not:N\tl_gclear:N \exp_not:V\l__csvsim_tmpa_tl
           }
       }
     \__csvsim_set_colnames:
@@ -384,8 +403,7 @@
     \g__csvsim_hook_after_reading_tl
     \bool_if:NT \g__csvsim_collect_data_bool
       {
-        \exp_args:NV \tl_gset_eq:NN \g__csvsim_data_collection_tl \g__csvsim_collect_tl
-        \tl_gclear:N \g__csvsim_collect_tl
+        \__csvsim_collect_data_end:
       }
   }
 
@@ -407,25 +425,6 @@
 
 
 %---- auxiliary user macros
-
-% \NewDocumentCommand \csvlinetotablerow { }
-  % {
-    % \tl_clear:N \l_tmpa_tl
-    % \bool_set_false:N \l_tmpa_bool
-    % \seq_map_inline:Nn \g__csvsim_line_seq
-      % {
-        % \bool_if:NTF \l_tmpa_bool
-          % {
-            % \tl_put_right:Nn \l_tmpa_tl { & ##1 }
-          % }
-          % {
-            % \tl_put_right:Nn \l_tmpa_tl { ##1 }
-            % \bool_set_true:N \l_tmpa_bool
-          % }
-      % }
-    % \l_tmpa_tl
-  % }
-
 
 \NewExpandableDocumentCommand \csvlinetotablerow { }
   {
@@ -475,9 +474,9 @@
   }
 
 
-\NewExpandableDocumentCommand \ifcsvstrcmp { m m }
+\NewExpandableDocumentCommand \ifcsvstrcmp { }
   {
-    \str_compare:eNeTF {#1} = {#2}
+    \str_if_eq:eeTF
   }
 
 
@@ -487,19 +486,17 @@
   }
 
 
-\NewDocumentCommand \ifcsvstrequal { m m }
+\NewDocumentCommand \ifcsvstrequal { }
   {
-    \tl_set:Nx \l_tmpa_tl {#1}
-    \tl_set:Nx \l_tmpb_tl {#2}
-    \tl_if_eq:NNTF \l_tmpa_tl \l_tmpb_tl
+    \tl_if_eq:eeTF
   }
 
 
 \NewDocumentCommand \ifcsvprostrequal { m m }
   {
-    \protected@edef \l_tmpa_tl {#1}
-    \protected@edef \l_tmpb_tl {#2}
-    \tl_if_eq:NNTF \l_tmpa_tl \l_tmpb_tl
+    \protected@edef \l__csvsim_tmpa_tl {#1}
+    \protected@edef \l__csvsim_tmpb_tl {#2}
+    \tl_if_eq:NNTF \l__csvsim_tmpa_tl \l__csvsim_tmpb_tl
   }
 
 
@@ -525,15 +522,15 @@
         \str_set:Nn \l__csvsim_temp_filename_str {#1}
       }
       {
-        \str_set:Nn \l_tmpa_str {#1}
-        \str_if_empty:NF \l_tmpa_str
+        \str_set:Nn \l__csvsim_tmpa_str {#1}
+        \str_if_empty:NF \l__csvsim_tmpa_str
           {
-            \str_compare:eNeF { \str_item:Nn \l_tmpa_str {-1} } = { / }
+            \str_compare:eNeF { \str_item:Nn \l__csvsim_tmpa_str {-1} } = { / }
               {
-                \str_put_right:Nn \l_tmpa_str {/}
+                \str_put_right:Nn \l__csvsim_tmpa_str {/}
               }
             \str_concat:NNN \l__csvsim_temp_filename_str
-              \l_tmpa_str \l__csvsim_temp_filename_str
+              \l__csvsim_tmpa_str \l__csvsim_temp_filename_str
           }
       }
   }
@@ -635,7 +632,7 @@
     no~check~column~count      .meta:n = { check~column~count=false },
     warn~on~column~count~error .meta:n = { on~column~count~error=
       {
-        \msg_warning:nnxxxx { csvsimple }{ column-wrong-count }
+        \msg_warning:nneeee { csvsimple }{ column-wrong-count }
           { \int_use:N\g__csvsim_col_int }
           { \int_use:N\g_csvsim_columncount_int }
           { \int_use:N\g_csvsim_inputline_int }
@@ -840,51 +837,51 @@
   {
     \tl_if_in:nnTF {#1}{-}
       {
-        \seq_set_split:Nnn \l_tmpa_seq {-} {#1}
-        \seq_pop_left:NN \l_tmpa_seq \l_tmpa_tl
-        \seq_pop_left:NN \l_tmpa_seq \l_tmpb_tl
-        \tl_if_empty:NTF \l_tmpa_tl
+        \seq_set_split:Nnn \l__csvsim_tmpa_seq {-} {#1}
+        \seq_pop_left:NN \l__csvsim_tmpa_seq \l__csvsim_tmpa_tl
+        \seq_pop_left:NN \l__csvsim_tmpa_seq \l__csvsim_tmpb_tl
+        \tl_if_empty:NTF \l__csvsim_tmpa_tl
           {
-            \int_set_eq:NN \l_tmpa_int \c_one_int
+            \int_set_eq:NN \l__csvsim_tmpa_int \c_one_int
           }
           {
-            \int_set:Nn \l_tmpa_int { \l_tmpa_tl }
+            \int_set:Nn \l__csvsim_tmpa_int { \l__csvsim_tmpa_tl }
           }
-        \tl_if_empty:NTF \l_tmpb_tl
+        \tl_if_empty:NTF \l__csvsim_tmpb_tl
           {
-            \int_set_eq:NN \l_tmpb_int \c_max_int
+            \int_set_eq:NN \l__csvsim_tmpb_int \c_max_int
           }
           {
-            \int_set:Nn \l_tmpb_int { \l_tmpb_tl }
+            \int_set:Nn \l__csvsim_tmpb_int { \l__csvsim_tmpb_tl }
           }
       }
       {
         \tl_if_in:nnTF {#1}{+}
           {
-            \seq_set_split:Nnn \l_tmpa_seq {+} {#1}
-            \seq_pop_left:NN \l_tmpa_seq \l_tmpa_tl
-            \seq_pop_left:NN \l_tmpa_seq \l_tmpb_tl
-            \tl_if_empty:NTF \l_tmpa_tl
+            \seq_set_split:Nnn \l__csvsim_tmpa_seq {+} {#1}
+            \seq_pop_left:NN \l__csvsim_tmpa_seq \l__csvsim_tmpa_tl
+            \seq_pop_left:NN \l__csvsim_tmpa_seq \l__csvsim_tmpb_tl
+            \tl_if_empty:NTF \l__csvsim_tmpa_tl
               {
-                \int_set:Nn \l_tmpa_int { 1 }
+                \int_set:Nn \l__csvsim_tmpa_int { 1 }
               }
               {
-                \int_set:Nn \l_tmpa_int { \l_tmpa_tl }
+                \int_set:Nn \l__csvsim_tmpa_int { \l__csvsim_tmpa_tl }
               }
-            \tl_if_empty:NTF \l_tmpb_tl
+            \tl_if_empty:NTF \l__csvsim_tmpb_tl
               {
-                \int_set_eq:NN \l_tmpb_int \l_tmpa_int
+                \int_set_eq:NN \l__csvsim_tmpb_int \l__csvsim_tmpa_int
               }
               {
-                \int_set:Nn \l_tmpb_int { \l_tmpa_int + \l_tmpb_tl - 1 }
+                \int_set:Nn \l__csvsim_tmpb_int { \l__csvsim_tmpa_int + \l__csvsim_tmpb_tl - 1 }
               }
           }
           {
-            \int_set:Nn \l_tmpa_int {#1}
-            \int_set_eq:NN \l_tmpb_int \l_tmpa_int
+            \int_set:Nn \l__csvsim_tmpa_int {#1}
+            \int_set_eq:NN \l__csvsim_tmpb_int \l__csvsim_tmpa_int
           }
       }
-    \seq_gput_right:Nx \g__csvsim_range_seq {{\int_use:N \l_tmpa_int}{\int_use:N \l_tmpb_int}}
+    \seq_gput_right:Ne \g__csvsim_range_seq {{\int_use:N \l__csvsim_tmpa_int}{\int_use:N \l__csvsim_tmpb_int}}
   }
 
 
@@ -944,28 +941,29 @@
 
 \cs_new_protected_nopar:Npn \__csvsim_gset_tl_to_collect:N #1
   {
-    \tl_gset:Nx #1
+    \tl_gset:Ne #1
       {
-        \exp_not:N \tl_gput_right:Nn
+        \exp_not:N \tl_build_gput_right:Nn
         \exp_not:N \g__csvsim_collect_tl
-        {\exp_not:V #1}
+        { \exp_not:o { #1 } }
       }
   }
 
 
 \cs_new_protected_nopar:Npn \__csvsim_gset_tl_to_collect_expanded:N #1
   {
-    \tl_gset:Nx #1
+    \tl_gset:Ne #1
       {
-        \exp_not:N \tl_gput_right:Nx
+        \exp_not:N \tl_build_gput_right:Ne
         \exp_not:N \g__csvsim_collect_tl
-        {\exp_not:V #1}
+        { \exp_not:o { #1 } }
       }
   }
 
 
-\cs_new_protected_nopar:Npn \__csvsim_collect_data:
+\cs_new_protected_nopar:Npn \__csvsim_collect_data_begin:
   {
+    \tl_build_gbegin:N \g__csvsim_collect_tl
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_head_tl
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_first_line_tl
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_after_line_tl
@@ -976,29 +974,50 @@
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_late_after_last_line_tl
     \__csvsim_gset_tl_to_collect:N \g__csvsim_hook_late_after_line_tl
     \__csvsim_gset_tl_to_collect_expanded:N \g__csvsim_body_tl
+  }
+
+
+\cs_new_protected_nopar:Npn \__csvsim_collect_data_end:
+  {
+    \tl_build_gend:N \g__csvsim_collect_tl
+    \bool_if:NTF \g__csvsim_consume_collected_data_bool
+      {
+        \g__csvsim_collect_tl
+        \exp_args:NV \tl_gclear:N \g__csvsim_data_collection_tl
+      }
+      {
+        \exp_args:NV \tl_gset_eq:NN \g__csvsim_data_collection_tl \g__csvsim_collect_tl
+      }
     \tl_gclear:N \g__csvsim_collect_tl
   }
 
 
-\cs_set_eq:NN \csvexpval \exp_not:V
+\cs_set_eq:NN \csvexpval \exp_not:o
 \cs_set_eq:NN \csvexpnot \exp_not:N
 
 
 \NewDocumentCommand{ \csvcollectn }{ +m }
   {
-    \tl_gput_right:Nn \g__csvsim_collect_tl {#1}
+    \tl_build_gput_right:Nn \g__csvsim_collect_tl {#1}
   }
 
 
+\NewDocumentCommand{ \csvcollecte }{ +m }
+  {
+    \tl_build_gput_right:Ne \g__csvsim_collect_tl {#1}
+  }
+
+
+% alias for \csvcollecte
 \NewDocumentCommand{ \csvcollectx }{ +m }
   {
-    \tl_gput_right:Nx \g__csvsim_collect_tl {#1}
+    \tl_build_gput_right:Ne \g__csvsim_collect_tl {#1}
   }
 
 
 \NewDocumentCommand{ \csvcollectV }{ m }
   {
-    \tl_gput_right:NV \g__csvsim_collect_tl #1
+    \tl_build_gput_right:Ne \g__csvsim_collect_tl { \exp_not:o { #1 } }
   }
 
 
@@ -1006,6 +1025,7 @@
   {
     collect~data    .bool_gset:N = \g__csvsim_collect_data_bool,
     data~collection .tl_gset:N   = \g__csvsim_data_collection_tl,
+    consume~collected~data .bool_gset:N = \g__csvsim_consume_collected_data_bool,
   }
 
 
@@ -1139,9 +1159,9 @@
           {
             \g__csvsim_begin_table_center_tl
             \g__csvsim_before_table_tl
-            \tl_gset:Nn \g_tmpa_tl {\begin{#1}}
-            \tl_gput_right:NV \g_tmpa_tl \g__csvsim_generic_table_options_tl
-            \g_tmpa_tl
+            \tl_gset:Nn \g__csvsim_tmpa_tl {\begin{#1}}
+            \tl_gput_right:NV \g__csvsim_tmpa_tl \g__csvsim_generic_table_options_tl
+            \g__csvsim_tmpa_tl
             \g__csvsim_table_head_tl
           }
           {
@@ -1155,25 +1175,28 @@
     generic~collected~table .meta:n =
       {
         collect~data,
+        consume~collected~data = true,
         _table_ =
           {
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_begin_table_center_tl
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_before_table_tl
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \begin{#1} }
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_generic_table_options_tl
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_head_tl
+            \tl_build_gput_right:Ne \g__csvsim_collect_tl
+              {
+                \exp_not:o { \g__csvsim_begin_table_center_tl }
+                \exp_not:o { \g__csvsim_before_table_tl }
+                \exp_not:n { \begin{#1} }
+                \exp_not:o { \g__csvsim_generic_table_options_tl }
+                \exp_not:o { \g__csvsim_table_head_tl }
+              }
           }
           {
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_table_foot_tl
-            \tl_gput_right:Nn \g__csvsim_collect_tl { \end{#1} }
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_after_table_tl
-            \tl_gput_right:NV \g__csvsim_collect_tl \g__csvsim_end_table_center_tl
+            \tl_build_gput_right:Ne \g__csvsim_collect_tl
+              {
+                \exp_not:o { \g__csvsim_table_foot_tl }
+                \exp_not:n { \end{#1} }
+                \exp_not:o { \g__csvsim_after_table_tl }
+                \exp_not:o { \g__csvsim_end_table_center_tl }
+              }
           },
         late~after~line = \\,
-        after~reading   =
-          {
-            \tl_use:N \g__csvsim_collect_tl
-          },
       },
   }
 
@@ -1540,7 +1563,7 @@
         \iow_open:Nn \g__csvsim_iow { \l__csvsim_csvsorter_token_str }
         \iow_now:Nn \g__csvsim_iow { \ExplSyntaxOn \msg_error:nn { csvsimple }{ sort-error } \ExplSyntaxOff }
         \iow_close:N \g__csvsim_iow
-        \sys_shell_now:x
+        \sys_shell_now:e
           {
             "\l__csvsim_csvsorter_command_str" \c_space_tl
               -c~ "\l__csvsim_csvsorter_configpath_str/\l__csvsim_temp_filename_str" \c_space_tl
@@ -1576,6 +1599,7 @@
         head~to~column~names~prefix = ,
         head~to~column~names        = false,
         collect~data                = false,
+        consume~collected~data      = false,
         column~count                = 0,
         on~column~count~error       =,
         range                       =,

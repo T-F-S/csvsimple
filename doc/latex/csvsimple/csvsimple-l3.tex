@@ -1,7 +1,7 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
 % !TeX spellcheck=en_US
-%% The LaTeX package csvsimple - version 2.5.1pre1 (2023/10/17)
+%% The LaTeX package csvsimple - version 2.6.0pre2 (2023/12/18)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -709,7 +709,7 @@ for the general table options in combination with \refCom{csvreader} and
   ]
   {
     { doc name = csvautolongtable  },
-    { doc name = csvautolongtable*, doc new= 2021-06-25 }
+    { doc name = csvautolongtable*, doc new = 2021-06-25 }
   }
   |\csvautolongtable| or |\csvautolongtable*|
   is an abbreviation for the application of the option key
@@ -1703,11 +1703,11 @@ are described with predefined keys. The following keys allow to use further
 \end{docCsvKey}
 
 
-\begin{docCsvKey}[][doc new=2021-09-09]{generic collected table}{=\meta{name}}{no default, initially empty}
+\begin{docCsvKey}[][doc new and updated={2021-09-09}{2023-12-18}]{generic collected table}{=\meta{name}}{no default, initially empty}
   Like \refKey{/csvsim/generic table} but for environments which need
   collected content, e.g. |tblr| from package \ctanpkg{tabularray}, see \Fullref{sec:datacollection}.
-  Note that \refKey{/csvsim/after reading} is set to use the collected
-  data immediately.
+  Note that \refKey{/csvsim/consume collected data} is set to |true| to
+  use the collected data immediately.
 
 \begin{dispListing}
   % The `tblr` environment from package `tabularray` would be used
@@ -2260,7 +2260,8 @@ Also, the \emph{expanded} content of
 \begin{itemize}
 \item\refKey{/csvsim/command}
 \end{itemize}
-is added to \docAuxCommand{csvdatacollection}.
+is added to \refCom{csvdatacollection}
+(depending on \refKey{/csvsim/consume collected data} and \refKey{/csvsim/data collection}).
 Note that for \refKey{/csvsim/command} special care has to be taken
 \emph{what} should be protected from expansion and \emph{what not}.
 Observe the following hints for \refKey{/csvsim/command}:
@@ -2298,6 +2299,14 @@ See \Fullref{sec:tabularray} for examples.
 
 \clearpage
 
+\begin{docCsvKey}[][doc new={2023-12-18}]{consume collected data}{\colOpt{=true\textbar false}}{default |true|, initially |false|}
+If set to |false|, the collected data of a CSV file processed with
+\refKey{/csvsim/collect data} is saved into \refCom{csvdatacollection}.\par
+Otherwise, if set to |true|, the collected data is not saved, but directly used
+after reading the CSV file, see \refKey{/csvsim/generic collected table}.
+\end{docCsvKey}
+
+
 \begin{docCsvKey}[][doc new=2021-07-06]{data collection}{=\meta{macro}}{no default, initially \refCom{csvdatacollection}}
 Sets the collection macro to an alternative for \refCom{csvdatacollection}.
 \begin{dispListing}
@@ -2313,9 +2322,9 @@ Sets the collection macro to an alternative for \refCom{csvdatacollection}.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2021-07-06]{csvexpval}{\meta{macro}}
+\begin{docCommand}[doc new and updated={2021-07-06}{2023-12-17}]{csvexpval}{\meta{macro}}
   Recovers the content of the given \meta{macro} and prevents further
-  expansion. This is a wrapper for \docAuxCommand*{exp_not:V}.
+  expansion. This is a wrapper for \docAuxCommand*{exp_not:o}.
   Alternatively, |\expandonce| from \ctanpkg{etoolbox} could be used.
 \end{docCommand}
 
@@ -2329,20 +2338,28 @@ Sets the collection macro to an alternative for \refCom{csvdatacollection}.
 The following macros can only be used inside keys which are \emph{not}
 collected to \refCom{csvdatacollection}, e.g. inside \refKey{/csvsim/after filter}.
 
-\begin{docCommand}[doc new=2021-07-06]{csvcollectn}{\marg{code}}
+\begin{docCommand}[doc new and updated={2021-07-06}{2023-12-17}]{csvcollectn}{\marg{code}}
   Appends the given \meta{code} to \refCom{csvdatacollection}.\\
-  This corresponds to \docAuxCommand*{tl_gput_right:Nn}.
+  This corresponds to \docAuxCommand*{tl_build_gput_right:Nn}.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2021-07-06]{csvcollectx}{\marg{code}}
+\begin{docCommands}[
+      doc parameter = \marg{code}
+    ]
+  {
+    { doc name = csvcollecte, doc new and updated = {2021-07-06}{2023-12-18} },
+    { doc name = csvcollectx }
+  }
   Appends the expansion of the given \meta{code} to \refCom{csvdatacollection}.\\
-  This corresponds to \docAuxCommand*{tl_gput_right:Nx}.
-\end{docCommand}
+  This corresponds to \docAuxCommand*{tl_build_gput_right:Ne}.\\
+  \refCom{csvcollectx} is an alias for \refCom{csvcollecte} and is kept for backward compatibility.
+\end{docCommands}
 
-\begin{docCommand}[doc new=2021-07-06]{csvcollectV}{\meta{macro}}
+\begin{docCommand}[doc new and updated={2021-07-06}{2023-12-17}]{csvcollectV}{\meta{macro}}
   Appends the content of the given \meta{macro} to \refCom{csvdatacollection}.\\
-  This corresponds to \docAuxCommand*{tl_gput_right:NV}.
+  This corresponds to \docAuxCommand*{tl_build_gput_right:Ne} and \docAuxCommand*{exp_not:o} for
+  \meta{macro}.
 \end{docCommand}
 
 
@@ -2364,9 +2381,9 @@ provided for backward compatibility.
 \end{itemize}
 \medskip
 
-\begin{docCommand}[doc new and updated={2016-07-01}{2021-06-28}]{ifcsvstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+\begin{docCommand}[doc new and updated={2016-07-01}{2023-12-18}]{ifcsvstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
   Compares two strings and executes \meta{true} if they are equal, and \meta{false} otherwise.
-  The comparison is done using |\str_compare:eNeTF|.
+  The comparison is done using |\str_if_eq:eeTF|.
   \refCom{ifcsvstrcmp} is expandable.
 \end{docCommand}
 
@@ -2378,10 +2395,9 @@ provided for backward compatibility.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new and updated={2016-07-01}{2021-06-28}]{ifcsvstrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
-  Compares two strings and executes \meta{true} if they are equal, and \meta{false} otherwise.
-  The strings are expanded
-  and the comparison is done using |\tl_if_eq:NNTF|.
+\begin{docCommand}[doc new and updated={2016-07-01}{2023-12-18}]{ifcsvstrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+  Compares two strings (token lists in expl3 syntax) and executes \meta{true} if they are equal, and \meta{false} otherwise.
+  The strings are expanded and the comparison is done using |\tl_if_eq:eeTF|.
   \refCom{ifcsvstrequal} is not expandable.
 \end{docCommand}
 
