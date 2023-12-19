@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.6.0pre2 (2023/12/18)
+%% The LaTeX package csvsimple - version 2.6.0pre3 (2023/12/19)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2023/12/18}{2.6.0pre2}
+\ProvidesExplPackage{csvsimple-l3}{2023/12/19}{2.6.0pre3}
   {LaTeX3 CSV file processing}
 
 
@@ -474,42 +474,50 @@
   }
 
 
-\NewExpandableDocumentCommand \ifcsvstrcmp { }
+%---- String and Number Tests
+
+
+\NewExpandableDocumentCommand \IfCsvsimStrEqualTF { }
   {
     \str_if_eq:eeTF
   }
+\NewCommandCopy \ifcsvstrcmp \IfCsvsimStrEqualTF
 
 
 \NewExpandableDocumentCommand \ifcsvnotstrcmp { m m +m +m }
   {
-    \ifcsvstrcmp{#1}{#2}{#4}{#3}
+    \IfCsvsimStrEqualTF{#1}{#2}{#4}{#3}
   }
 
 
-\NewDocumentCommand \ifcsvstrequal { }
+\NewDocumentCommand \IfCsvsimTlEqualTF { }
   {
     \tl_if_eq:eeTF
   }
+\NewCommandCopy \ifcsvstrequal \IfCsvsimTlEqualTF
 
 
-\NewDocumentCommand \ifcsvprostrequal { m m }
+\NewDocumentCommand \IfCsvsimTlProtectedEqualTF { m m }
   {
     \protected@edef \l__csvsim_tmpa_tl {#1}
     \protected@edef \l__csvsim_tmpb_tl {#2}
     \tl_if_eq:NNTF \l__csvsim_tmpa_tl \l__csvsim_tmpb_tl
   }
+\NewCommandCopy \ifcsvprostrequal \IfCsvsimTlProtectedEqualTF
 
 
-\NewExpandableDocumentCommand \ifcsvfpcmp { m }
+\NewExpandableDocumentCommand \IfCsvsimFpCompareTF { m }
   {
     \fp_compare:nTF {#1}
   }
+\NewCommandCopy \ifcsvfpcmp \IfCsvsimFpCompareTF
 
 
-\NewExpandableDocumentCommand \ifcsvintcmp { m }
+\NewExpandableDocumentCommand \IfCsvsimIntCompareTF { m }
   {
     \int_compare:nTF {#1}
   }
+\NewCommandCopy \ifcsvintcmp \IfCsvsimIntCompareTF
 
 
 %---- filename functions

@@ -1,7 +1,7 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
 % !TeX spellcheck=en_US
-%% The LaTeX package csvsimple - version 2.6.0pre2 (2023/12/18)
+%% The LaTeX package csvsimple - version 2.6.0pre3 (2023/12/19)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -344,7 +344,7 @@ a certificate is printed only for students with grade unequal to 5.0.
   ]{grade.csv}
   {1=\name,2=\firstname,3=\matnumber,4=\gender,5=\grade}{%
     \begin{center}\Large\bfseries Certificate in Mathematics\end{center}
-    \large\ifcsvstrcmp{\gender}{f}{Ms.}{Mr.}
+    \large\IfCsvsimStrEqualTF{\gender}{f}{Ms.}{Mr.}
     \firstname~\name, matriculation number \matnumber, has passed the test
     in mathematics with grade \grade.\par\ldots\par
   }%
@@ -580,7 +580,7 @@ purpose:
 \begin{dispExample}
 \csvreader[
     autotabular,
-    full filter = \ifcsvstrcmp{\csvcoliv}{m}{\csvfilteraccept}{\csvfilterreject}
+    full filter = \IfCsvsimStrEqualTF{\csvcoliv}{m}{\csvfilteraccept}{\csvfilterreject}
   ]{grade.csv}{}{%
     \csvlinetotablerow
   }
@@ -2366,67 +2366,98 @@ collected to \refCom{csvdatacollection}, e.g. inside \refKey{/csvsim/after filte
 \clearpage
 \section{String and Number Tests}\label{sec:stringtests}%
 
-The following string tests are complementing the string tests
-from packages like |etoolbox|. They all do the same, i.e.,
-comparing expanded strings for equality. To some extent, they are
-provided for backward compatibility.
-\begin{itemize}
-\item\refCom{ifcsvstrcmp} may be the most efficient method, because it uses
-  the  native compiler string comparison (if available).
-\item\refCom{ifcsvstrequal} does not rely on a compiler. It also is the
-  fallback implementation for \refCom{ifcsvstrcmp}, if there is no
-  native comparison method.
-\item\refCom{ifcsvprostrequal} is possibly more failsafe than the other two
-  string tests. It may be used, if strings contain dirty things like |\textbf{A}|.
-\end{itemize}
+The following string and number tests are, to some extent, provided for
+backward compatibility.
+Mainly, they are wrappers for corresponding |expl3| conditionals.
+Therefore, you are encouraged to use the following CamelCase macros
+like \refCom{IfCsvsimStrEqualTF} which provide by their name insight
+to the underlying |expl3| functions. The lowercase variants are kept
+for backward compatibility.
 \medskip
 
-\begin{docCommand}[doc new and updated={2016-07-01}{2023-12-18}]{ifcsvstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+
+\begin{docCommands}[
+      doc parameter = \marg{string A}\marg{string B}\marg{true}\marg{false}
+    ]
+  {
+    { doc name = IfCsvsimStrEqualTF, doc new and updated = {2016-07-01}{2023-12-19} },
+    { doc name = ifcsvstrcmp, color command=black }
+  }
   Compares two strings and executes \meta{true} if they are equal, and \meta{false} otherwise.
   The comparison is done using |\str_if_eq:eeTF|.
-  \refCom{ifcsvstrcmp} is expandable.
-\end{docCommand}
+  \refCom{IfCsvsimStrEqualTF} is expandable.
+  Typically, this is the preferred function for many use cases.
+\end{docCommands}
 
 
-\begin{docCommand}[doc new and updated={2016-07-01}{2021-06-28}]{ifcsvnotstrcmp}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
+\begin{docCommand}[doc new and updated={2016-07-01}{2021-06-28},color command=black]{ifcsvnotstrcmp}{\marg{string A}\marg{string B}\marg{true}\marg{false}}
   Compares two strings and executes \meta{true} if they are \emph{not} equal, and \meta{false} otherwise.
-  The implementation uses \refCom{ifcsvstrcmp}.
-  \refCom{ifcsvstrcmp} is expandable.
+  The implementation uses \refCom{IfCsvsimStrEqualTF}.
+  \refCom{ifcsvnotstrcmp} is expandable.
+  Consider using \refCom{IfCsvsimStrEqualTF} alternatively.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new and updated={2016-07-01}{2023-12-18}]{ifcsvstrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
-  Compares two strings (token lists in expl3 syntax) and executes \meta{true} if they are equal, and \meta{false} otherwise.
-  The strings are expanded and the comparison is done using |\tl_if_eq:eeTF|.
-  \refCom{ifcsvstrequal} is not expandable.
-\end{docCommand}
+\begin{docCommands}[
+      doc parameter = \marg{token list A}\marg{token list B}\marg{true}\marg{false}
+    ]
+  {
+    { doc name = IfCsvsimTlEqualTF, doc new and updated = {2016-07-01}{2023-12-19} },
+    { doc name = ifcsvstrequal, color command=black }
+  }
+  Compares two token lists and executes \meta{true} if they are equal, and \meta{false} otherwise.
+  The comparison is done using |\tl_if_eq:eeTF|.
+  \refCom{IfCsvsimTlEqualTF} is not expandable.
+  If you have no special reason for using a token list comparison, where
+  characters and category codes of those characters are compared, you may
+  rather choose \refCom{IfCsvsimStrEqualTF}.
+\end{docCommands}
 
 
-\begin{docCommand}[doc new and updated={2016-07-01}{2021-06-28}]{ifcsvprostrequal}{\marg{stringA}\marg{stringB}\marg{true}\marg{false}}
-  Compares two strings and executes \meta{true} if they are equal, and \meta{false} otherwise.
-  The strings are expanded with |\protected@edef|
+
+\begin{docCommands}[
+      doc parameter = \marg{token list A}\marg{token list B}\marg{true}\marg{false}
+    ]
+  {
+    { doc name = IfCsvsimTlProtectedEqualTF, doc new and updated = {2016-07-01}{2023-12-19} },
+    { doc name = ifcsvprostrequal, color command=black }
+  }
+  Compares two token lists and executes \meta{true} if they are equal, and \meta{false} otherwise.
+  The token lists are expanded with |\protected@edef|
   in the test, i.e. parts of the
-  strings which are protected stay unexpanded.
+  token lists which are protected stay unexpanded.
   The comparison is done using |\tl_if_eq:NNTF|.
-  \refCom{ifcsvprostrequal} is not expandable.
-\end{docCommand}
+  \refCom{IfCsvsimTlProtectedEqualTF} is not expandable.
+\end{docCommands}
 
 
-The following number tests are wrappers for corresponding \LaTeX3 conditionals.
-
-\begin{docCommand}[doc new={2021-06-28}]{ifcsvfpcmp}{\marg{floating point expression}\marg{true}\marg{false}}
+\begin{docCommands}[
+      doc parameter = \marg{floating point expression}\marg{token list B}\marg{true}\marg{false}
+    ]
+  {
+    { doc name = IfCsvsimFpCompareTF, doc new and updated = {2021-06-28}{2023-12-19} },
+    { doc name = ifcsvfpcmp, color command=black }
+  }
   Evaluates the given \meta{floating point expression}
   and executes \meta{true} or \meta{false} appropriately.
   The evaluation is done using |\fp_compare:nTF|.
-  \refCom{ifcsvfpcmp} is expandable.
-\end{docCommand}
+  \refCom{IfCsvsimFpCompareTF} is expandable.
+\end{docCommands}
 
-\begin{docCommand}[doc new={2021-06-28}]{ifcsvintcmp}{\marg{integer expression}\marg{true}\marg{false}}
+
+\begin{docCommands}[
+      doc parameter = \marg{integer expression}\marg{token list B}\marg{true}\marg{false}
+    ]
+  {
+    { doc name = IfCsvsimIntCompareTF, doc new and updated = {2021-06-28}{2023-12-19} },
+    { doc name = ifcsvintcmp, color command=black }
+  }
   Evaluates the given \meta{integer expression}
   and executes \meta{true} or \meta{false} appropriately.
   The evaluation is done using |\int_compare:nTF|.
-  \refCom{ifcsvintcmp} is expandable.
-\end{docCommand}
+  \refCom{IfCsvsimIntCompareTF} is expandable.
+\end{docCommands}
+
 
 
 \clearpage
@@ -2494,13 +2525,13 @@ introduced.
 
 \begin{dispExample}
 % this example requires the tcolorbox package
-\newcommand{\ifmale}[2]{\ifcsvstrcmp{\gender}{m}{#1}{#2}}
+\newcommand{\ifmale}[2]{\IfCsvsimStrEqualTF{\gender}{m}{#1}{#2}}
 
 \csvreader[head to column names]{address.csv}{}{%
 \begin{tcolorbox}[colframe=DarkGray,colback=White,arc=0mm,width=(\linewidth-2pt)/2,
       equal height group=letter,before=,after=\hfill,fonttitle=\bfseries,
       adjusted title={Letter to \name}]
-  \ifcsvstrcmp{\degree}{}{\ifmale{Mr.}{Ms.}}{\degree}~\givenname~\name\\
+  \IfCsvsimStrEqualTF{\degree}{}{\ifmale{Mr.}{Ms.}}{\degree}~\givenname~\name\\
   \street\\\zip~\location
   \tcblower
   {\itshape Dear \ifmale{Sir}{Madam},}\\
@@ -2904,7 +2935,7 @@ The following examples uses |data.csv| from \Fullref{sec:examgrapghpres}.
       },
     table head = {\SetCell[c=4]{c} Important Data Table \\},
   ]{data.csv}{}{
-       \ifcsvstrcmp{\group}{A}{\csvexpnot\SetRow{brown7}}{}
+       \IfCsvsimStrEqualTF{\group}{A}{\csvexpnot\SetRow{brown7}}{}
        \csvexpnot\SetCell{bg=purple7}
        \csvexpval\land
      & \csvexpval\group
@@ -2925,7 +2956,7 @@ Note in the example above that
   \item Therefore, expansion of |\SetRow|, |\SetCell|, etc. is prevented by \refCom{csvexpnot}.
   \item The \emph{values} (content) of |\land|, |\group|, etc. are recovered by
         \refCom{csvexpval}.
-  \item |\ifcsvstrcmp| and |\fpeval| are \emph{expandable} and therefore the
+  \item |\IfCsvsimStrEqualTF| and |\fpeval| are \emph{expandable} and therefore the
     results of these commands are \emph{collected}.
   \item |\tablenum| from \ctanpkg{siunitx} is a robust command and therefore
     needs no protection. If you are not sure, if a command is robust or not, it

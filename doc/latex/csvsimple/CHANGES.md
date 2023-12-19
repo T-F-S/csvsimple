@@ -22,6 +22,13 @@ and this project adheres to
 ### Added
 - `consume collected data`
 - `\csvcollecte` (replacement for `\csvcollectx`)
+- New CamelCase macro names for several existing string and number test macros
+    to adapt expl3 naming conventions.
+    - `\IfCsvsimStrEqualTF`
+    - `\IfCsvsimTlEqualTF`
+    - `\IfCsvsimTlProtectedEqualTF`
+    - `\IfCsvsimFpCompareTF`
+    - `\IfCsvsimIntCompareTF`
 
 ### Changed
 - Default settings for `\csvautotabularray` and friends slightly changed
