@@ -1,8 +1,8 @@
-%% The LaTeX package csvsimple - version 2.6.0pre3 (2023/12/19)
+%% The LaTeX package csvsimple - version 2.6.0 (2024/01/19)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2023 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -17,9 +17,9 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\ProvidesExplPackage{csvsimple-l3}{2023/12/19}{2.6.0pre3}
+\NeedsTeXFormat{LaTeX2e}[2023-11-01]
+\ProvidesExplPackage{csvsimple-l3}{2024/01/19}{2.6.0}
   {LaTeX3 CSV file processing}
-
 
 
 %---- check package
@@ -1563,7 +1563,7 @@
     \sys_if_shell_unrestricted:TF
       {
         \__csvsim_set_temp_filename:n { #1 }
-        \msg_note:nnxx { csvsimple }{ sort-info }{ #2 }{ \l__csvsim_temp_filename_str }
+        \msg_note:nnee { csvsimple }{ sort-info }{ #2 }{ \l__csvsim_temp_filename_str }
         \cs_if_exist:NF \g__csvsim_iow
           {
             \iow_new:N \g__csvsim_iow

@@ -1,8 +1,8 @@
-%% The LaTeX package csvsimple - version 2.6.0pre3 (2023/12/19)
+%% The LaTeX package csvsimple - version 2.6.0 (2024/01/19)
 %% csvsimple.sty: Simple LaTeX CSV file processing
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2023 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -17,9 +17,8 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\RequirePackage{l3keys2e}
-
-\ProvidesExplPackage{csvsimple}{2023/12/19}{2.6.0pre3}
+\NeedsTeXFormat{LaTeX2e}[2022-06-01]
+\ProvidesExplPackage{csvsimple}{2024/01/19}{2.6.0}
   {LaTeX CSV file processing}
 
 \cs_if_exist:NT \c__csvsim_package_expl_bool
@@ -36,14 +35,16 @@
     \tex_endinput:D
   }
 
-\keys_define:nn { csvsimple }
+\tl_new:N \l__csvsim_package_expl_tl
+
+\DeclareKeys
   {
     l3     .code:n = \tl_set:Nn \l__csvsim_package_expl_tl { l3 },
     legacy .code:n = \tl_set:Nn \l__csvsim_package_expl_tl { legacy },
   }
 
-\keys_set:nn { csvsimple } { legacy }
+\SetKeys{ legacy }
 
-\ProcessKeysPackageOptions { csvsimple }
+\ProcessKeyOptions
 
 \RequirePackage{csvsimple-\l__csvsim_package_expl_tl}

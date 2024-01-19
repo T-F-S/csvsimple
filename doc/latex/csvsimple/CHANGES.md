@@ -17,13 +17,13 @@ and this project adheres to
 
 
 
-## [2.6.0]
+## [2.6.0] - 2024-01-19
 
 ### Added
 - `consume collected data`
 - `\csvcollecte` (replacement for `\csvcollectx`)
 - New CamelCase macro names for several existing string and number test macros
-    to adapt expl3 naming conventions.
+    to adapt expl3 naming conventions (issue #34):
     - `\IfCsvsimStrEqualTF`
     - `\IfCsvsimTlEqualTF`
     - `\IfCsvsimTlProtectedEqualTF`
@@ -40,12 +40,11 @@ and this project adheres to
 - Implementation of `data collection` changed to piecewise token list constructions
 - Implementation of `generic collected table` does not alter `after reading` anymore
 - Implementation of `\ifcsvstrcmp` and `\ifcsvstrequal` changed
+- Documentation of Section "String and Number Tests" updated (issue #33)
+- Leading `/` removed from all l3keys inside the documentation
+- `l3keys2e` removed from `csvsimple.sty` and code adapted
+- Needed LaTeX version updated to 2023-11-01
 - Several minor changes
-
-### Deprecated
-### Removed
-### Fixed
-### Security
 
 
 
