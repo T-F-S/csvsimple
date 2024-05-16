@@ -17,6 +17,18 @@ and this project adheres to
 
 
 
+## [2.6.1] - 2024-05-16
+
+### Changed
+- Documentation of `csvsim/filter fp`, `csvsim/and filter fp`, `\IfCsvsimFpCompareTF`, 
+    and `\IfCsvsimIntCompareTF` clarified (issue #37)
+- Reset `data collection` to `\csvdatacollection` for every csv reader (issue #39)
+
+### Fixed
+- Documentation typos fixed (issue #38)
+
+
+
 ## [2.6.0] - 2024-01-19
 
 ### Added

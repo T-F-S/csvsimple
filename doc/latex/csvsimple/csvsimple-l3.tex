@@ -1,7 +1,7 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
 % !TeX spellcheck=en_US
-%% The LaTeX package csvsimple - version 2.6.0 (2024/01/19)
+%% The LaTeX package csvsimple - version 2.6.1 (2024/05/16)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ way.
 An even more comfortable and preferable way to create a table is setting
 appropriate option keys. Note, that this gives you the possibility to create a
 meta key (called style here) which contains the whole table creation
-using \refCom{csvstyle} or |keys_define:nn| from |l3keys|.
+using \refCom{csvstyle} or |\keys_define:nn| from |l3keys|.
 
 \begin{dispExample}
 \csvreader[
@@ -1182,9 +1182,10 @@ The following string compare filters \refKey{csvsim/filter strcmp} and
 \end{docCsvKey}
 
 
-\begin{docCsvKey}[][doc new and updated={2021-06-25}{2022-10-21}]{filter fp}{=\marg{floating point expression}}{no default}
-  Only data lines which fulfill a \LaTeX3 \meta{floating point expression}
-    (|l3fp|, \ctanpkg{xfp}) are accepted.
+\enlargethispage*{1cm}
+\begin{docCsvKey}[][doc new and updated={2021-06-25}{2022-10-21}]{filter fp}{=\marg{floating point comparison}}{no default}
+  Only data lines which fulfill a \LaTeX3 \meta{floating point comparison}
+  are accepted. The evaluation is done using \docAuxCommand*{fp_compare_p:n}.
 \begin{dispExample}
 % \usepackage{booktabs}
 \csvreader[
@@ -1316,7 +1317,7 @@ filter options:
 
 
 \begin{docCsvKeys}[
-    doc parameter   = {=\marg{floating point expression}},
+    doc parameter   = {=\marg{floating point comparison}},
     doc description = {style, no default},
     doc new = {2022-10-21}
   ]
@@ -1326,9 +1327,23 @@ filter options:
   }
   Like \refKey{csvsim/filter fp}, but appended to a required existing
   expl3 based filter with \emph{and} (|&&|) resp. \emph{or} (\texttt{\textbar\textbar}).
+\begin{dispExample}
+% \usepackage{booktabs}
+\csvreader[
+    head to column names,
+    tabular    = llll,
+    table head = \toprule & \bfseries Name & \bfseries Matr & \bfseries Grade\\\midrule,
+    table foot = \bottomrule,
+  %>> list only matriculation numbers greater than 20000 and grade less than 4.0 <<
+    filter fp      = { \matriculation > 20000 },
+    and filter fp  = { \grade < 4.0  },
+  ]{grade.csv}{}{%
+    \thecsvrow & \slshape\name, \givenname & \matriculation & \grade
+  }
+\end{dispExample}
 \end{docCsvKeys}
 
-
+\enlargethispage*{1cm}
 \begin{docCsvKeys}[
     doc parameter   = {=\marg{boolean expression}},
     doc description = {style, no default},
@@ -2304,14 +2319,18 @@ If set to |false|, the collected data of a CSV file processed with
 \refKey{csvsim/collect data} is saved into \refCom{csvdatacollection}.\par
 Otherwise, if set to |true|, the collected data is not saved, but directly used
 after reading the CSV file, see \refKey{csvsim/generic collected table}.
+After usage, the collected data is cleared, i.e. \refCom{csvdatacollection} is emptied.
 \end{docCsvKey}
 
 
-\begin{docCsvKey}[][doc new=2021-07-06]{data collection}{=\meta{macro}}{no default, initially \refCom{csvdatacollection}}
+\begin{docCsvKey}[][doc new and updated={2021-07-06}{2024-05-16}]{data collection}{=\meta{macro}}{no default, initially \refCom{csvdatacollection}}
 Sets the collection macro to an alternative for \refCom{csvdatacollection}.
 \begin{dispListing}
   data collection = \myData,    %  instead of \csvdatacollection
 \end{dispListing}
+Note that until version 2.6.0 (2024/01/19), \refKey{csvsim/data collection} was
+not reset to the default \refCom{csvdatacollection} for following CSV files,
+but it is now.
 \end{docCsvKey}
 
 
@@ -2432,29 +2451,35 @@ for backward compatibility.
 
 
 \begin{docCommands}[
-      doc parameter = \marg{floating point expression}\marg{token list B}\marg{true}\marg{false}
+      doc parameter = \marg{floating point comparison}\marg{true}\marg{false}
     ]
   {
     { doc name = IfCsvsimFpCompareTF, doc new and updated = {2021-06-28}{2023-12-19} },
     { doc name = ifcsvfpcmp, color command=black }
   }
-  Evaluates the given \meta{floating point expression}
+  Evaluates the given \meta{floating point comparison}
   and executes \meta{true} or \meta{false} appropriately.
-  The evaluation is done using |\fp_compare:nTF|.
+  The evaluation is done using \docAuxCommand*{fp_compare:nTF}.\\
+  Basically, a \meta{floating point comparison} consists of
+  \mbox{\meta{fp expr\textsubscript{1}} \meta{relation} \meta{fp expr\textsubscript{2}}},
+  like \mbox{$x<y$}, but \docAuxCommand*{fp_compare:nTF} even allows a chain of comparisons.
   \refCom{IfCsvsimFpCompareTF} is expandable.
 \end{docCommands}
 
 
 \begin{docCommands}[
-      doc parameter = \marg{integer expression}\marg{token list B}\marg{true}\marg{false}
+      doc parameter = \marg{integer comparison}\marg{true}\marg{false}
     ]
   {
     { doc name = IfCsvsimIntCompareTF, doc new and updated = {2021-06-28}{2023-12-19} },
     { doc name = ifcsvintcmp, color command=black }
   }
-  Evaluates the given \meta{integer expression}
+  Evaluates the given \meta{integer comparison}
   and executes \meta{true} or \meta{false} appropriately.
-  The evaluation is done using |\int_compare:nTF|.
+  The evaluation is done using \docAuxCommand*{int_compare:nTF}.\\
+  Basically, a \meta{integer comparison} consists of
+  \mbox{\meta{int expr\textsubscript{1}} \meta{relation} \meta{int expr\textsubscript{2}}},
+  like \mbox{$x<y$}, but \docAuxCommand*{int_compare:nTF} even allows a chain of comparisons.
   \refCom{IfCsvsimIntCompareTF} is expandable.
 \end{docCommands}
 

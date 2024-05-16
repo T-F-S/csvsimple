@@ -1,4 +1,4 @@
-# The LaTeX package csvsimple - version 2.6.0 (2024/01/19)
+# The LaTeX package csvsimple - version 2.6.1 (2024/05/16)
 
 
 > Copyright (c) 2008-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
