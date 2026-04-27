@@ -1,10 +1,10 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.7.0 (2024/09/27)
+%% The LaTeX package csvsimple - version 2.7.1 (2026/04/27)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2026 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -52,12 +52,13 @@
 \bigskip
 \begin{absquote}
   \begin{center}\bfseries Abstract\end{center}
-  |csvsimple| provides a simple \LaTeX\ interface for the processing of files with
-  comma separated values (CSV). |csvsimple| relies heavily on a key value
-  syntax which results in an easy way of usage.
-  Filtering and table generation is especially supported. Since the package
-  is considered as a lightweight tool, there is no support for data sorting
-  or data base storage.
+  |csvsimple| provides a simple \LaTeX\ interface for processing files with
+  comma-separated values (CSV).
+  |csvsimple| makes extensive use of key–value syntax, resulting in a straightforward interface.
+
+  Filtering and table generation are particularly supported. As the package
+  is intended to be lightweight, it does not provide support for data sorting or
+  database storage.
 \end{absquote}
 
 \section{Package Options}%
@@ -112,7 +113,7 @@ upgrade point of view.
 
 \begin{itemize}
 \item Any patches or additions using undocumented internals of |csvsimple-legacy|
-  will stop to function, because |csvsimple-l3| has a completely implementation.
+  will stop to function, because |csvsimple-l3| has a completely new implementation.
 \item |csvsimple-l3| is programmed in |expl3| code using the \LaTeX3 interfaces.
   No additional packages are loaded or needed with exception of several options
   which allow to access methods from |ifthen|, |etoolbox|, |longtable|, etc.

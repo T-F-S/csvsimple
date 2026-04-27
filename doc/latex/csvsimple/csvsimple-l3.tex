@@ -1,11 +1,11 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
 % !TeX spellcheck=en_US
-%% The LaTeX package csvsimple - version 2.7.0 (2024/09/27)
+%% The LaTeX package csvsimple - version 2.7.1 (2026/04/27)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2026 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -33,7 +33,7 @@
   pdftitle={Manual for the csvsimple-l3 package},
   pdfauthor={Thomas F. Sturm},
   pdfsubject={csv file processing with LaTeX3},
-  pdfkeywords={csv file, comma separated values, key value syntax}
+  pdfkeywords={csv file, comma-separated values, key–value syntax}
 }
 
 \usepackage{incgraph}
@@ -61,12 +61,13 @@
 \bigskip
 \begin{absquote}
   \begin{center}\bfseries Abstract\end{center}
-  |csvsimple(-l3)| provides a simple \LaTeX\ interface for the processing of files with
-  comma separated values (CSV). |csvsimple-l3| relies heavily on the key value
-  syntax from |l3keys| which results in an easy way of usage.
-  Filtering and table generation is especially supported. Since the package
-  is considered as a lightweight tool, there is no support for data sorting
-  or data base storage.
+  |csvsimple(-l3)| provides a simple \LaTeX\ interface for processing files with
+  comma-separated values (CSV).
+  |csvsimple(-l3)| makes extensive use of key–value syntax, resulting in a straightforward interface.
+
+  Filtering and table generation are particularly supported. As the package
+  is intended to be lightweight, it does not provide support for data sorting or
+  database storage.
 \end{absquote}
 
 \vspace{1cm}
@@ -99,12 +100,12 @@
 \clearpage
 \section{Introduction}%
 The |csvsimple-l3| package is applied to the processing of
-CSV\footnote{CSV file: file with comma separated values.} files.
-This processing is controlled by key value assignments according to the
+CSV\footnote{CSV file: file with comma-separated values.} files.
+This processing is controlled by key–value assignments according to the
 syntax of |l3keys|. Sample applications of the package
 are tabular lists, serial letters, and charts.
 
-An alternative to |csvsimple-l3| is the \ctanpkg{datatool} package
+An alternative to |csvsimple-l3| is the \refPkg{datatool} package
 which provides considerably more functions and allows sorting of data by \LaTeX.
 |csvsimple-l3| has a different approach for the user interface and
 is deliberately restricted to some basic functions with fast
@@ -114,7 +115,7 @@ Mind the following restrictions:
 \begin{itemize}
 \item Sorting is not supported directly but can be done
   with external tools, see \Fullref{sec:Sorting}.
-\item Values are expected to be comma separated, but the package
+\item Values are expected to be comma-separated, but the package
   provides support for other separators, see \Fullref{sec:separators}.
 \item Values are expected to be either not quoted or quoted with
   curly braces |{}| of \TeX\ groups. Other quotes like double-quotes
@@ -137,7 +138,7 @@ alternatives inside the preamble:
 \end{dispListing}
 
 Not automatically loaded, but used for many examples are the packages
-\ctanpkg{longtable}, \ctanpkg{booktabs}, \ctanpkg{ifthen}, and \ctanpkg{etoolbox}.
+\refPkg{longtable}, \refPkg{tabularray}, \refPkg{booktabs}, \refPkg{ifthen}, and \refPkg{etoolbox}.
 
 
 \clearpage
@@ -357,7 +358,7 @@ a certificate is printed only for students with grade unequal to 5.0.
 \begin{docCommand}{csvreader}{\oarg{options}\marg{file name}\marg{assignments}\marg{command list}}
   \refCom{csvreader} reads the file denoted by \meta{file name} line by line.
   Every line of the file has to contain an identical amount of
-  comma separated values. The curly braces |{}| of \TeX\ groups can be used
+  comma-separated values. The curly braces |{}| of \TeX\ groups can be used
   to mask a block which may contain commas not to be processed as separators.\smallskip
 
   The first line of such a CSV file is by default but not necessarily
@@ -368,7 +369,7 @@ a certificate is printed only for students with grade unequal to 5.0.
   Every line which contains a higher or lower number of entries is ignored
   during standard processing.\smallskip
 
-  The \meta{assignments} are given as comma separated list of key value pairs
+  The \meta{assignments} are given as comma-separated list of key–value pairs
   \mbox{\meta{name}|=|\meta{macro}}. Here, \meta{name} is an entry from the
   header line \emph{or} the arabic number of the addressed column.
   \meta{macro} is some \TeX\ macro which gets the content of the addressed column.\smallskip
@@ -388,7 +389,7 @@ a certificate is printed only for students with grade unequal to 5.0.
   that \textbf{all macro definitions are made global} to be used for table applications.\smallskip
 
   The processing of the given CSV file can be controlled by various
-  \meta{options} given as key value list. The feasible option keys
+  \meta{options} given as key–value list. The feasible option keys
   are described in section \ref{sec:schluessel} from page \pageref{sec:schluessel}.
 
 \begin{dispExample}
@@ -415,7 +416,7 @@ is useless for |\csvreader|.
 \begin{docCommand}{csvloop}{\marg{options}}
   Usually, \refCom{csvreader} may be preferred instead of |\csvloop|.
   \refCom{csvreader} is based on |\csvloop| which takes a mandatory list of
-  \meta{options} in key value syntax.
+  \meta{options} in key–value syntax.
   This list of \meta{options} controls the total processing. Especially,
   it has to contain the CSV file name.
 \begin{dispExample}
@@ -717,7 +718,7 @@ for the general table options in combination with \refCom{csvreader} and
   together with other \meta{options} to \refCom{csvloop}.
   This macro reads the whole CSV file denoted by \meta{file name}
   with an automated formatting.
-  For application, the package \ctanpkg{longtable} is required which has to be
+  For application, the package \refPkg{longtable} is required which has to be
   loaded in the preamble.
   The star variant treats the first line as data line and not as header line.
 \begin{dispListing}
@@ -743,7 +744,7 @@ for the general table options in combination with \refCom{csvreader} and
   together with other \meta{options} to \refCom{csvloop}.
   This macro reads the whole CSV file denoted by \meta{file name}
   with an automated formatting.
-  For application, the package \ctanpkg{booktabs} is required which has to be
+  For application, the package \refPkg{booktabs} is required which has to be
   loaded in the preamble.
   The star variant treats the first line as data line and not as header line.
 \begin{dispExample}
@@ -765,7 +766,7 @@ for the general table options in combination with \refCom{csvreader} and
   together with other \meta{options} to \refCom{csvloop}.
   This macro reads the whole CSV file denoted by \meta{file name}
   with an automated formatting.
-  For application, the packages \ctanpkg{booktabs} and \ctanpkg{longtable} are required which have to be
+  For application, the packages \refPkg{booktabs} and \refPkg{longtable} are required which have to be
   loaded in the preamble.
   The star variant treats the first line as data line and not as header line.
 \begin{dispListing}
@@ -792,12 +793,12 @@ for the general table options in combination with \refCom{csvreader} and
   together with other \meta{options} to \refCom{csvloop}.
   These macros read the whole CSV file denoted by \meta{file name}
   with an automated formatting.
-  For application, the package \ctanpkg{tabularray} is required which has to be
+  For application, the package \refPkg{tabularray} is required which has to be
   loaded in the preamble.
   \refCom{csvautotabularray} uses the \docAuxEnvironment*{tblr} environment and
   \refCom{csvautolongtabularray} uses the \docAuxEnvironment*{longtblr} environment.
   The star variants treat the first line as data line and not as header line.\par
-  Options to the table environments from \ctanpkg{tabularray} may be given
+  Options to the table environments from \refPkg{tabularray} may be given
   by either setting \refKey{csvsim/generic table options} or
   using \meta{taboptions 1} and \meta{taboptions 2}.\par
   The default setting is
@@ -842,12 +843,12 @@ Alternatively to \refKey{csvsim/generic table options}
 using \meta{taboptions 1} and \meta{taboptions 2}.
 If \meta{taboptions 2} is \emph{not present}, then \meta{taboptions 1}
 is used as
-mandatory argument (\ctanpkg{tabularray} inner specification).
+mandatory argument (\refPkg{tabularray} inner specification).
 Otherwise, \meta{taboptions 1} is used as
-optional argument (\ctanpkg{tabularray} outer specification)
+optional argument (\refPkg{tabularray} outer specification)
 and
 \meta{taboptions 2} as
-mandatory argument (\ctanpkg{tabularray} inner specification).
+mandatory argument (\refPkg{tabularray} inner specification).
 
 \begin{dispExample}
 \csvautotabularray[table centered]
@@ -1044,9 +1045,9 @@ see Section~\ref{subsec:tabsupport} from page~\pageref{subsec:tabsupport}.
 \end{docCsvKey}
 
 \begin{docCsvKey}{column names}{=\marg{assignments}}{no default, initially empty}
-  Adds some new \meta{assignments} of macros to columns in key value syntax.
+  Adds some new \meta{assignments} of macros to columns in key–value syntax.
   Existing assignments are kept.\par
-  The \meta{assignments} are given as comma separated list of key value pairs
+  The \meta{assignments} are given as comma-separated list of key–value pairs
   \mbox{\meta{name}|=|\meta{macro}}. Here, \meta{name} is an entry from the
   header line \emph{or} the arabic number of the addressed column.
   \meta{macro} is some \TeX\ macro which gets the content of the addressed column.
@@ -1171,14 +1172,14 @@ The following string compare filters \refKey{csvsim/filter strcmp} and
 \begin{docCsvKey}{filter equal}{=\marg{stringA}\marg{stringB}}{no default}
   Only lines where \meta{stringA} and \meta{stringB} are equal after expansion
   are accepted.
-  The implementation is done with the \ctanpkg{ifthen} package (loading required!).
+  The implementation is done with the \refPkg{ifthen} package (loading required!).
 \end{docCsvKey}
 
 
 \begin{docCsvKey}{filter not equal}{=\marg{stringA}\marg{stringB}}{no default}
   Only lines where \meta{stringA} and \meta{stringB} are not equal after expansion
   are accepted.
-  The implementation is done with the \ctanpkg{ifthen} package (loading required!).
+  The implementation is done with the \refPkg{ifthen} package (loading required!).
 \end{docCsvKey}
 
 
@@ -1370,7 +1371,7 @@ filter options:
 \begin{dispListing}
 filter test=\iftest{some testing},
 \end{dispListing}
-  For |\iftest|, tests from the \ctanpkg{etoolbox} package like
+  For |\iftest|, tests from the \refPkg{etoolbox} package like
   |\ifnumcomp|, |\ifdimgreater|, etc. and from \Fullref{sec:stringtests} can be used.
   Also, arbitrary own macros fulfilling this signature can be applied.
 \begin{dispExample}
@@ -1393,7 +1394,7 @@ filter test=\iftest{some testing},
 \begin{docCsvKey}[][doc new=2016-07-01]{filter expr}{=\meta{boolean expression}}{no default}
   Only data lines which fulfill a \meta{boolean expression} are accepted.
   Every \meta{boolean expression}
-  from the \ctanpkg{etoolbox} package is feasible (package loading required!).
+  from the \refPkg{etoolbox} package is feasible (package loading required!).
   To preprocess the data line before testing the \meta{boolean expression},
   the option key \refKey{csvsim/before filter} can be used.
 \begin{dispExample}
@@ -1417,7 +1418,7 @@ filter test=\iftest{some testing},
 \clearpage
 \begin{docCsvKey}[][doc new=2016-07-01]{filter ifthen}{=\meta{boolean expression}}{no default}
   Only data lines which fulfill a \meta{boolean expression} are accepted.
-  For the \meta{boolean expression}, every term from the \ctanpkg{ifthen} package
+  For the \meta{boolean expression}, every term from the \refPkg{ifthen} package
   is feasible (package loading required!).
   To preprocess the data line before testing the \meta{boolean expression},
   the option key \refKey{csvsim/before filter} can be used.
@@ -1495,7 +1496,7 @@ line 10 to 30 of the accepted lines.
 
 
 \begin{docCsvKey}[][doc new and updated={2021-06-29}{2022-09-21}]{range}{=\brackets{\meta{range1},\meta{range2},\meta{range3},... }}{no default, initially empty}
-  Defines a comma separated list of line ranges. If a line number \refCom{thecsvrow}
+  Defines a comma-separated list of line ranges. If a line number \refCom{thecsvrow}
   satisfies one or more of the given \meta{range1}, \meta{range2}, \ldots,
   the corresponding line is processed and displayed.
   If \refKey{csvsim/range} is set to empty, all lines are accepted.
@@ -1598,7 +1599,7 @@ The following example displays the last three line numbers:
 \begin{docCsvKey}{tabular}{=\meta{table format}}{style, no default}
   Surrounds the CSV processing with |\begin{tabular}|\marg{table format}
   at begin and with |\end{tabular}| at end.
-  Additionally, the commands defined by the key values of
+  Additionally, the commands defined by the key–values of
   \refKey{csvsim/before table}, \refKey{csvsim/table head}, \refKey{csvsim/table foot},
   and \refKey{csvsim/after table} are executed at the appropriate places.
   \refKey{csvsim/late after line} is set to \cs{}\cs{}.
@@ -1612,7 +1613,7 @@ The following example displays the last three line numbers:
 
 \begin{docCsvKey}{longtable}{=\meta{table format}}{style, no default}
   Like \refKey{csvsim/tabular} but for the |longtable| environment.
-  This requires the package \ctanpkg{longtable} (not loaded automatically).
+  This requires the package \refPkg{longtable} (not loaded automatically).
 \end{docCsvKey}
 
 
@@ -1628,7 +1629,7 @@ The following example displays the last three line numbers:
 
 \begin{docCsvKey}[][doc new=2021-07-06]{tabularray}{=\meta{table format}}{style, no default}
   Like \refKey{csvsim/tabular} but for the |tblr| environment.
-  This requires the package \ctanpkg{tabularray} (not loaded automatically).
+  This requires the package \refPkg{tabularray} (not loaded automatically).
   This also sets \refKey{csvsim/collect data} since this kind of table
   needs collected content, see \Fullref{sec:datacollection}.
   Note that \refKey{csvsim/after reading} is set to use the collected
@@ -1638,7 +1639,7 @@ The following example displays the last three line numbers:
 
 \begin{docCsvKey}[][doc new=2021-07-23]{long tabularray}{=\meta{table format}}{style, no default}
   Like \refKey{csvsim/tabularray} but using the |longtblr| environment
-  from the package \ctanpkg{tabularray} (not loaded automatically).
+  from the package \refPkg{tabularray} (not loaded automatically).
 \end{docCsvKey}
 
 
@@ -1701,7 +1702,7 @@ are described with predefined keys. The following keys allow to use further
 \begin{docCsvKey}[][doc new=2021-09-09]{generic table}{=\meta{name}}{no default, initially empty}
   Surrounds the CSV processing with \cs{begin}\marg{name}
   at begin and with \cs{end}\marg{name} at end.
-  Additionally, the commands defined by the key values of
+  Additionally, the commands defined by the key–values of
   \refKey{csvsim/before table}, \refKey{csvsim/table head}, \refKey{csvsim/table foot},
   and \refKey{csvsim/after table} are executed at the appropriate places.
   \refKey{csvsim/late after line} is set to \cs{}\cs{}.\par
@@ -1720,7 +1721,7 @@ are described with predefined keys. The following keys allow to use further
 
 \begin{docCsvKey}[][doc new and updated={2021-09-09}{2023-12-18}]{generic collected table}{=\meta{name}}{no default, initially empty}
   Like \refKey{csvsim/generic table} but for environments which need
-  collected content, e.g. |tblr| from package \ctanpkg{tabularray}, see \Fullref{sec:datacollection}.
+  collected content, e.g. |tblr| from package \refPkg{tabularray}, see \Fullref{sec:datacollection}.
   Note that \refKey{csvsim/consume collected data} is set to |true| to
   use the collected data immediately.
 
@@ -2252,7 +2253,7 @@ Now, we can use the new rule:
 |csvsimple-l3| reads and processes a CSV file line by line. Accordingly, the \TeX{}
 input stream is filled line by line.
 Although this is an efficient procedure, for some applications like tables with
-the \ctanpkg{tabularray} package, collecting the data from the CSV file into a macro is needed.
+the \refPkg{tabularray} package, collecting the data from the CSV file into a macro is needed.
 This macro can be given to the target application for further processing.
 
 
@@ -2345,7 +2346,7 @@ but it is now.
 \begin{docCommand}[doc new and updated={2021-07-06}{2023-12-17}]{csvexpval}{\meta{macro}}
   Recovers the content of the given \meta{macro} and prevents further
   expansion. This is a wrapper for \docAuxCommand*{exp_not:o}.
-  Alternatively, |\expandonce| from \ctanpkg{etoolbox} could be used.
+  Alternatively, |\expandonce| from \refPkg{etoolbox} could be used.
 \end{docCommand}
 
 
@@ -2768,10 +2769,10 @@ December, 2.2,  3.3e3
 
 \medskip
 
-The \ctanpkg{siunitx} package provides a huge amount of formatting options for
-numbers. A good and robust way to apply formatting by \ctanpkg{siunitx} inside
+The \refPkg{siunitx} package provides a huge amount of formatting options for
+numbers. A good and robust way to apply formatting by \refPkg{siunitx} inside
 tables generated by |csvsimple-l3| is the |\tablenum| macro from
-\ctanpkg{siunitx}.
+\refPkg{siunitx}.
 
 \begin{dispExample}
 % \usepackage{siunitx,array,booktabs}
@@ -2936,9 +2937,9 @@ because there is no head, but the columns can be addressed by their numbers:
 \clearpage
 \subsection{Tables with \texttt{tabularray}}\label{sec:tabularray}%
 
-The \ctanpkg{tabularray} package gives extended control for generating
+The \refPkg{tabularray} package gives extended control for generating
 tables. \refKey{csvsim/tabularray} and \refKey{csvsim/centered tabularray}
-support such tables. A distinctiveness is that for \ctanpkg{tabularray}
+support such tables. A distinctiveness is that for \refPkg{tabularray}
 data from a CSV file has to be \emph{collected} first (into a macro)
 and applied afterwards. The process is hidden from the user view, but
 has to be taken into account when \refKey{csvsim/command} is set up,
@@ -2984,7 +2985,7 @@ Note in the example above that
         \refCom{csvexpval}.
   \item |\IfCsvsimStrEqualTF| and |\fpeval| are \emph{expandable} and therefore the
     results of these commands are \emph{collected}.
-  \item |\tablenum| from \ctanpkg{siunitx} is a robust command and therefore
+  \item |\tablenum| from \refPkg{siunitx} is a robust command and therefore
     needs no protection. If you are not sure, if a command is robust or not, it
     does not hurt add the prefix \refCom{csvexpnot}, i.e. use |\csvexpnot\tablenum|.
   \end{itemize}
@@ -2992,7 +2993,7 @@ Note in the example above that
 
 \clearpage
 
-Filters and line ranges can be used for \ctanpkg{tabularray} and all
+Filters and line ranges can be used for \refPkg{tabularray} and all
 data collections without restriction:
 
 \begin{dispExample}
@@ -3044,7 +3045,7 @@ Display data from line 3 on:\par
 \clearpage
 
 The following example uses \refCom{csvautotabularray} to display the whole
-table. Note that the \ctanpkg{tabularray} options are given as last
+table. Note that the \refPkg{tabularray} options are given as last
 optional argument.
 
 \begin{dispExample}
@@ -3063,7 +3064,7 @@ optional argument.
 \clearpage
 \subsection{Imported CSV data}\label{sec:importeddata}%
 If data is imported from other applications, there is not always a choice
-to format in comma separated values with curly brackets.
+to format in comma-separated values with curly brackets.
 
 Consider the following example data file:
 

@@ -1,9 +1,9 @@
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.7.0 (2024/09/27)
+%% The LaTeX package csvsimple - version 2.7.1 (2026/04/27)
 %% csvsimple-doc.sty: style file for the documentation
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2008-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2008-2026 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -18,8 +18,8 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\def\version{2.7.0}%
-\def\datum{2024/09/27}%
+\def\version{2.7.1}%
+\def\datum{2026/04/27}%
 
 \IfFileExists{csvsimple-doc.cfg}{\input{csvsimple-doc.cfg}}{}\providecommand\csvpkgprefix{}
 
@@ -55,7 +55,7 @@
 
 \RequirePackage{longtable,booktabs,ifthen,etoolbox}
 
-\IfFileExists{minted2.sty}{\RequirePackage{minted2}}{}
+%\IfFileExists{minted2.sty}{\RequirePackage{minted2}}{}
 \RequirePackage{tcolorbox}
 \tcbuselibrary{skins,xparse,minted,breakable,documentation,raster}
 
@@ -90,6 +90,7 @@
     documentation minted style=colorful,
     documentation minted options={fontsize=\footnotesize},
     },
+  ctan formatter=\texttt,
 }
 
 \renewcommand*{\tcbdocnew}[1]{\textcolor{green!50!black}{\sffamily\bfseries N} #1}
@@ -105,11 +106,6 @@
 
 \NewTotalTCBox{\verbbox}{m}{enhanced,on line,size=fbox,frame empty,colback=red!5!white,
   colupper=red!85!black,fontupper=\bfseries\ttfamily}{\detokenize{"}#1\detokenize{"}}
-
-\NewDocumentCommand{\ctanpkg}{m}
-  {%
-     \href{https://ctan.org/pkg/#1}{\texttt{#1}}%
-  }
 
 \makeindex
 

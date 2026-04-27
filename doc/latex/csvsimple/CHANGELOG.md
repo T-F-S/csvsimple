@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on
-[Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
@@ -14,6 +14,17 @@ and this project adheres to
 ### Removed
 ### Fixed
 ### Security
+
+
+## [2.7.1] - 2026-04-27
+
+### Changed
+- `CHANGES.md` renamed to `CHANGELOG.md` following https://keepachangelog.com/en/1.1.0/
+- Minor documentation improvements
+
+### Fixed
+- Warning issued when the package has already been loaded
+- Code style improved with explcheck
 
 
 
