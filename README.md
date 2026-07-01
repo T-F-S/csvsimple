@@ -1,4 +1,4 @@
-# The LaTeX package csvsimple - version 2.7.1 (2026/04/27)
+# The LaTeX package csvsimple - version 3.0.0 (2026/07/01)
 
 [![CTAN](https://img.shields.io/ctan/v/csvsimple.svg)](https://www.ctan.org/pkg/csvsimple)
 
@@ -31,11 +31,9 @@ database storage.
 -  `csvsimple.sty`             LaTeX package file (style file)
 -  `csvsimple-l3.sty`          LaTeX package file (style file)
 -  `csvsimple-legacy.sty`      LaTeX package file (style file)
--  `csvsimple.pdf`             Documentation for csvsimple
--  `csvsimple-l3.pdf`          Documentation for csvsimple (LaTeX3)
+-  `csvsimple.pdf`             Documentation for csvsimple (LaTeX3)
 -  `csvsimple-legacy.pdf`      Documentation for csvsimple (Legacy)
 -  `csvsimple.tex`             Source code of the documentation
--  `csvsimple-l3.tex`          Source code of the documentation
 -  `csvsimple-legacy.tex`      Source code of the documentation
 -  `csvsimple-doc.sty`         Source code of the documentation
 -  `csvsimple-title.png`       Picture for the documentation

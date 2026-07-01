@@ -16,6 +16,32 @@ and this project adheres to
 ### Security
 
 
+
+## [3.0.0] - 2026-07-01
+
+### Added
+- Documentation example section "Storing Data in L3 Property Lists"
+- Some further additions to the documentation.
+
+### Changed
+- The default package option setting for `csvsimple` is changed from
+    `legacy` to `l3`. Documents using the legacy version may have to adapt
+    the way they load `csvsimple`.
+    ** \usepackage{csvsimple}            CHANGED: loads csvsimple-l3 now instead of csvsimple-legacy **
+    ** \usepackage[legacy]{csvsimple}    no change **
+    ** \usepackage{csvsimple-legacy}     no change **
+    ** \usepackage[l3]{csvsimple}        no change **
+    ** \usepackage{csvsimple-l3}         no change **
+- Documentation adapted to the change.
+- `csvsimple.pdf` now contains the documentation for `csvsimple` / `csvsimple-l3`
+- Minor code optimizations
+
+### Removed
+- The documentation `csvsimple-l3.pdf` is merged into `csvsimple.pdf`
+- Removed files: `csvsimple-l3.tex` and `csvsimple-l3.pdf`
+
+
+
 ## [2.7.1] - 2026-04-27
 
 ### Changed

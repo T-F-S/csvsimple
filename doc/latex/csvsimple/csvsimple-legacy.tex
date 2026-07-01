@@ -1,6 +1,6 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.7.1 (2026/04/27)
+%% The LaTeX package csvsimple - version 3.0.0 (2026/07/01)
 %% csvsimple.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
@@ -105,16 +105,16 @@ processing speed.
 Mind the following restrictions:
 \begin{itemize}
 \item Sorting is not supported directly but can be done
-  with external tools, see \Fullref{sec:Sorting}.
+  with external tools, see \zvref{sec:Sorting}.
 \item Values are expected to be comma separated, but the package
-  provides support for other separators, see \Fullref{sec:separators}.
+  provides support for other separators, see \zvref{sec:separators}.
 \item Values are expected to be either not quoted or quoted with
   curly braces |{}| of \TeX\ groups. Other quotes like doublequotes
   are not supported directly, but can be achieved
-  with external tools, see \Fullref{sec:importeddata}.
+  with external tools, see \zvref{sec:importeddata}.
 \item Every data line is expected to contain the same amount of values.
   Unfeasible data lines are silently ignored by default, but this can
-  be configured, see \Fullref{sec:consistency}.
+  be configured, see \zvref{sec:consistency}.
 \end{itemize}
 
 
@@ -126,8 +126,6 @@ and |ifthen|.
 |csvsimple-legacy| itself is loaded with \emph{one} of the following
 alternatives inside the preamble:
 \begin{dispListing}
-\usepackage{csvsimple}
-   % or alternatively (not simultaneously!)
 \usepackage[legacy]{csvsimple}
    % or alternatively (not simultaneously!)
 \usepackage{csvsimple-legacy}
@@ -818,7 +816,7 @@ see Section~\ref{subsec:tabsupport} from page~\pageref{subsec:tabsupport}.
 filter test=\iftest{some testing},
 \end{dispListing}
   For |\iftest|, tests from the |etoolbox| package like
-  |\ifnumcomp|, |\ifdimgreater|, etc. and from \Fullref{sec:stringtests} can be used.
+  |\ifnumcomp|, |\ifdimgreater|, etc. and from \zvref{sec:stringtests} can be used.
 
 \begin{dispExample}
 \csvreader[head to column names,tabular=llll,

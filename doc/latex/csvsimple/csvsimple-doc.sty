@@ -1,5 +1,5 @@
 % !TeX encoding=UTF-8
-%% The LaTeX package csvsimple - version 2.7.1 (2026/04/27)
+%% The LaTeX package csvsimple - version 3.0.0 (2026/07/01)
 %% csvsimple-doc.sty: style file for the documentation
 %%
 %% -------------------------------------------------------------------------------------------
@@ -18,8 +18,8 @@
 %%
 %% This work consists of all files listed in README.md
 %%
-\def\version{2.7.1}%
-\def\datum{2026/04/27}%
+\def\version{3.0.0}%
+\def\datum{2026/07/01}%
 
 \IfFileExists{csvsimple-doc.cfg}{\input{csvsimple-doc.cfg}}{}\providecommand\csvpkgprefix{}
 
@@ -32,13 +32,22 @@
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[english]{babel}
 \RequirePackage{lmodern,parskip,array,ifthen,calc,makeidx}
+\RequirePackage{microtype}
+\microtypesetup{nopatch=footnote}
 \RequirePackage{amsmath,amssymb}
 \RequirePackage[svgnames,table]{xcolor}
 \RequirePackage{tikz,siunitx,xfp,tabularray}
 \RequirePackage{varioref}
 \RequirePackage[pdftex,bookmarks,raiselinks,pageanchor,hyperindex,colorlinks]{hyperref}
 \urlstyle{sf}
-\RequirePackage{cleveref}
+
+\RequirePackage{zref-clever}
+\RequirePackage{zref-vario}
+\RequirePackage{zref-titleref}
+\zcsetup{cap}
+\zcRefTypeSetup{page}{cap=false}
+\zcRefTypeSetup{page}{Name-sg={page}, name-sg={page}}
+
 
 \RequirePackage[a4paper,left=2.5cm,right=2.5cm,top=1.5cm,bottom=1.5cm,
     marginparsep=3mm,marginparwidth=18mm,

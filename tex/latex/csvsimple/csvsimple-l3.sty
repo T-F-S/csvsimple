@@ -1,4 +1,4 @@
-%% The LaTeX package csvsimple - version 2.7.1 (2026/04/27)
+%% The LaTeX package csvsimple - version 3.0.0 (2026/07/01)
 %% csvsimple-l3.sty: Simple LaTeX CSV file processing (LaTeX3)
 %%
 %% -------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@
 %% This work consists of all files listed in README.md
 %%
 \NeedsTeXFormat{LaTeX2e}[2025-11-01]
-\ProvidesExplPackage{csvsimple-l3}{2026/04/27}{2.7.1}
+\ProvidesExplPackage{csvsimple-l3}{2026/07/01}{3.0.0}
   {LaTeX3 CSV file processing}
 
 
@@ -229,7 +229,7 @@
   {
     \bool_do_while:nn
       {
-        \bool_lazy_or_p:nn { \tl_if_eq_p:NN \csvline \c__csvsim_par_tl } { \tl_if_blank_p:o \csvline }
+        \bool_lazy_or_p:nn { \tl_if_eq_p:NN \csvline \c__csvsim_par_tl } { \tl_if_blank_p:o \csvline } % noqa: W302
       }
       {
         \__csvsim_read_line:
@@ -387,11 +387,7 @@
     % clear macros
     \int_step_inline:nn { \g__csvsim_colmax_int }
       {
-        \tl_set:No \l__csvsim_tmpa_tl { \cs:w csvcol \int_to_roman:n {##1} \cs_end: }
-        \use:e
-          {
-            \exp_not:N \tl_gclear:N \exp_not:V \l__csvsim_tmpa_tl
-          }
+        \exp_last_unbraced:No \tl_gclear:N { \cs:w csvcol \int_to_roman:n {##1} \cs_end: }
       }
     \__csvsim_set_colnames:
     \seq_gclear:N \g__csvsim_colname_seq
